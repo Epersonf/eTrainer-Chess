@@ -9,7 +9,7 @@ abstract class BaseApi {
     _initializeToken();
     try {
       return await requestFunction();
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       if (_isServiceUnavailable(e)) {
         throw Exception(
             'Serviço indisponível no momento. Por favor, tente novamente mais tarde.');
@@ -56,12 +56,12 @@ abstract class BaseApi {
         ));
   }
 
-  static bool _isServiceUnavailable(DioError e) {
+  static bool _isServiceUnavailable(DioException e) {
     // Timeout, erro de conexão, ou status 500/503
-    return e.type == DioErrorType.connectionTimeout ||
-        e.type == DioErrorType.receiveTimeout ||
-        e.type == DioErrorType.sendTimeout ||
-        e.type == DioErrorType.connectionError;
+    return e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.connectionError;
   }
 
   static String? _initializeToken() {
@@ -79,7 +79,7 @@ abstract class BaseApi {
     _dio.options.headers['Authorization'] = 'Bearer $token';
   }
 
-  static resetToken() {
+  static void resetToken() {
     _dio.options.headers.remove('Authorization');
   }
 }

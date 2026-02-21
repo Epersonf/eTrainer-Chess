@@ -47,6 +47,8 @@ dependencies:
   flutter_mobx: ^2.3.0
   json_annotation: ^4.10.0
   google_fonts: ^6.1.0
+  flutter_chess_board: ^1.0.1
+  mobx: ^2.6.0
 
 dev_dependencies:
   flutter_test:
