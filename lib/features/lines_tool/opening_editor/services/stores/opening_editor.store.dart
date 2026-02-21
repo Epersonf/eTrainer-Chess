@@ -23,28 +23,47 @@ abstract class OpeningEditorStoreBase with Store {
   @observable
   ObservableList<String> currentMessages = ObservableList<String>();
 
+  // Helper para clonar a árvore nativamente sem usar json dinâmico
+  Map<String, OpTrainNode> _cloneTree(Map<String, OpTrainNode>? original) {
+    if (original == null) return {};
+    return original.map((k, v) => MapEntry(k, OpTrainNode(
+      possibleMessages: v.possibleMessages?.toList(),
+      expectedMoves: _cloneTree(v.expectedMoves),
+    )));
+  }
+
   @action
   void onMoveMade(String from, String to, [String? promotion]) {
     final String moveKey = promotion != null ? "$from$to$promotion" : "$from$to";
     
-    // Usamos toJson/fromJson para criar uma cópia mutável profunda do repertório facilmente
-    final map = repertoire.toJson();
-    Map<String, dynamic> currentMap = map['expectedMoves'];
+    // Clona a árvore com tipos estritos para o MobX não reclamar
+    final newRoot = _cloneTree(repertoire.expectedMoves);
+    Map<String, OpTrainNode> currentMap = newRoot;
     
     for (String pathKey in currentPath) {
-      if (currentMap[pathKey]['expectedMoves'] == null) {
-        currentMap[pathKey]['expectedMoves'] = <String, dynamic>{};
+      if (!currentMap.containsKey(pathKey)) {
+         currentMap[pathKey] = OpTrainNode(possibleMessages: [], expectedMoves: {});
       }
-      currentMap = currentMap[pathKey]['expectedMoves'];
+      if (currentMap[pathKey]!.expectedMoves == null) {
+        currentMap[pathKey] = OpTrainNode(
+          possibleMessages: currentMap[pathKey]!.possibleMessages,
+          expectedMoves: {},
+        );
+      }
+      currentMap = currentMap[pathKey]!.expectedMoves!;
     }
 
     if (!currentMap.containsKey(moveKey)) {
-      currentMap[moveKey] = {
-        'possibleMessages': <String>[],
-        'expectedMoves': <String, dynamic>{},
-      };
-      repertoire = OpTrainRepertoire.fromJson(map);
+      currentMap[moveKey] = OpTrainNode(
+        possibleMessages: [],
+        expectedMoves: {},
+      );
     }
+
+    repertoire = OpTrainRepertoire(
+      initialFen: repertoire.initialFen,
+      expectedMoves: newRoot,
+    );
 
     currentPath.add(moveKey);
     _loadMessagesForCurrentNode();
@@ -95,19 +114,22 @@ abstract class OpeningEditorStoreBase with Store {
   void deleteNode(List<String> pathToDelete) {
     if (pathToDelete.isEmpty) return;
 
-    final map = repertoire.toJson();
-    Map<String, dynamic> currentMap = map['expectedMoves'];
+    final newRoot = _cloneTree(repertoire.expectedMoves);
+    Map<String, OpTrainNode> currentMap = newRoot;
 
     // Navega até o pai do nó que será deletado
     for (int i = 0; i < pathToDelete.length - 1; i++) {
-      currentMap = currentMap[pathToDelete[i]]['expectedMoves'];
+      currentMap = currentMap[pathToDelete[i]]!.expectedMoves!;
     }
 
     // Remove o nó
     final keyToRemove = pathToDelete.last;
     currentMap.remove(keyToRemove);
     
-    repertoire = OpTrainRepertoire.fromJson(map);
+    repertoire = OpTrainRepertoire(
+      initialFen: repertoire.initialFen,
+      expectedMoves: newRoot,
+    );
 
     // Se o usuário deletou a variante atual, volte o tabuleiro
     final pathStr = pathToDelete.join(',');
@@ -141,17 +163,25 @@ abstract class OpeningEditorStoreBase with Store {
   void _syncMessagesToRepertoire() {
     if (currentPath.isEmpty) return;
     
-    final map = repertoire.toJson();
-    Map<String, dynamic> currentMap = map['expectedMoves'];
+    final newRoot = _cloneTree(repertoire.expectedMoves);
+    Map<String, OpTrainNode> currentMap = newRoot;
     
     for (int i = 0; i < currentPath.length - 1; i++) {
-      currentMap = currentMap[currentPath[i]]['expectedMoves'];
+      currentMap = currentMap[currentPath[i]]!.expectedMoves!;
     }
     
     final lastKey = currentPath.last;
-    currentMap[lastKey]['possibleMessages'] = currentMessages.where((msg) => msg.trim().isNotEmpty).toList();
+    final existingNode = currentMap[lastKey]!;
     
-    repertoire = OpTrainRepertoire.fromJson(map);
+    currentMap[lastKey] = OpTrainNode(
+      possibleMessages: currentMessages.where((msg) => msg.trim().isNotEmpty).toList(),
+      expectedMoves: existingNode.expectedMoves,
+    );
+    
+    repertoire = OpTrainRepertoire(
+      initialFen: repertoire.initialFen,
+      expectedMoves: newRoot,
+    );
   }
 
   void _loadMessagesForCurrentNode() {

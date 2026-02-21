@@ -115,7 +115,6 @@ class _MoveTreeNode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Verifica estado atual para estilização
     final currentPathStr = store.currentPath.join(',');
     final thisPathStr = path.join(',');
     
@@ -128,17 +127,17 @@ class _MoveTreeNode extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // O item do nó na árvore
+        // O nó atual
         GestureDetector(
           onTap: () => store.jumpToNode(path),
           onSecondaryTapDown: (details) => _showContextMenu(context, details.globalPosition),
           child: Container(
-            padding: EdgeInsets.only(left: 12.0 + (depth * 16), right: 12, top: 4, bottom: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: isExactlyActive ? Colors.cyanAccent.withOpacity(0.15) : Colors.transparent,
               border: Border(
                 left: BorderSide(
-                  color: isExactlyActive ? Colors.cyanAccent : (isAncestor ? Colors.cyan.withOpacity(0.3) : Colors.transparent),
+                  color: isExactlyActive ? Colors.cyanAccent : (isAncestor ? Colors.cyan.withOpacity(0.5) : Colors.transparent),
                   width: 3,
                 ),
               ),
@@ -165,19 +164,29 @@ class _MoveTreeNode extends StatelessWidget {
           ),
         ),
         
-        // Renderiza os filhos do nó (Nest Infinito)
+        // Renderiza os filhos com "Nesting" visual
         if (node.expectedMoves != null && node.expectedMoves!.isNotEmpty)
-          ...node.expectedMoves!.entries.map((childEntry) {
-            return _MoveTreeNode(
-              store: store,
-              moveKey: childEntry.key,
-              node: childEntry.value,
-              path: [...path, childEntry.key],
-              depth: depth + 1,
-            );
-          }),
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Container(
+              decoration: const BoxDecoration(
+                border: Border(left: BorderSide(color: Colors.white10, width: 2)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: node.expectedMoves!.entries.map((childEntry) {
+                  return _MoveTreeNode(
+                    store: store,
+                    moveKey: childEntry.key,
+                    node: childEntry.value,
+                    path: [...path, childEntry.key],
+                    depth: depth + 1,
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
       ],
     );
   }
 }
-
