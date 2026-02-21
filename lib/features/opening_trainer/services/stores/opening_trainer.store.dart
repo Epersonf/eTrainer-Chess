@@ -9,31 +9,32 @@ part 'opening_trainer.store.g.dart';
 
 class OpeningTrainerStore = OpeningTrainerStoreBase with _$OpeningTrainerStore;
 
+enum PlayerMode { white, black, both }
+
 abstract class OpeningTrainerStoreBase with Store {
   final ChessBoardController chessController = ChessBoardController();
   Map<String, OpTrainNode>? _currentNodeMoves;
 
-  // Guarda o repertório atual para podermos reiniciar o treinamento
   OpTrainRepertoire? currentRepertoire;
 
-  // NOVO: Getter reativo que lê a orientação do JSON atual
-  OpTrainColor get currentOrientation =>
-      currentRepertoire?.boardOrientation ?? OpTrainColor.white;
+  // NOVO: Controle de Modos
+  @observable
+  PlayerMode playerMode = PlayerMode.white;
 
-  // NOVO: Controle de visibilidade das coordenadas
+  // NOVO: Salva o FEN válido mais recente para consertar o Undo perfeitamente
+  String _lastValidFen = '';
+
   @observable
   bool showCoordinates = true;
 
   @observable
-  bool isAutoPlaying = false; // Trava para evitar conflito com o callback onMove
+  bool isAutoPlaying = false;
 
-  // NOVO: Controle de lance incorreto
   @observable
   bool hasMadeWrongMove = false;
 
   @observable
-  String currentMessage =
-      "Selecione uma abertura ou carregue um arquivo para começar!";
+  String currentMessage = "Selecione uma abertura ou carregue um arquivo para começar!";
 
   @observable
   bool isTrainingFinished = false;
@@ -41,22 +42,30 @@ abstract class OpeningTrainerStoreBase with Store {
   @observable
   String? errorMessage;
 
-  // NOVO: Ação para ligar/desligar coordenadas
   @action
   void toggleCoordinates() {
     showCoordinates = !showCoordinates;
+  }
+
+  // NOVO: Ação para mudar a cor e reiniciar automaticamente o treino
+  @action
+  void setPlayerMode(PlayerMode mode) {
+    playerMode = mode;
+    restartTraining();
   }
 
   @action
   void loadRepertoire(OpTrainRepertoire repertoire) {
     currentRepertoire = repertoire;
     chessController.loadFen(repertoire.initialFen);
+    _lastValidFen = repertoire.initialFen; // Salva o FEN inicial
+    
     _currentNodeMoves = repertoire.expectedMoves;
-    currentMessage = "Sua vez de jogar!";
+    currentMessage = "Treinamento iniciado. Faça seu lance!";
     isTrainingFinished = false;
     errorMessage = null;
     isAutoPlaying = false;
-    hasMadeWrongMove = false; // resetar a trava quando carregar repertório
+    hasMadeWrongMove = false;
     showCoordinates = true;
 
     _checkAutoMove();
@@ -72,15 +81,16 @@ abstract class OpeningTrainerStoreBase with Store {
   @action
   void onUserMove(String from, String to, [String? promotion]) {
     if (isTrainingFinished || _currentNodeMoves == null) return;
-    // NOVO: Impede lances se já houver um erro no tabuleiro
     if (isAutoPlaying || hasMadeWrongMove) return;
 
     errorMessage = null;
-    // Anexa a peça promovida à chave do lance se existir (ex: 'e7e8q')
     final String moveKey = promotion != null ? "$from$to$promotion" : "$from$to";
 
     if (_currentNodeMoves!.containsKey(moveKey)) {
       final nextNode = _currentNodeMoves![moveKey]!;
+
+      // ACERTOU: Atualiza o estado válido
+      _lastValidFen = chessController.getFen(); 
 
       _updateMessage(nextNode);
       _currentNodeMoves = nextNode.expectedMoves;
@@ -92,31 +102,27 @@ abstract class OpeningTrainerStoreBase with Store {
         _checkAutoMove();
       }
     } else {
-      // MODIFICADO: Não desfaz automaticamente, apenas marca o erro
+      // ERROU: Trava o jogo, mas mantém a peça visualmente onde o usuário soltou
       hasMadeWrongMove = true;
       errorMessage = "Lance incorreto! Tente se lembrar da preparação.";
     }
   }
 
-  // NOVO: Função para o Botão de Desfazer
   @action
   void undoWrongMove() {
-    try {
-      chessController.undoMove();
-    } catch (_) {}
+    // CONSERTO DO UNDO: Restaura o FEN gravado no último lance válido
+    chessController.loadFen(_lastValidFen);
     hasMadeWrongMove = false;
     errorMessage = null;
     currentMessage = "Tente novamente.";
   }
 
-  // NOVO: Função para a Lâmpada (Hint)
   @action
   void showHint() {
     if (isTrainingFinished || _currentNodeMoves == null || _currentNodeMoves!.isEmpty) return;
 
     final validMoves = _currentNodeMoves!.keys.toList();
     if (validMoves.isNotEmpty) {
-      // Formata os lances (ex: de e2e4 para e2-e4)
       final movesStr = validMoves.map((m) {
         if (m.length == 4) return "${m.substring(0, 2)}-${m.substring(2, 4)}";
         if (m.length == 5) return "${m.substring(0, 2)}-${m.substring(2, 4)}=${m[4].toUpperCase()}";
@@ -131,55 +137,49 @@ abstract class OpeningTrainerStoreBase with Store {
   Future<void> _checkAutoMove() async {
     if (_currentNodeMoves == null || _currentNodeMoves!.isEmpty) return;
 
-    // Pega todas as chaves cujos nós correspondentes são do tipo 'AUTO' (case-insensitive)
-    final List<String> autoKeys = _currentNodeMoves!.entries
-        .where((e) => e.value.type.toUpperCase() == 'AUTO')
-        .map((e) => e.key)
-        .toList();
+    // Lógica inteligente de turno: lê quem joga direto do FEN
+    final isWhiteTurn = chessController.getFen().contains(' w ');
+    
+    // Verifica se a engine deve jogar
+    final shouldAutoMove = (playerMode == PlayerMode.white && !isWhiteTurn) ||
+                           (playerMode == PlayerMode.black && isWhiteTurn);
 
-    if (autoKeys.isNotEmpty) {
+    if (shouldAutoMove) {
       isAutoPlaying = true;
-      final savedRepertoire =
-          currentRepertoire; // Salva o estado atual para evitar Race Condition
+      final savedRepertoire = currentRepertoire;
 
       await Future.delayed(const Duration(milliseconds: 600));
 
-      // Se o usuário clicou em "Reiniciar" durante o delay, aborta a execução
       if (currentRepertoire != savedRepertoire) {
         isAutoPlaying = false;
         return;
       }
 
-      // Sorteia aleatoriamente UM dos lances AUTO
-      final String randomMoveKey = autoKeys[Random().nextInt(autoKeys.length)];
-      final OpTrainNode selectedNode = _currentNodeMoves![randomMoveKey]!;
+      // NOVO: Seleciona randomicamente qualquer lance esperado
+      final availableMoves = _currentNodeMoves!.keys.toList();
+      final randomMoveKey = availableMoves[Random().nextInt(availableMoves.length)];
+      final selectedNode = _currentNodeMoves![randomMoveKey]!;
 
-      // Separa from, to e promoção dinamicamente
       final String from = randomMoveKey.substring(0, 2);
       final String to = randomMoveKey.substring(2, 4);
-      final String? promotion = randomMoveKey.length > 4
-          ? randomMoveKey.substring(4, 5)
-          : null;
+      final String? promotion = randomMoveKey.length > 4 ? randomMoveKey.substring(4, 5) : null;
 
       try {
         if (promotion != null) {
           try {
-            chessController.makeMoveWithPromotion(
-              from: from,
-              to: to,
-              pieceToPromoteTo: promotion,
-            );
+            chessController.makeMoveWithPromotion(from: from, to: to, pieceToPromoteTo: promotion);
           } catch (_) {
-            // Fallback caso a versão da lib não suporte makeMoveWithPromotion
             chessController.makeMove(from: from, to: to);
           }
         } else {
           chessController.makeMove(from: from, to: to);
         }
       } catch (e) {
-        // Se a engine recusar o lance AUTO, mostramos o erro na UI
         errorMessage = "Erro interno no lance automático ($from para $to): $e";
       }
+
+      // ACERTOU (AUTO): Atualiza estado válido
+      _lastValidFen = chessController.getFen();
 
       _updateMessage(selectedNode);
       _currentNodeMoves = selectedNode.expectedMoves;
@@ -189,10 +189,8 @@ abstract class OpeningTrainerStoreBase with Store {
         currentMessage = "Treinamento concluído!";
       }
 
-      // Delay seguro antes de liberar a UI para garantir que o onMove não cause conflito
       await Future.delayed(const Duration(milliseconds: 100));
 
-      // Checa novamente caso tenha reiniciado exatamente no micro-delay final
       if (currentRepertoire != savedRepertoire) {
         isAutoPlaying = false;
         return;
@@ -200,7 +198,7 @@ abstract class OpeningTrainerStoreBase with Store {
 
       isAutoPlaying = false;
 
-      // Executa de novo caso a resposta do oponente force outra resposta automática
+      // Chama de novo caso tenha engatilhado outro lance automático (Ex: PlayerMode.both não cai aqui, mas evita bugs)
       _checkAutoMove();
     }
   }

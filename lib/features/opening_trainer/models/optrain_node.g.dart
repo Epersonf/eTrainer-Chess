@@ -7,7 +7,6 @@ part of 'optrain_node.dart';
 // **************************************************************************
 
 OpTrainNode _$OpTrainNodeFromJson(Map<String, dynamic> json) => OpTrainNode(
-  type: json['type'] as String? ?? 'AUTO',
   possibleMessages: (json['possibleMessages'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
@@ -18,7 +17,6 @@ OpTrainNode _$OpTrainNodeFromJson(Map<String, dynamic> json) => OpTrainNode(
 
 Map<String, dynamic> _$OpTrainNodeToJson(OpTrainNode instance) =>
     <String, dynamic>{
-      'type': instance.type,
       'possibleMessages': instance.possibleMessages,
       'expectedMoves': instance.expectedMoves,
     };

@@ -172,6 +172,8 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
                       onRestart: store.restartTraining,
                       showCoordinates: store.showCoordinates,
                       onToggleCoordinates: store.toggleCoordinates,
+                      playerMode: store.playerMode,
+                      onModeChanged: store.setPlayerMode,
                     ),
                   ),
                   const SizedBox(height: 24),

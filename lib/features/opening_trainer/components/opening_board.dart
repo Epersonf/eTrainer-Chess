@@ -1,4 +1,3 @@
-import 'package:e_trainer_chess/features/opening_trainer/models/optrain_repertoire.dart';
 import 'package:e_trainer_chess/features/opening_trainer/services/stores/opening_trainer.store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart';
@@ -41,7 +40,8 @@ class OpeningBoard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             child: Observer(
               builder: (_) {
-                final isWhiteBottom = store.currentOrientation == OpTrainColor.white;
+                // A Orientação Visual agora depende estritamente da escolha do jogador
+                final isWhiteBottom = store.playerMode != PlayerMode.black;
                 
                 return Stack(
                   children: [

@@ -1,3 +1,4 @@
+import 'package:e_trainer_chess/features/opening_trainer/services/stores/opening_trainer.store.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -7,9 +8,12 @@ class ControlPanel extends StatelessWidget {
   final List<DropdownMenuItem<String>>? dropdownItems;
   final ValueChanged<String?> onChanged;
   final VoidCallback onRestart;
-  // NOVO: Recebendo os parâmetros das coordenadas
   final bool showCoordinates;
   final VoidCallback onToggleCoordinates;
+
+  // NOVO: Adicionado controles de Modo
+  final PlayerMode playerMode;
+  final ValueChanged<PlayerMode> onModeChanged;
 
   const ControlPanel({
     super.key,
@@ -20,6 +24,8 @@ class ControlPanel extends StatelessWidget {
     required this.onRestart,
     required this.showCoordinates,
     required this.onToggleCoordinates,
+    required this.playerMode,
+    required this.onModeChanged,
   });
 
   @override
@@ -37,13 +43,39 @@ class ControlPanel extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Repertório de Aberturas",
-              style: GoogleFonts.ibmPlexSans(
-                color: Colors.grey[400],
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Repertório de Aberturas",
+                  style: GoogleFonts.ibmPlexSans(
+                    color: Colors.grey[400],
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                // Botão de Coordenadas
+                InkWell(
+                  onTap: onToggleCoordinates,
+                  child: Row(
+                    children: [
+                      Icon(
+                        showCoordinates ? Icons.grid_on : Icons.grid_off,
+                        color: showCoordinates ? Colors.cyanAccent : Colors.grey,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        "Coords",
+                        style: TextStyle(
+                          color: showCoordinates ? Colors.cyanAccent : Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 12),
             Row(
@@ -76,22 +108,6 @@ class ControlPanel extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                // NOVO: Botão de toggle das coordenadas
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.cyanAccent.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: IconButton(
-                    icon: Icon(
-                      showCoordinates ? Icons.grid_on : Icons.grid_off,
-                      color: showCoordinates ? Colors.cyanAccent : Colors.grey,
-                    ),
-                    tooltip: "Mostrar Coordenadas",
-                    onPressed: onToggleCoordinates,
-                  ),
-                ),
                 const SizedBox(width: 8),
                 Container(
                   decoration: BoxDecoration(
@@ -106,7 +122,79 @@ class ControlPanel extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 16),
+            // NOVO: Seletor de Modo (Brancas / Ambas / Pretas)
+            Text(
+              "Jogar de:",
+              style: GoogleFonts.ibmPlexSans(
+                color: Colors.grey[400],
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF2C2C2C),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  _buildModeButton(
+                    title: "Brancas",
+                    mode: PlayerMode.white,
+                    iconColor: Colors.white,
+                  ),
+                  _buildModeButton(
+                    title: "Ambas",
+                    mode: PlayerMode.both,
+                    iconColor: Colors.grey,
+                  ),
+                  _buildModeButton(
+                    title: "Pretas",
+                    mode: PlayerMode.black,
+                    iconColor: Colors.black,
+                  ),
+                ],
+              ),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModeButton({
+    required String title,
+    required PlayerMode mode,
+    required Color iconColor,
+  }) {
+    final isSelected = playerMode == mode;
+    return Expanded(
+      child: InkWell(
+        onTap: () => onModeChanged(mode),
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.cyanAccent.withOpacity(0.15) : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: isSelected ? Border.all(color: Colors.cyanAccent.withOpacity(0.5)) : null,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.circle, color: iconColor, size: 12),
+              const SizedBox(width: 6),
+              Text(
+                title,
+                style: TextStyle(
+                  color: isSelected ? Colors.cyanAccent : Colors.grey[400],
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -4,15 +4,11 @@ part 'optrain_node.g.dart';
 
 @JsonSerializable()
 class OpTrainNode {
-  @JsonKey(defaultValue: 'AUTO')
-  final String type;
-
   final List<String>? possibleMessages;
 
   final Map<String, OpTrainNode>? expectedMoves;
 
   OpTrainNode({
-    required this.type,
     this.possibleMessages,
     this.expectedMoves,
   });
