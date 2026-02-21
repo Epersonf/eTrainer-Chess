@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 class ControlPanel extends StatelessWidget {
   final String selectedOpening;
   final Map<String, String> defaultOpenings;
+  final List<DropdownMenuItem<String>>? dropdownItems;
   final ValueChanged<String?> onChanged;
   final VoidCallback onRestart;
 
@@ -11,6 +12,7 @@ class ControlPanel extends StatelessWidget {
     super.key,
     required this.selectedOpening,
     required this.defaultOpenings,
+    this.dropdownItems,
     required this.onChanged,
     required this.onRestart,
   });
@@ -54,7 +56,7 @@ class ControlPanel extends StatelessWidget {
                         dropdownColor: const Color(0xFF2C2C2C),
                         icon: const Icon(Icons.keyboard_arrow_down, color: Colors.cyanAccent),
                         value: selectedOpening,
-                        items: [
+                        items: dropdownItems ?? [
                           ...defaultOpenings.entries.map((e) => DropdownMenuItem(
                                 value: e.key,
                                 child: Text(e.value, style: const TextStyle(color: Colors.white)),

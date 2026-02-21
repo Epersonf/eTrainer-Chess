@@ -40,6 +40,12 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
     _loadAssetOpening(_selectedOpening);
   }
 
+  @override
+  void dispose() {
+    store.dispose(); // Limpa o Store ao sair da tela
+    super.dispose();
+  }
+
   Future<void> _loadAssetOpening(String openingKey) async {
     try {
       final String jsonString = await rootBundle.loadString(
@@ -55,8 +61,10 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
         store.loadRepertoire(repertoire);
       }
     } catch (e) {
+      // Log do erro real para você no console
+      debugPrint("Erro ao carregar $openingKey: $e");
       store.currentMessage =
-          "Erro ao carregar $openingKey. Verifique se o arquivo existe em assets/openings/";
+          "Erro ao carregar $openingKey. Verifique se o JSON é válido e existe.";
     }
   }
 
@@ -102,6 +110,18 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Prepara os itens do dropdown uma vez por build
+    final dropdownItems = [
+      ..._defaultOpenings.entries.map((e) => DropdownMenuItem(
+            value: e.key,
+            child: Text(e.value, style: const TextStyle(color: Colors.white)),
+          )),
+      const DropdownMenuItem(
+        value: 'custom',
+        child: Text('Personalizado (.optrain)', style: TextStyle(color: Colors.cyanAccent)),
+      ),
+    ];
+
     // Scaffold com fundo Dark
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
@@ -135,6 +155,7 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
                   ControlPanel(
                     selectedOpening: _selectedOpening,
                     defaultOpenings: _defaultOpenings,
+                    dropdownItems: dropdownItems,
                     onChanged: (val) {
                       if (val == null) return;
                       if (val == 'custom') {
