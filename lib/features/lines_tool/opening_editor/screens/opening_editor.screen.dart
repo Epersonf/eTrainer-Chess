@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:e_trainer_chess/components/main_app_bar.dart';
 
 @RoutePage()
 class OpeningEditorScreen extends StatefulWidget {
@@ -65,9 +66,7 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const material.Color.fromARGB(255, 18, 18, 18),
-      appBar: AppBar(
-        title: Text('Opening Editor', style: GoogleFonts.michroma(color: Colors.cyanAccent)),
-        backgroundColor: const material.Color.fromARGB(255, 26, 26, 26),
+      appBar: MainAppBar(
         actions: [
           IconButton(
             icon: const Icon(Icons.download, color: Colors.cyanAccent),

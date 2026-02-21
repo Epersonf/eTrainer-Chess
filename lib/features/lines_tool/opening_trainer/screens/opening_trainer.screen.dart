@@ -10,6 +10,7 @@ import 'package:e_trainer_chess/features/lines_tool/opening_trainer/services/sto
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:e_trainer_chess/components/main_app_bar.dart';
 
 // Components
 import '../components/opening_board.dart';
@@ -127,22 +128,7 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
     // Scaffold com fundo Dark
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
-      appBar: AppBar(
-        title: Text(
-          'Opening Trainer',
-          style: GoogleFonts.michroma(color: Colors.cyanAccent),
-        ),
-        backgroundColor: const Color(0xFF1A1A1A),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.cyanAccent),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1.0),
-          child: Container(
-            color: Colors.cyanAccent.withOpacity(0.2),
-            height: 1.0,
-          ),
-        ),
-      ),
+      appBar: const MainAppBar(),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
