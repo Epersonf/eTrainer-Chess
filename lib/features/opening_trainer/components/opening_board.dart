@@ -1,3 +1,4 @@
+import 'package:e_trainer_chess/features/opening_trainer/models/optrain_repertoire.dart';
 import 'package:e_trainer_chess/features/opening_trainer/services/stores/opening_trainer.store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart';
@@ -10,6 +11,14 @@ class OpeningBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Estilo para destacar os caracteres por cima da textura do tabuleiro
+    const coordStyle = TextStyle(
+      color: Colors.white,
+      fontSize: 12,
+      fontWeight: FontWeight.bold,
+      shadows: [Shadow(color: Colors.black, blurRadius: 4, offset: Offset(1, 1))],
+    );
+
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(
@@ -31,32 +40,78 @@ class OpeningBoard extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Observer(
-              builder: (_) => ChessBoard(
-                controller: store.chessController,
-                boardColor: BoardColor.brown,
-                boardOrientation: PlayerColor.white,
-                // NOVO: bloqueia lances quando há um movimento incorreto no tabuleiro
-                enableUserMoves: !store.isAutoPlaying && !store.hasMadeWrongMove,
-                onMove: () {
-                  try {
-                    final history = store.chessController.game.history;
-                    if (history.isNotEmpty) {
-                      final lastMove = history.last.move;
-                      final String from = lastMove.fromAlgebraic;
-                      final String to = lastMove.toAlgebraic;
-                      
-                      // Identifica se houve promoção e pega a primeira letra (q, r, b, n)
-                      String? promotionStr;
-                      if (lastMove.promotion != null) {
-                        promotionStr = lastMove.promotion.toString().split('.').last.toLowerCase();
-                        if (promotionStr.isNotEmpty) promotionStr = promotionStr[0];
-                      }
+              builder: (_) {
+                final isWhiteBottom = store.currentOrientation == OpTrainColor.white;
+                
+                return Stack(
+                  children: [
+                    ChessBoard(
+                      controller: store.chessController,
+                      boardColor: BoardColor.brown,
+                      // Define a orientação usando o model do JSON
+                      boardOrientation: isWhiteBottom ? PlayerColor.white : PlayerColor.black,
+                      enableUserMoves: !store.isAutoPlaying && !store.hasMadeWrongMove,
+                      onMove: () {
+                        try {
+                          final history = store.chessController.game.history;
+                          if (history.isNotEmpty) {
+                            final lastMove = history.last.move;
+                            final String from = lastMove.fromAlgebraic;
+                            final String to = lastMove.toAlgebraic;
+                            
+                            String? promotionStr;
+                            if (lastMove.promotion != null) {
+                              promotionStr = lastMove.promotion.toString().split('.').last.toLowerCase();
+                              if (promotionStr.isNotEmpty) promotionStr = promotionStr[0];
+                            }
 
-                      store.onUserMove(from, to, promotionStr);
-                    }
-                  } catch (_) {}
-                },
-              ),
+                            store.onUserMove(from, to, promotionStr);
+                          }
+                        } catch (_) {}
+                      },
+                    ),
+                    
+                    // Overlay de Coordenadas independentes da lib
+                    if (store.showCoordinates)
+                      Positioned.fill(
+                        child: IgnorePointer( // Impede as letras de bloquearem cliques nas peças
+                          child: Stack(
+                            children: [
+                              // 1 a 8
+                              Positioned(
+                                top: 0,
+                                bottom: 0,
+                                left: 4,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: List.generate(8, (i) {
+                                    final rank = isWhiteBottom ? 8 - i : i + 1;
+                                    return Text(rank.toString(), style: coordStyle);
+                                  }),
+                                ),
+                              ),
+                              // a até h
+                              Positioned(
+                                bottom: 2,
+                                left: 0,
+                                right: 0,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: List.generate(8, (i) {
+                                    final file = isWhiteBottom 
+                                        ? String.fromCharCode(97 + i) 
+                                        : String.fromCharCode(104 - i);
+                                    return Text(file, style: coordStyle);
+                                  }),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
             ),
           ),
         ),

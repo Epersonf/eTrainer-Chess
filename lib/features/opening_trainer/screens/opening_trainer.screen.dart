@@ -8,6 +8,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:e_trainer_chess/features/opening_trainer/models/optrain_repertoire.dart';
 import 'package:e_trainer_chess/features/opening_trainer/services/stores/opening_trainer.store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // Components
@@ -32,6 +33,7 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
     'italian': 'Italian Game',
     'london': 'London System',
     'english': 'English Opening',
+    'sicilian': 'Sicilian Defense',
   };
 
   @override
@@ -152,20 +154,25 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
               final panelWidget = Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ControlPanel(
-                    selectedOpening: _selectedOpening,
-                    defaultOpenings: _defaultOpenings,
-                    dropdownItems: dropdownItems,
-                    onChanged: (val) {
-                      if (val == null) return;
-                      if (val == 'custom') {
-                        _pickAndLoadFile();
-                      } else {
-                        setState(() => _selectedOpening = val);
-                        _loadAssetOpening(val);
-                      }
-                    },
-                    onRestart: store.restartTraining,
+                  // NOVO: Observer para atualizar o ícone do botão quando clicar
+                  Observer(
+                    builder: (_) => ControlPanel(
+                      selectedOpening: _selectedOpening,
+                      defaultOpenings: _defaultOpenings,
+                      dropdownItems: dropdownItems,
+                      onChanged: (val) {
+                        if (val == null) return;
+                        if (val == 'custom') {
+                          _pickAndLoadFile();
+                        } else {
+                          setState(() => _selectedOpening = val);
+                          _loadAssetOpening(val);
+                        }
+                      },
+                      onRestart: store.restartTraining,
+                      showCoordinates: store.showCoordinates,
+                      onToggleCoordinates: store.toggleCoordinates,
+                    ),
                   ),
                   const SizedBox(height: 24),
                   TrainerPanel(store: store),

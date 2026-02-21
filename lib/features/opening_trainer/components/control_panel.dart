@@ -7,6 +7,9 @@ class ControlPanel extends StatelessWidget {
   final List<DropdownMenuItem<String>>? dropdownItems;
   final ValueChanged<String?> onChanged;
   final VoidCallback onRestart;
+  // NOVO: Recebendo os parâmetros das coordenadas
+  final bool showCoordinates;
+  final VoidCallback onToggleCoordinates;
 
   const ControlPanel({
     super.key,
@@ -15,6 +18,8 @@ class ControlPanel extends StatelessWidget {
     this.dropdownItems,
     required this.onChanged,
     required this.onRestart,
+    required this.showCoordinates,
+    required this.onToggleCoordinates,
   });
 
   @override
@@ -72,6 +77,22 @@ class ControlPanel extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
+                // NOVO: Botão de toggle das coordenadas
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.cyanAccent.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconButton(
+                    icon: Icon(
+                      showCoordinates ? Icons.grid_on : Icons.grid_off,
+                      color: showCoordinates ? Colors.cyanAccent : Colors.grey,
+                    ),
+                    tooltip: "Mostrar Coordenadas",
+                    onPressed: onToggleCoordinates,
+                  ),
+                ),
+                const SizedBox(width: 8),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.cyanAccent.withOpacity(0.1),

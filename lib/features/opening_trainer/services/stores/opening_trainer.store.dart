@@ -16,6 +16,14 @@ abstract class OpeningTrainerStoreBase with Store {
   // Guarda o repertório atual para podermos reiniciar o treinamento
   OpTrainRepertoire? currentRepertoire;
 
+  // NOVO: Getter reativo que lê a orientação do JSON atual
+  OpTrainColor get currentOrientation =>
+      currentRepertoire?.boardOrientation ?? OpTrainColor.white;
+
+  // NOVO: Controle de visibilidade das coordenadas
+  @observable
+  bool showCoordinates = true;
+
   @observable
   bool isAutoPlaying = false; // Trava para evitar conflito com o callback onMove
 
@@ -33,6 +41,12 @@ abstract class OpeningTrainerStoreBase with Store {
   @observable
   String? errorMessage;
 
+  // NOVO: Ação para ligar/desligar coordenadas
+  @action
+  void toggleCoordinates() {
+    showCoordinates = !showCoordinates;
+  }
+
   @action
   void loadRepertoire(OpTrainRepertoire repertoire) {
     currentRepertoire = repertoire;
@@ -43,6 +57,7 @@ abstract class OpeningTrainerStoreBase with Store {
     errorMessage = null;
     isAutoPlaying = false;
     hasMadeWrongMove = false; // resetar a trava quando carregar repertório
+    showCoordinates = true;
 
     _checkAutoMove();
   }

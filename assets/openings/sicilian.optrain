@@ -1,0 +1,17 @@
+{
+  "initialFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "boardOrientation": "black",
+  "expectedMoves": {
+    "e2e4": {
+      "type": "AUTO",
+      "possibleMessages": ["As brancas abrem com e4."],
+      "expectedMoves": {
+        "c7c5": {
+          "type": "MANUAL",
+          "possibleMessages": ["Defesa Siciliana! Você luta pelo centro com um peão lateral.", "Muito bem, jogando pela vitória de pretas."],
+          "expectedMoves": {}
+        }
+      }
+    }
+  }
+}
