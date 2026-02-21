@@ -45,26 +45,22 @@ mixin _$OpeningEditorStore on OpeningEditorStoreBase, Store {
     });
   }
 
-  late final _$currentMessagesInputAtom = Atom(
-    name: 'OpeningEditorStoreBase.currentMessagesInput',
+  late final _$currentMessagesAtom = Atom(
+    name: 'OpeningEditorStoreBase.currentMessages',
     context: context,
   );
 
   @override
-  String get currentMessagesInput {
-    _$currentMessagesInputAtom.reportRead();
-    return super.currentMessagesInput;
+  ObservableList<String> get currentMessages {
+    _$currentMessagesAtom.reportRead();
+    return super.currentMessages;
   }
 
   @override
-  set currentMessagesInput(String value) {
-    _$currentMessagesInputAtom.reportWrite(
-      value,
-      super.currentMessagesInput,
-      () {
-        super.currentMessagesInput = value;
-      },
-    );
+  set currentMessages(ObservableList<String> value) {
+    _$currentMessagesAtom.reportWrite(value, super.currentMessages, () {
+      super.currentMessages = value;
+    });
   }
 
   late final _$OpeningEditorStoreBaseActionController = ActionController(
@@ -109,12 +105,60 @@ mixin _$OpeningEditorStore on OpeningEditorStoreBase, Store {
   }
 
   @override
-  void saveMessages(String text) {
+  void advanceMove() {
     final _$actionInfo = _$OpeningEditorStoreBaseActionController.startAction(
-      name: 'OpeningEditorStoreBase.saveMessages',
+      name: 'OpeningEditorStoreBase.advanceMove',
     );
     try {
-      return super.saveMessages(text);
+      return super.advanceMove();
+    } finally {
+      _$OpeningEditorStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void deleteNode(List<String> pathToDelete) {
+    final _$actionInfo = _$OpeningEditorStoreBaseActionController.startAction(
+      name: 'OpeningEditorStoreBase.deleteNode',
+    );
+    try {
+      return super.deleteNode(pathToDelete);
+    } finally {
+      _$OpeningEditorStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void addMessage() {
+    final _$actionInfo = _$OpeningEditorStoreBaseActionController.startAction(
+      name: 'OpeningEditorStoreBase.addMessage',
+    );
+    try {
+      return super.addMessage();
+    } finally {
+      _$OpeningEditorStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void updateMessage(int index, String text) {
+    final _$actionInfo = _$OpeningEditorStoreBaseActionController.startAction(
+      name: 'OpeningEditorStoreBase.updateMessage',
+    );
+    try {
+      return super.updateMessage(index, text);
+    } finally {
+      _$OpeningEditorStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void removeMessage(int index) {
+    final _$actionInfo = _$OpeningEditorStoreBaseActionController.startAction(
+      name: 'OpeningEditorStoreBase.removeMessage',
+    );
+    try {
+      return super.removeMessage(index);
     } finally {
       _$OpeningEditorStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -125,7 +169,7 @@ mixin _$OpeningEditorStore on OpeningEditorStoreBase, Store {
     return '''
 repertoire: ${repertoire},
 currentPath: ${currentPath},
-currentMessagesInput: ${currentMessagesInput}
+currentMessages: ${currentMessages}
     ''';
   }
 }

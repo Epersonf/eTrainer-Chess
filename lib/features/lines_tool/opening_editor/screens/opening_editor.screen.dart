@@ -1,15 +1,16 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:e_trainer_chess/core/service_locator.dart';
-import 'package:e_trainer_chess/features/lines_tool/opening_editor/components/move_hierarchy_panel.dart';
-import 'package:e_trainer_chess/features/lines_tool/opening_editor/services/stores/opening_editor.store.dart';
 import 'package:flutter/material.dart' hide Color;
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/services.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:mobx/mobx.dart'; // Importante para o reaction()
 import 'package:google_fonts/google_fonts.dart';
+
 import 'package:e_trainer_chess/components/main_app_bar.dart';
+import 'package:e_trainer_chess/features/lines_tool/opening_editor/services/stores/opening_editor.store.dart';
+
+import '../components/move_hierarchy_panel.dart';
+import '../components/message_editor_panel.dart';
 
 @RoutePage()
 class OpeningEditorScreen extends StatefulWidget {
@@ -21,26 +22,10 @@ class OpeningEditorScreen extends StatefulWidget {
 
 class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
   final OpeningEditorStore store = sl<OpeningEditorStore>();
-  final TextEditingController _messagesController = TextEditingController();
-  late final ReactionDisposer _messageReaction;
-
-  @override
-  void initState() {
-    super.initState();
-    _messageReaction = reaction((_) => store.currentMessagesInput, (
-      String msg,
-    ) {
-      if (_messagesController.text != msg) {
-        _messagesController.text = msg;
-      }
-    });
-  }
 
   @override
   void dispose() {
-    _messageReaction(); // Limpa o observer
     store.dispose();
-    _messagesController.dispose();
     super.dispose();
   }
 
@@ -65,16 +50,11 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
             onPressed: () {
               Clipboard.setData(ClipboardData(text: jsonText));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Copiado para a área de transferência!"),
-                ),
+                const SnackBar(content: Text("Copiado para a área de transferência!")),
               );
               Navigator.pop(context);
             },
-            child: const Text(
-              "Copiar",
-              style: TextStyle(color: Colors.cyanAccent),
-            ),
+            child: const Text("Copiar", style: TextStyle(color: Colors.cyanAccent)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -88,7 +68,6 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
   @override
   Widget build(BuildContext context) {
     return Focus(
-      // Intercepta eventos de teclado
       autofocus: true,
       onKeyEvent: (node, event) {
         if (event is KeyDownEvent) {
@@ -115,105 +94,74 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
         ),
         body: Row(
           children: [
-            Container(
-              width: 400,
-              padding: const EdgeInsets.all(16),
-              color: const material.Color.fromARGB(255, 26, 26, 26),
-              child: Column(
-                children: [
-                  ChessBoard(
-                    controller: store.chessController,
-                    boardColor: BoardColor.brown,
-                    enableUserMoves: true,
-                    onMove: () {
-                      final history = store.chessController.game.history;
-                      if (history.isNotEmpty) {
-                        final lastMove = history.last.move;
-                        String? promotionStr;
-                        if (lastMove.promotion != null) {
-                          promotionStr = lastMove.promotion
-                              .toString()
-                              .split('.')
-                              .last
-                              .toLowerCase();
-                          if (promotionStr.isNotEmpty)
-                            promotionStr = promotionStr[0];
-                        }
-                        store.onMoveMade(
-                          lastMove.fromAlgebraic,
-                          lastMove.toAlgebraic,
-                          promotionStr,
-                        );
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Editor de Nó",
-                        style: GoogleFonts.michroma(
-                          color: Colors.white,
-                          fontSize: 14,
+            // Painel da Esquerda (Tabuleiro + Editor de Mensagens)
+            Expanded(
+              flex: 5, 
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                color: const material.Color.fromARGB(255, 26, 26, 26),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final bool isWide = constraints.maxWidth > 700;
+                    
+                    final boardWidget = Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 500),
+                        child: ChessBoard(
+                          controller: store.chessController,
+                          boardColor: BoardColor.brown,
+                          enableUserMoves: true,
+                          onMove: () {
+                            final history = store.chessController.game.history;
+                            if (history.isNotEmpty) {
+                              final lastMove = history.last.move;
+                              String? promotionStr;
+                              if (lastMove.promotion != null) {
+                                promotionStr = lastMove.promotion.toString().split('.').last.toLowerCase();
+                                if (promotionStr.isNotEmpty) promotionStr = promotionStr[0];
+                              }
+                              store.onMoveMade(
+                                lastMove.fromAlgebraic,
+                                lastMove.toAlgebraic,
+                                promotionStr,
+                              );
+                            }
+                          },
                         ),
                       ),
-                      Observer(
-                        builder: (_) => IconButton(
-                          icon: const Icon(Icons.undo, color: Colors.grey),
-                          onPressed: store.currentPath.isEmpty
-                              ? null
-                              : store.undoMove,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: Observer(
-                      builder: (_) {
-                        if (store.currentPath.isEmpty) {
-                          return Center(
-                            child: Text(
-                              "Faça um lance para editar.",
-                              style: TextStyle(color: Colors.grey[600]),
-                            ),
-                          );
-                        }
+                    );
 
-                        if (_messagesController.text !=
-                                store.currentMessagesInput &&
-                            !FocusScope.of(context).hasFocus) {
-                          _messagesController.text = store.currentMessagesInput;
-                        }
+                    final messageWidget = MessageEditorPanel(store: store);
 
-                        return TextField(
-                          controller: _messagesController,
-                          maxLines: null,
-                          expands: true,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: "Adicione mensagens (uma por linha)...",
-                            hintStyle: TextStyle(color: Colors.grey[700]),
-                            filled: true,
-                            fillColor: const material.Color.fromARGB(
-                              255,
-                              44,
-                              44,
-                              44,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          onChanged: store.saveMessages,
-                        );
-                      },
-                    ),
-                  ),
-                ],
+                    // Distribuição responsiva: se tela muito estreita, empilha. Se não, coloca lado a lado.
+                    if (isWide) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(flex: 3, child: boardWidget),
+                          const SizedBox(width: 32),
+                          Expanded(flex: 2, child: messageWidget),
+                        ],
+                      );
+                    } else {
+                      return Column(
+                        children: [
+                          boardWidget,
+                          const SizedBox(height: 24),
+                          Expanded(child: messageWidget),
+                        ],
+                      );
+                    }
+                  },
+                ),
               ),
             ),
-            MoveHierarchyPanel(store: store),
+            
+            // Painel da Direita: Árvore Infinita
+            SizedBox(
+              width: 320,
+              child: MoveHierarchyPanel(store: store),
+            ),
           ],
         ),
       ),

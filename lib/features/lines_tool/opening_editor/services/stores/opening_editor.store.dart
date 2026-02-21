@@ -21,25 +21,29 @@ abstract class OpeningEditorStoreBase with Store {
   ObservableList<String> currentPath = ObservableList<String>();
 
   @observable
-  String currentMessagesInput = '';
+  ObservableList<String> currentMessages = ObservableList<String>();
 
   @action
   void onMoveMade(String from, String to, [String? promotion]) {
     final String moveKey = promotion != null ? "$from$to$promotion" : "$from$to";
-    Map<String, OpTrainNode> currentMap = repertoire.expectedMoves;
+    
+    // Usamos toJson/fromJson para criar uma cópia mutável profunda do repertório facilmente
+    final map = repertoire.toJson();
+    Map<String, dynamic> currentMap = map['expectedMoves'];
+    
     for (String pathKey in currentPath) {
-      currentMap = currentMap[pathKey]!.expectedMoves ?? {};
+      if (currentMap[pathKey]['expectedMoves'] == null) {
+        currentMap[pathKey]['expectedMoves'] = <String, dynamic>{};
+      }
+      currentMap = currentMap[pathKey]['expectedMoves'];
     }
 
     if (!currentMap.containsKey(moveKey)) {
-      currentMap[moveKey] = OpTrainNode(
-        possibleMessages: [],
-        expectedMoves: {},
-      );
-      repertoire = OpTrainRepertoire(
-        initialFen: repertoire.initialFen,
-        expectedMoves: Map.from(repertoire.expectedMoves),
-      );
+      currentMap[moveKey] = {
+        'possibleMessages': <String>[],
+        'expectedMoves': <String, dynamic>{},
+      };
+      repertoire = OpTrainRepertoire.fromJson(map);
     }
 
     currentPath.add(moveKey);
@@ -74,37 +78,6 @@ abstract class OpeningEditorStoreBase with Store {
   }
 
   @action
-  void saveMessages(String text) {
-    if (currentPath.isEmpty) return;
-
-    List<String> msgs = text.split('\n').where((s) => s.trim().isNotEmpty).toList();
-
-    Map<String, OpTrainNode> currentMap = repertoire.expectedMoves;
-    for (int i = 0; i < currentPath.length - 1; i++) {
-      currentMap = currentMap[currentPath[i]]!.expectedMoves!;
-    }
-
-    final lastKey = currentPath.last;
-    final existingNode = currentMap[lastKey]!;
-    currentMap[lastKey] = OpTrainNode(
-      possibleMessages: msgs.isEmpty ? null : msgs,
-      expectedMoves: existingNode.expectedMoves,
-    );
-
-    repertoire = OpTrainRepertoire(
-      initialFen: repertoire.initialFen,
-      expectedMoves: Map.from(repertoire.expectedMoves),
-    );
-  }
-
-  @action
-  void switchVariation(int pathIndex, String newMoveKey) {
-    final newPath = currentPath.sublist(0, pathIndex);
-    newPath.add(newMoveKey);
-    jumpToNode(newPath);
-  }
-
-  @action
   void advanceMove() {
     Map<String, OpTrainNode> currentMap = repertoire.expectedMoves;
     for (String pathKey in currentPath) {
@@ -118,9 +91,72 @@ abstract class OpeningEditorStoreBase with Store {
     }
   }
 
+  @action
+  void deleteNode(List<String> pathToDelete) {
+    if (pathToDelete.isEmpty) return;
+
+    final map = repertoire.toJson();
+    Map<String, dynamic> currentMap = map['expectedMoves'];
+
+    // Navega até o pai do nó que será deletado
+    for (int i = 0; i < pathToDelete.length - 1; i++) {
+      currentMap = currentMap[pathToDelete[i]]['expectedMoves'];
+    }
+
+    // Remove o nó
+    final keyToRemove = pathToDelete.last;
+    currentMap.remove(keyToRemove);
+    
+    repertoire = OpTrainRepertoire.fromJson(map);
+
+    // Se o usuário deletou a variante atual, volte o tabuleiro
+    final pathStr = pathToDelete.join(',');
+    final currentStr = currentPath.join(',');
+    if (currentStr.startsWith(pathStr)) {
+      final newPath = pathToDelete.sublist(0, pathToDelete.length - 1);
+      jumpToNode(newPath);
+    }
+  }
+
+  // ---- MANIPULAÇÃO DE MENSAGENS ----
+
+  @action
+  void addMessage() {
+    currentMessages.add("");
+    _syncMessagesToRepertoire();
+  }
+
+  @action
+  void updateMessage(int index, String text) {
+    currentMessages[index] = text;
+    _syncMessagesToRepertoire();
+  }
+
+  @action
+  void removeMessage(int index) {
+    currentMessages.removeAt(index);
+    _syncMessagesToRepertoire();
+  }
+
+  void _syncMessagesToRepertoire() {
+    if (currentPath.isEmpty) return;
+    
+    final map = repertoire.toJson();
+    Map<String, dynamic> currentMap = map['expectedMoves'];
+    
+    for (int i = 0; i < currentPath.length - 1; i++) {
+      currentMap = currentMap[currentPath[i]]['expectedMoves'];
+    }
+    
+    final lastKey = currentPath.last;
+    currentMap[lastKey]['possibleMessages'] = currentMessages.where((msg) => msg.trim().isNotEmpty).toList();
+    
+    repertoire = OpTrainRepertoire.fromJson(map);
+  }
+
   void _loadMessagesForCurrentNode() {
     if (currentPath.isEmpty) {
-      currentMessagesInput = '';
+      currentMessages.clear();
       return;
     }
 
@@ -131,7 +167,10 @@ abstract class OpeningEditorStoreBase with Store {
       currentMap = node?.expectedMoves ?? {};
     }
 
-    currentMessagesInput = node?.possibleMessages?.join('\n') ?? '';
+    currentMessages.clear();
+    if (node?.possibleMessages != null) {
+      currentMessages.addAll(node!.possibleMessages!);
+    }
   }
 
   String exportJson() {
