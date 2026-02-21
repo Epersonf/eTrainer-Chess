@@ -87,7 +87,7 @@ abstract class OpeningEditorStoreBase with Store {
     final lastKey = currentPath.last;
     final existingNode = currentMap[lastKey]!;
     currentMap[lastKey] = OpTrainNode(
-      possibleMessages: msgs,
+      possibleMessages: msgs.isEmpty ? null : msgs,
       expectedMoves: existingNode.expectedMoves,
     );
 
@@ -95,6 +95,27 @@ abstract class OpeningEditorStoreBase with Store {
       initialFen: repertoire.initialFen,
       expectedMoves: Map.from(repertoire.expectedMoves),
     );
+  }
+
+  @action
+  void switchVariation(int pathIndex, String newMoveKey) {
+    final newPath = currentPath.sublist(0, pathIndex);
+    newPath.add(newMoveKey);
+    jumpToNode(newPath);
+  }
+
+  @action
+  void advanceMove() {
+    Map<String, OpTrainNode> currentMap = repertoire.expectedMoves;
+    for (String pathKey in currentPath) {
+      currentMap = currentMap[pathKey]?.expectedMoves ?? {};
+    }
+
+    if (currentMap.isNotEmpty) {
+      final firstMove = currentMap.keys.first;
+      final newPath = List<String>.from(currentPath)..add(firstMove);
+      jumpToNode(newPath);
+    }
   }
 
   void _loadMessagesForCurrentNode() {
