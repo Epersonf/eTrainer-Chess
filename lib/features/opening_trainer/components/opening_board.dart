@@ -35,7 +35,8 @@ class OpeningBoard extends StatelessWidget {
                 controller: store.chessController,
                 boardColor: BoardColor.brown,
                 boardOrientation: PlayerColor.white,
-                enableUserMoves: !store.isAutoPlaying,
+                // NOVO: bloqueia lances quando há um movimento incorreto no tabuleiro
+                enableUserMoves: !store.isAutoPlaying && !store.hasMadeWrongMove,
                 onMove: () {
                   try {
                     final history = store.chessController.game.history;

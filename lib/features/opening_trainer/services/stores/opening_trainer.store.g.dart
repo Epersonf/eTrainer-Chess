@@ -27,6 +27,24 @@ mixin _$OpeningTrainerStore on OpeningTrainerStoreBase, Store {
     });
   }
 
+  late final _$hasMadeWrongMoveAtom = Atom(
+    name: 'OpeningTrainerStoreBase.hasMadeWrongMove',
+    context: context,
+  );
+
+  @override
+  bool get hasMadeWrongMove {
+    _$hasMadeWrongMoveAtom.reportRead();
+    return super.hasMadeWrongMove;
+  }
+
+  @override
+  set hasMadeWrongMove(bool value) {
+    _$hasMadeWrongMoveAtom.reportWrite(value, super.hasMadeWrongMove, () {
+      super.hasMadeWrongMove = value;
+    });
+  }
+
   late final _$currentMessageAtom = Atom(
     name: 'OpeningTrainerStoreBase.currentMessage',
     context: context,
@@ -133,9 +151,34 @@ mixin _$OpeningTrainerStore on OpeningTrainerStoreBase, Store {
   }
 
   @override
+  void undoWrongMove() {
+    final _$actionInfo = _$OpeningTrainerStoreBaseActionController.startAction(
+      name: 'OpeningTrainerStoreBase.undoWrongMove',
+    );
+    try {
+      return super.undoWrongMove();
+    } finally {
+      _$OpeningTrainerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void showHint() {
+    final _$actionInfo = _$OpeningTrainerStoreBaseActionController.startAction(
+      name: 'OpeningTrainerStoreBase.showHint',
+    );
+    try {
+      return super.showHint();
+    } finally {
+      _$OpeningTrainerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 isAutoPlaying: ${isAutoPlaying},
+hasMadeWrongMove: ${hasMadeWrongMove},
 currentMessage: ${currentMessage},
 isTrainingFinished: ${isTrainingFinished},
 errorMessage: ${errorMessage}

@@ -19,6 +19,10 @@ abstract class OpeningTrainerStoreBase with Store {
   @observable
   bool isAutoPlaying = false; // Trava para evitar conflito com o callback onMove
 
+  // NOVO: Controle de lance incorreto
+  @observable
+  bool hasMadeWrongMove = false;
+
   @observable
   String currentMessage =
       "Selecione uma abertura ou carregue um arquivo para começar!";
@@ -38,6 +42,7 @@ abstract class OpeningTrainerStoreBase with Store {
     isTrainingFinished = false;
     errorMessage = null;
     isAutoPlaying = false;
+    hasMadeWrongMove = false; // resetar a trava quando carregar repertório
 
     _checkAutoMove();
   }
@@ -52,13 +57,12 @@ abstract class OpeningTrainerStoreBase with Store {
   @action
   void onUserMove(String from, String to, [String? promotion]) {
     if (isTrainingFinished || _currentNodeMoves == null) return;
-    if (isAutoPlaying) return; // Ignora o lance se for o computador jogando
+    // NOVO: Impede lances se já houver um erro no tabuleiro
+    if (isAutoPlaying || hasMadeWrongMove) return;
 
     errorMessage = null;
     // Anexa a peça promovida à chave do lance se existir (ex: 'e7e8q')
-    final String moveKey = promotion != null
-        ? "$from$to$promotion"
-        : "$from$to";
+    final String moveKey = promotion != null ? "$from$to$promotion" : "$from$to";
 
     if (_currentNodeMoves!.containsKey(moveKey)) {
       final nextNode = _currentNodeMoves![moveKey]!;
@@ -73,11 +77,38 @@ abstract class OpeningTrainerStoreBase with Store {
         _checkAutoMove();
       }
     } else {
-      // Desfaz lance incorreto
-      try {
-        chessController.undoMove();
-      } catch (_) {}
+      // MODIFICADO: Não desfaz automaticamente, apenas marca o erro
+      hasMadeWrongMove = true;
       errorMessage = "Lance incorreto! Tente se lembrar da preparação.";
+    }
+  }
+
+  // NOVO: Função para o Botão de Desfazer
+  @action
+  void undoWrongMove() {
+    try {
+      chessController.undoMove();
+    } catch (_) {}
+    hasMadeWrongMove = false;
+    errorMessage = null;
+    currentMessage = "Tente novamente.";
+  }
+
+  // NOVO: Função para a Lâmpada (Hint)
+  @action
+  void showHint() {
+    if (isTrainingFinished || _currentNodeMoves == null || _currentNodeMoves!.isEmpty) return;
+
+    final validMoves = _currentNodeMoves!.keys.toList();
+    if (validMoves.isNotEmpty) {
+      // Formata os lances (ex: de e2e4 para e2-e4)
+      final movesStr = validMoves.map((m) {
+        if (m.length == 4) return "${m.substring(0, 2)}-${m.substring(2, 4)}";
+        if (m.length == 5) return "${m.substring(0, 2)}-${m.substring(2, 4)}=${m[4].toUpperCase()}";
+        return m;
+      }).join(" ou ");
+
+      currentMessage = "💡 Dica: Jogue $movesStr";
     }
   }
 
