@@ -49,12 +49,13 @@ abstract class OpeningTrainerStoreBase with Store {
   }
 
   @action
-  void onUserMove(String from, String to) {
+  void onUserMove(String from, String to, [String? promotion]) {
     if (isTrainingFinished || _currentNodeMoves == null) return;
     if (isAutoPlaying) return; // Ignora o lance se for o computador jogando
 
     errorMessage = null;
-    final String moveKey = "${from}${to}";
+    // Anexa a peça promovida à chave do lance se existir (ex: 'e7e8q')
+    final String moveKey = promotion != null ? "$from$to$promotion" : "$from$to";
 
     if (_currentNodeMoves!.containsKey(moveKey)) {
       final nextNode = _currentNodeMoves![moveKey]!;
@@ -83,23 +84,42 @@ abstract class OpeningTrainerStoreBase with Store {
 
     // Pega todas as chaves cujos nós correspondentes são do tipo 'AUTO' (case-insensitive)
     final List<String> autoKeys = _currentNodeMoves!.entries
-      .where((MapEntry<String, OpTrainNode> e) => e.value.type.toUpperCase() == 'AUTO')
-      .map((MapEntry<String, OpTrainNode> e) => e.key)
+      .where((e) => e.value.type.toUpperCase() == 'AUTO')
+      .map((e) => e.key)
       .toList();
 
     if (autoKeys.isNotEmpty) {
       isAutoPlaying = true;
+      final savedRepertoire = currentRepertoire; // Salva o estado atual para evitar Race Condition
+
       await Future.delayed(const Duration(milliseconds: 600));
+
+      // Se o usuário clicou em "Reiniciar" durante o delay, aborta a execução
+      if (currentRepertoire != savedRepertoire) {
+        isAutoPlaying = false;
+        return; 
+      }
 
       // Sorteia aleatoriamente UM dos lances AUTO
       final String randomMoveKey = autoKeys[Random().nextInt(autoKeys.length)];
       final OpTrainNode selectedNode = _currentNodeMoves![randomMoveKey]!;
 
+      // Separa from, to e promoção dinamicamente
       final String from = randomMoveKey.substring(0, 2);
       final String to = randomMoveKey.substring(2, 4);
+      final String? promotion = randomMoveKey.length > 4 ? randomMoveKey.substring(4, 5) : null;
       
       try {
-        chessController.makeMove(from: from, to: to);
+        if (promotion != null) {
+          try {
+             chessController.makeMoveWithPromotion(from: from, to: to, pieceToPromoteTo: promotion);
+          } catch (_) {
+             // Fallback caso a versão da lib não suporte makeMoveWithPromotion
+             chessController.makeMove(from: from, to: to);
+          }
+        } else {
+          chessController.makeMove(from: from, to: to);
+        }
       } catch (e) {
         // Se a engine recusar o lance AUTO, mostramos o erro na UI
         errorMessage = "Erro interno no lance automático ($from para $to): $e";
@@ -115,6 +135,10 @@ abstract class OpeningTrainerStoreBase with Store {
 
       // Delay seguro antes de liberar a UI para garantir que o onMove não cause conflito
       await Future.delayed(const Duration(milliseconds: 100));
+
+      // Checa novamente caso tenha reiniciado exatamente no micro-delay final
+      if (currentRepertoire != savedRepertoire) return; 
+
       isAutoPlaying = false;
 
       // Executa de novo caso a resposta do oponente force outra resposta automática

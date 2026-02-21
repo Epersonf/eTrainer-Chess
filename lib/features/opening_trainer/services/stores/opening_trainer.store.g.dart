@@ -121,12 +121,12 @@ mixin _$OpeningTrainerStore on OpeningTrainerStoreBase, Store {
   }
 
   @override
-  void onUserMove(String from, String to) {
+  void onUserMove(String from, String to, [String? promotion]) {
     final _$actionInfo = _$OpeningTrainerStoreBaseActionController.startAction(
       name: 'OpeningTrainerStoreBase.onUserMove',
     );
     try {
-      return super.onUserMove(from, to);
+      return super.onUserMove(from, to, promotion);
     } finally {
       _$OpeningTrainerStoreBaseActionController.endAction(_$actionInfo);
     }

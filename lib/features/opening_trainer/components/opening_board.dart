@@ -41,7 +41,17 @@ class OpeningBoard extends StatelessWidget {
                     final history = store.chessController.game.history;
                     if (history.isNotEmpty) {
                       final lastMove = history.last.move;
-                      store.onUserMove(lastMove.fromAlgebraic, lastMove.toAlgebraic);
+                      final String from = lastMove.fromAlgebraic;
+                      final String to = lastMove.toAlgebraic;
+                      
+                      // Identifica se houve promoção e pega a primeira letra (q, r, b, n)
+                      String? promotionStr;
+                      if (lastMove.promotion != null) {
+                        promotionStr = lastMove.promotion.toString().split('.').last.toLowerCase();
+                        if (promotionStr.isNotEmpty) promotionStr = promotionStr[0];
+                      }
+
+                      store.onUserMove(from, to, promotionStr);
                     }
                   } catch (_) {}
                 },
