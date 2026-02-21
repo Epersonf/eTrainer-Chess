@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:e_trainer_chess/features/opening_trainer/models/optrain_node.dart';
-import 'package:e_trainer_chess/features/opening_trainer/models/optrain_repertoire.dart';
+import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optrain_node.dart';
+import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optrain_repertoire.dart';
 import 'package:mobx/mobx.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart';
 

@@ -1,4 +1,4 @@
-import 'package:e_trainer_chess/features/opening_trainer/services/stores/opening_trainer.store.dart';
+import 'package:e_trainer_chess/features/lines_tool/opening_trainer/services/stores/opening_trainer.store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';

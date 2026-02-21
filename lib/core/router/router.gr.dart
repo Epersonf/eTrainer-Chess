@@ -10,9 +10,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i3;
-import 'package:e_trainer_chess/features/opening_editor/screens/opening_editor.screen.dart'
+import 'package:e_trainer_chess/features/lines_tool/opening_editor/screens/opening_editor.screen.dart'
     as _i1;
-import 'package:e_trainer_chess/features/opening_trainer/screens/opening_trainer.screen.dart'
+import 'package:e_trainer_chess/features/lines_tool/opening_trainer/screens/opening_trainer.screen.dart'
     as _i2;
 
 /// generated route for

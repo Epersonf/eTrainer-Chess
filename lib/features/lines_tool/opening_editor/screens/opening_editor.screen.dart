@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:e_trainer_chess/core/service_locator.dart';
-import 'package:e_trainer_chess/features/opening_editor/components/node_graph.dart';
-import 'package:e_trainer_chess/features/opening_editor/services/stores/opening_editor.store.dart';
+import 'package:e_trainer_chess/features/lines_tool/opening_editor/components/node_graph.dart';
+import 'package:e_trainer_chess/features/lines_tool/opening_editor/services/stores/opening_editor.store.dart';
 import 'package:flutter/material.dart' hide Color;
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/services.dart';
