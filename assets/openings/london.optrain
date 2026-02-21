@@ -9,7 +9,7 @@
           "type": "AUTO",
           "possibleMessages": ["As pretas ocupam o centro com d5."],
           "expectedMoves": {
-            "Bf4": {
+            "c1f4": {
               "type": "MANUAL",
               "possibleMessages": ["Desenvolva o bispo fora da cadeia de peões."],
               "expectedMoves": {}
