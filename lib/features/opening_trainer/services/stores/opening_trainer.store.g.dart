@@ -9,6 +9,24 @@ part of 'opening_trainer.store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$OpeningTrainerStore on OpeningTrainerStoreBase, Store {
+  late final _$isAutoPlayingAtom = Atom(
+    name: 'OpeningTrainerStoreBase.isAutoPlaying',
+    context: context,
+  );
+
+  @override
+  bool get isAutoPlaying {
+    _$isAutoPlayingAtom.reportRead();
+    return super.isAutoPlaying;
+  }
+
+  @override
+  set isAutoPlaying(bool value) {
+    _$isAutoPlayingAtom.reportWrite(value, super.isAutoPlaying, () {
+      super.isAutoPlaying = value;
+    });
+  }
+
   late final _$currentMessageAtom = Atom(
     name: 'OpeningTrainerStoreBase.currentMessage',
     context: context,
@@ -91,6 +109,18 @@ mixin _$OpeningTrainerStore on OpeningTrainerStoreBase, Store {
   }
 
   @override
+  void restartTraining() {
+    final _$actionInfo = _$OpeningTrainerStoreBaseActionController.startAction(
+      name: 'OpeningTrainerStoreBase.restartTraining',
+    );
+    try {
+      return super.restartTraining();
+    } finally {
+      _$OpeningTrainerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void onUserMove(String from, String to) {
     final _$actionInfo = _$OpeningTrainerStoreBaseActionController.startAction(
       name: 'OpeningTrainerStoreBase.onUserMove',
@@ -105,6 +135,7 @@ mixin _$OpeningTrainerStore on OpeningTrainerStoreBase, Store {
   @override
   String toString() {
     return '''
+isAutoPlaying: ${isAutoPlaying},
 currentMessage: ${currentMessage},
 isTrainingFinished: ${isTrainingFinished},
 errorMessage: ${errorMessage}

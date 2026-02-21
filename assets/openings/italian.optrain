@@ -1,0 +1,34 @@
+{
+  "initialFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "expectedMoves": {
+    "e2e4": {
+      "type": "MANUAL",
+      "possibleMessages": ["Excelente. Você domina o centro com e4.", "Peão do Rei. A escolha dos campeões."],
+      "expectedMoves": {
+        "e7e5": {
+          "type": "AUTO",
+          "possibleMessages": ["As pretas respondem com e5, espelhando sua jogada."],
+          "expectedMoves": {
+            "g1f3": {
+              "type": "MANUAL",
+              "possibleMessages": ["Você desenvolve o cavalo e ataca o peão central."],
+              "expectedMoves": {
+                "b8c6": {
+                  "type": "AUTO",
+                  "possibleMessages": ["As pretas defendem o peão desenvolvendo o cavalo de dama."],
+                  "expectedMoves": {
+                    "f1c4": {
+                      "type": "MANUAL",
+                      "possibleMessages": ["Perfeito! Esta é a abertura Italiana. Mirando em f7."],
+                      "expectedMoves": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

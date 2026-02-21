@@ -13,8 +13,14 @@ abstract class OpeningTrainerStoreBase with Store {
   final ChessBoardController chessController = ChessBoardController();
   Map<String, OpTrainNode>? _currentNodeMoves;
 
+  // Guarda o repertório atual para podermos reiniciar o treinamento
+  OpTrainRepertoire? currentRepertoire;
+
   @observable
-  String currentMessage = "Carregue um arquivo .optrain para começar!";
+  bool isAutoPlaying = false; // Trava para evitar conflito com o callback onMove
+
+  @observable
+  String currentMessage = "Selecione uma abertura ou carregue um arquivo para começar!";
 
   @observable
   bool isTrainingFinished = false;
@@ -24,21 +30,31 @@ abstract class OpeningTrainerStoreBase with Store {
 
   @action
   void loadRepertoire(OpTrainRepertoire repertoire) {
+    currentRepertoire = repertoire;
     chessController.loadFen(repertoire.initialFen);
     _currentNodeMoves = repertoire.expectedMoves;
     currentMessage = "Sua vez de jogar!";
     isTrainingFinished = false;
     errorMessage = null;
+    isAutoPlaying = false;
 
     _checkAutoMove();
   }
 
   @action
+  void restartTraining() {
+    if (currentRepertoire != null) {
+      loadRepertoire(currentRepertoire!);
+    }
+  }
+
+  @action
   void onUserMove(String from, String to) {
     if (isTrainingFinished || _currentNodeMoves == null) return;
-    errorMessage = null;
+    if (isAutoPlaying) return; // Ignora o lance se for o computador jogando
 
-    final moveKey = "${from}${to}";
+    errorMessage = null;
+    final String moveKey = "${from}${to}";
 
     if (_currentNodeMoves!.containsKey(moveKey)) {
       final nextNode = _currentNodeMoves![moveKey]!;
@@ -53,7 +69,7 @@ abstract class OpeningTrainerStoreBase with Store {
         _checkAutoMove();
       }
     } else {
-      // desfaz lance
+      // Desfaz lance incorreto
       try {
         chessController.undoMove();
       } catch (_) {}
@@ -65,21 +81,29 @@ abstract class OpeningTrainerStoreBase with Store {
   Future<void> _checkAutoMove() async {
     if (_currentNodeMoves == null || _currentNodeMoves!.isEmpty) return;
 
-    final firstChildKey = _currentNodeMoves!.keys.first;
-    final firstChildNode = _currentNodeMoves![firstChildKey]!;
+    // Pega todas as chaves cujos nós correspondentes são do tipo 'AUTO' (case-insensitive)
+    final List<String> autoKeys = _currentNodeMoves!.entries
+      .where((MapEntry<String, OpTrainNode> e) => e.value.type.toUpperCase() == 'AUTO')
+      .map((MapEntry<String, OpTrainNode> e) => e.key)
+      .toList();
 
-    if (firstChildNode.type == 'AUTO') {
+    if (autoKeys.isNotEmpty) {
+      isAutoPlaying = true;
       await Future.delayed(const Duration(milliseconds: 600));
 
-      final keys = _currentNodeMoves!.keys.toList();
-      final randomMoveKey = keys[Random().nextInt(keys.length)];
-      final selectedNode = _currentNodeMoves![randomMoveKey]!;
+      // Sorteia aleatoriamente UM dos lances AUTO
+      final String randomMoveKey = autoKeys[Random().nextInt(autoKeys.length)];
+      final OpTrainNode selectedNode = _currentNodeMoves![randomMoveKey]!;
 
-      final from = randomMoveKey.substring(0, 2);
-      final to = randomMoveKey.substring(2, 4);
+      final String from = randomMoveKey.substring(0, 2);
+      final String to = randomMoveKey.substring(2, 4);
+      
       try {
         chessController.makeMove(from: from, to: to);
-      } catch (_) {}
+      } catch (e) {
+        // Se a engine recusar o lance AUTO, mostramos o erro na UI
+        errorMessage = "Erro interno no lance automático ($from para $to): $e";
+      }
 
       _updateMessage(selectedNode);
       _currentNodeMoves = selectedNode.expectedMoves;
@@ -88,12 +112,19 @@ abstract class OpeningTrainerStoreBase with Store {
         isTrainingFinished = true;
         currentMessage = "Treinamento concluído!";
       }
+
+      // Delay seguro antes de liberar a UI para garantir que o onMove não cause conflito
+      await Future.delayed(const Duration(milliseconds: 100));
+      isAutoPlaying = false;
+
+      // Executa de novo caso a resposta do oponente force outra resposta automática
+      _checkAutoMove();
     }
   }
 
   void _updateMessage(OpTrainNode node) {
     if (node.possibleMessages != null && node.possibleMessages!.isNotEmpty) {
-      final randomIndex = Random().nextInt(node.possibleMessages!.length);
+      final int randomIndex = Random().nextInt(node.possibleMessages!.length);
       currentMessage = node.possibleMessages![randomIndex];
     }
   }
