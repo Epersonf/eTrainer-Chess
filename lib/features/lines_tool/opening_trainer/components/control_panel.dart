@@ -14,6 +14,9 @@ class ControlPanel extends StatelessWidget {
   // NOVO: Adicionado controles de Modo
   final PlayerMode playerMode;
   final ValueChanged<PlayerMode> onModeChanged;
+  // NOVO: Seletor de variação (Random / Select)
+  final VariationMode variationMode;
+  final ValueChanged<VariationMode> onVariationModeChanged;
 
   const ControlPanel({
     super.key,
@@ -26,6 +29,8 @@ class ControlPanel extends StatelessWidget {
     required this.onToggleCoordinates,
     required this.playerMode,
     required this.onModeChanged,
+    required this.variationMode,
+    required this.onVariationModeChanged,
   });
 
   @override
@@ -61,14 +66,18 @@ class ControlPanel extends StatelessWidget {
                     children: [
                       Icon(
                         showCoordinates ? Icons.grid_on : Icons.grid_off,
-                        color: showCoordinates ? Colors.cyanAccent : Colors.grey,
+                        color: showCoordinates
+                            ? Colors.cyanAccent
+                            : Colors.grey,
                         size: 16,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         "Coords",
                         style: TextStyle(
-                          color: showCoordinates ? Colors.cyanAccent : Colors.grey,
+                          color: showCoordinates
+                              ? Colors.cyanAccent
+                              : Colors.grey,
                           fontSize: 12,
                         ),
                       ),
@@ -91,18 +100,31 @@ class ControlPanel extends StatelessWidget {
                       child: DropdownButton<String>(
                         isExpanded: true,
                         dropdownColor: const Color(0xFF2C2C2C),
-                        icon: const Icon(Icons.keyboard_arrow_down, color: Colors.cyanAccent),
+                        icon: const Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Colors.cyanAccent,
+                        ),
                         value: selectedOpening,
-                        items: dropdownItems ?? [
-                          ...defaultOpenings.entries.map((e) => DropdownMenuItem(
-                                value: e.key,
-                                child: Text(e.value, style: const TextStyle(color: Colors.white)),
-                              )),
-                          const DropdownMenuItem(
-                            value: 'custom',
-                            child: Text('Personalizado (.optrain)', style: TextStyle(color: Colors.cyanAccent)),
-                          ),
-                        ],
+                        items:
+                            dropdownItems ??
+                            [
+                              ...defaultOpenings.entries.map(
+                                (e) => DropdownMenuItem(
+                                  value: e.key,
+                                  child: Text(
+                                    e.value,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                              const DropdownMenuItem(
+                                value: 'custom',
+                                child: Text(
+                                  'Personalizado (.optrain)',
+                                  style: TextStyle(color: Colors.cyanAccent),
+                                ),
+                              ),
+                            ],
                         onChanged: onChanged,
                       ),
                     ),
@@ -123,6 +145,81 @@ class ControlPanel extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
+            const SizedBox(height: 16),
+            Text(
+              "Seleção de Variante (Engine):",
+              style: GoogleFonts.ibmPlexSans(
+                color: Colors.grey[400],
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF2C2C2C),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => onVariationModeChanged(VariationMode.random),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: variationMode == VariationMode.random
+                              ? Colors.cyanAccent.withOpacity(0.15)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
+                          border: variationMode == VariationMode.random
+                              ? Border.all(
+                                  color: Colors.cyanAccent.withOpacity(0.5),
+                                )
+                              : null,
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "Random",
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => onVariationModeChanged(VariationMode.select),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: variationMode == VariationMode.select
+                              ? Colors.cyanAccent.withOpacity(0.15)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
+                          border: variationMode == VariationMode.select
+                              ? Border.all(
+                                  color: Colors.cyanAccent.withOpacity(0.5),
+                                )
+                              : null,
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "Select",
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+
             // NOVO: Seletor de Modo (Brancas / Ambas / Pretas)
             Text(
               "Jogar de:",
@@ -131,7 +228,6 @@ class ControlPanel extends StatelessWidget {
                 fontSize: 12,
               ),
             ),
-            const SizedBox(height: 8),
             Container(
               decoration: BoxDecoration(
                 color: const Color(0xFF2C2C2C),
@@ -176,9 +272,13 @@ class ControlPanel extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.cyanAccent.withOpacity(0.15) : Colors.transparent,
+            color: isSelected
+                ? Colors.cyanAccent.withOpacity(0.15)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
-            border: isSelected ? Border.all(color: Colors.cyanAccent.withOpacity(0.5)) : null,
+            border: isSelected
+                ? Border.all(color: Colors.cyanAccent.withOpacity(0.5))
+                : null,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

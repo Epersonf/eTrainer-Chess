@@ -27,6 +27,42 @@ mixin _$OpeningTrainerStore on OpeningTrainerStoreBase, Store {
     });
   }
 
+  late final _$variationModeAtom = Atom(
+    name: 'OpeningTrainerStoreBase.variationMode',
+    context: context,
+  );
+
+  @override
+  VariationMode get variationMode {
+    _$variationModeAtom.reportRead();
+    return super.variationMode;
+  }
+
+  @override
+  set variationMode(VariationMode value) {
+    _$variationModeAtom.reportWrite(value, super.variationMode, () {
+      super.variationMode = value;
+    });
+  }
+
+  late final _$pendingVariationsAtom = Atom(
+    name: 'OpeningTrainerStoreBase.pendingVariations',
+    context: context,
+  );
+
+  @override
+  Map<String, OpTrainNode>? get pendingVariations {
+    _$pendingVariationsAtom.reportRead();
+    return super.pendingVariations;
+  }
+
+  @override
+  set pendingVariations(Map<String, OpTrainNode>? value) {
+    _$pendingVariationsAtom.reportWrite(value, super.pendingVariations, () {
+      super.pendingVariations = value;
+    });
+  }
+
   late final _$showCoordinatesAtom = Atom(
     name: 'OpeningTrainerStoreBase.showCoordinates',
     context: context,
@@ -145,6 +181,18 @@ mixin _$OpeningTrainerStore on OpeningTrainerStoreBase, Store {
     return _$_checkAutoMoveAsyncAction.run(() => super._checkAutoMove());
   }
 
+  late final _$chooseVariationAsyncAction = AsyncAction(
+    'OpeningTrainerStoreBase.chooseVariation',
+    context: context,
+  );
+
+  @override
+  Future<void> chooseVariation(String moveKey) {
+    return _$chooseVariationAsyncAction.run(
+      () => super.chooseVariation(moveKey),
+    );
+  }
+
   late final _$OpeningTrainerStoreBaseActionController = ActionController(
     name: 'OpeningTrainerStoreBase',
     context: context,
@@ -169,6 +217,18 @@ mixin _$OpeningTrainerStore on OpeningTrainerStoreBase, Store {
     );
     try {
       return super.setPlayerMode(mode);
+    } finally {
+      _$OpeningTrainerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setVariationMode(VariationMode mode) {
+    final _$actionInfo = _$OpeningTrainerStoreBaseActionController.startAction(
+      name: 'OpeningTrainerStoreBase.setVariationMode',
+    );
+    try {
+      return super.setVariationMode(mode);
     } finally {
       _$OpeningTrainerStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -238,6 +298,8 @@ mixin _$OpeningTrainerStore on OpeningTrainerStoreBase, Store {
   String toString() {
     return '''
 playerMode: ${playerMode},
+variationMode: ${variationMode},
+pendingVariations: ${pendingVariations},
 showCoordinates: ${showCoordinates},
 isAutoPlaying: ${isAutoPlaying},
 hasMadeWrongMove: ${hasMadeWrongMove},

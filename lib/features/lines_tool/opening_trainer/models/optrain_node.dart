@@ -4,11 +4,13 @@ part 'optrain_node.g.dart';
 
 @JsonSerializable()
 class OpTrainNode {
+  final String? name;
   final List<String>? possibleMessages;
 
   final Map<String, OpTrainNode>? expectedMoves;
 
   OpTrainNode({
+    this.name,
     this.possibleMessages,
     this.expectedMoves,
   });

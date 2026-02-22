@@ -63,6 +63,24 @@ mixin _$OpeningEditorStore on OpeningEditorStoreBase, Store {
     });
   }
 
+  late final _$currentVariantNameAtom = Atom(
+    name: 'OpeningEditorStoreBase.currentVariantName',
+    context: context,
+  );
+
+  @override
+  String? get currentVariantName {
+    _$currentVariantNameAtom.reportRead();
+    return super.currentVariantName;
+  }
+
+  @override
+  set currentVariantName(String? value) {
+    _$currentVariantNameAtom.reportWrite(value, super.currentVariantName, () {
+      super.currentVariantName = value;
+    });
+  }
+
   late final _$OpeningEditorStoreBaseActionController = ActionController(
     name: 'OpeningEditorStoreBase',
     context: context,
@@ -165,11 +183,24 @@ mixin _$OpeningEditorStore on OpeningEditorStoreBase, Store {
   }
 
   @override
+  void updateVariantName(String name) {
+    final _$actionInfo = _$OpeningEditorStoreBaseActionController.startAction(
+      name: 'OpeningEditorStoreBase.updateVariantName',
+    );
+    try {
+      return super.updateVariantName(name);
+    } finally {
+      _$OpeningEditorStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 repertoire: ${repertoire},
 currentPath: ${currentPath},
-currentMessages: ${currentMessages}
+currentMessages: ${currentMessages},
+currentVariantName: ${currentVariantName}
     ''';
   }
 }

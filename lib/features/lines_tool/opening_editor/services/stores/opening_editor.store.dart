@@ -23,10 +23,14 @@ abstract class OpeningEditorStoreBase with Store {
   @observable
   ObservableList<String> currentMessages = ObservableList<String>();
 
+  @observable
+  String? currentVariantName;
+
   // Helper para clonar a árvore nativamente sem usar json dinâmico
   Map<String, OpTrainNode> _cloneTree(Map<String, OpTrainNode>? original) {
     if (original == null) return {};
     return original.map((k, v) => MapEntry(k, OpTrainNode(
+      name: v.name,
       possibleMessages: v.possibleMessages?.toList(),
       expectedMoves: _cloneTree(v.expectedMoves),
     )));
@@ -42,10 +46,11 @@ abstract class OpeningEditorStoreBase with Store {
     
     for (String pathKey in currentPath) {
       if (!currentMap.containsKey(pathKey)) {
-         currentMap[pathKey] = OpTrainNode(possibleMessages: [], expectedMoves: {});
+         currentMap[pathKey] = OpTrainNode(name: null, possibleMessages: [], expectedMoves: {});
       }
       if (currentMap[pathKey]!.expectedMoves == null) {
         currentMap[pathKey] = OpTrainNode(
+          name: currentMap[pathKey]!.name,
           possibleMessages: currentMap[pathKey]!.possibleMessages,
           expectedMoves: {},
         );
@@ -55,6 +60,7 @@ abstract class OpeningEditorStoreBase with Store {
 
     if (!currentMap.containsKey(moveKey)) {
       currentMap[moveKey] = OpTrainNode(
+        name: null,
         possibleMessages: [],
         expectedMoves: {},
       );
@@ -177,6 +183,7 @@ abstract class OpeningEditorStoreBase with Store {
     final existingNode = currentMap[lastKey]!;
     
     currentMap[lastKey] = OpTrainNode(
+      name: currentVariantName?.trim().isEmpty == true ? null : currentVariantName,
       possibleMessages: currentMessages.where((msg) => msg.trim().isNotEmpty).toList(),
       expectedMoves: existingNode.expectedMoves,
     );
@@ -190,6 +197,7 @@ abstract class OpeningEditorStoreBase with Store {
   void _loadMessagesForCurrentNode() {
     if (currentPath.isEmpty) {
       currentMessages.clear();
+      currentVariantName = null;
       return;
     }
 
@@ -204,6 +212,14 @@ abstract class OpeningEditorStoreBase with Store {
     if (node?.possibleMessages != null) {
       currentMessages.addAll(node!.possibleMessages!);
     }
+
+    currentVariantName = node?.name;
+  }
+
+  @action
+  void updateVariantName(String name) {
+    currentVariantName = name;
+    _syncMessagesToRepertoire();
   }
 
   String exportJson() {

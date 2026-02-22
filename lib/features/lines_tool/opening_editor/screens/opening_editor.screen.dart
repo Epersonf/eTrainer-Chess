@@ -6,6 +6,7 @@ import 'package:flutter/material.dart' as material;
 import 'package:flutter/services.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobx/mobx.dart';
 
 import 'package:e_trainer_chess/components/main_app_bar.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_editor/services/stores/opening_editor.store.dart';
@@ -22,15 +23,33 @@ class OpeningEditorScreen extends StatefulWidget {
 
 class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
   final OpeningEditorStore store = sl<OpeningEditorStore>();
+  late final TextEditingController _variantNameController;
+  late final ReactionDisposer _nameReaction;
 
   @override
   void initState() {
     super.initState();
     BrowserContextMenu.disableContextMenu();
+    _variantNameController = TextEditingController(text: store.currentVariantName ?? '');
+
+    // Keep controller in sync when store changes currentVariantName
+    _nameReaction = reaction((_) => store.currentVariantName, (String? v) {
+      final text = v ?? '';
+      if (_variantNameController.text != text) {
+        _variantNameController.text = text;
+      }
+    });
+    _variantNameController.addListener(() {
+      if (store.currentVariantName != _variantNameController.text) {
+        store.updateVariantName(_variantNameController.text);
+      }
+    });
   }
 
   @override
   void dispose() {
+    _nameReaction();
+    _variantNameController.dispose();
     store.dispose();
     BrowserContextMenu.enableContextMenu();
     super.dispose();
@@ -140,14 +159,39 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
 
                     final messageWidget = MessageEditorPanel(store: store);
 
+                    final variantNameField = Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: TextField(
+                        controller: _variantNameController,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          hintText: "Nome da variante (opcional)",
+                          hintStyle: TextStyle(color: Colors.white54),
+                          filled: true,
+                          fillColor: material.Color(0xFF1E1E1E),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(6),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        ),
+                      ),
+                    );
+
                     // Distribuição responsiva: se tela muito estreita, empilha. Se não, coloca lado a lado.
                     if (isWide) {
-                      return Row(
+                          return Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(flex: 3, child: boardWidget),
                           const SizedBox(width: 32),
-                          Expanded(flex: 2, child: messageWidget),
+                          Expanded(flex: 2, child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              variantNameField,
+                              Expanded(child: messageWidget),
+                            ],
+                          )),
                         ],
                       );
                     } else {
@@ -155,6 +199,7 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
                         children: [
                           boardWidget,
                           const SizedBox(height: 24),
+                          variantNameField,
                           Expanded(child: messageWidget),
                         ],
                       );

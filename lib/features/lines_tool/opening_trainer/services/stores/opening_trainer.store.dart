@@ -11,6 +11,8 @@ class OpeningTrainerStore = OpeningTrainerStoreBase with _$OpeningTrainerStore;
 
 enum PlayerMode { white, black, both }
 
+enum VariationMode { random, select }
+
 abstract class OpeningTrainerStoreBase with Store {
   final ChessBoardController chessController = ChessBoardController();
   Map<String, OpTrainNode>? _currentNodeMoves;
@@ -20,6 +22,12 @@ abstract class OpeningTrainerStoreBase with Store {
   // NOVO: Controle de Modos
   @observable
   PlayerMode playerMode = PlayerMode.white;
+
+  @observable
+  VariationMode variationMode = VariationMode.random;
+
+  @observable
+  Map<String, OpTrainNode>? pendingVariations;
 
   // NOVO: Salva o FEN válido mais recente para consertar o Undo perfeitamente
   String _lastValidFen = '';
@@ -51,6 +59,12 @@ abstract class OpeningTrainerStoreBase with Store {
   @action
   void setPlayerMode(PlayerMode mode) {
     playerMode = mode;
+    restartTraining();
+  }
+
+  @action
+  void setVariationMode(VariationMode mode) {
+    variationMode = mode;
     restartTraining();
   }
 
@@ -155,52 +169,63 @@ abstract class OpeningTrainerStoreBase with Store {
         return;
       }
 
-      // NOVO: Seleciona randomicamente qualquer lance esperado
+      // NOVO: Seleciona randomicamente qualquer lance esperado ou pede escolha
       final availableMoves = _currentNodeMoves!.keys.toList();
-      final randomMoveKey = availableMoves[Random().nextInt(availableMoves.length)];
-      final selectedNode = _currentNodeMoves![randomMoveKey]!;
 
-      final String from = randomMoveKey.substring(0, 2);
-      final String to = randomMoveKey.substring(2, 4);
-      final String? promotion = randomMoveKey.length > 4 ? randomMoveKey.substring(4, 5) : null;
-
-      try {
-        if (promotion != null) {
-          try {
-            chessController.makeMoveWithPromotion(from: from, to: to, pieceToPromoteTo: promotion);
-          } catch (_) {
-            chessController.makeMove(from: from, to: to);
-          }
-        } else {
-          chessController.makeMove(from: from, to: to);
-        }
-      } catch (e) {
-        errorMessage = "Erro interno no lance automático ($from para $to): $e";
-      }
-
-      // ACERTOU (AUTO): Atualiza estado válido
-      _lastValidFen = chessController.getFen();
-
-      _updateMessage(selectedNode);
-      _currentNodeMoves = selectedNode.expectedMoves;
-
-      if (_currentNodeMoves == null || _currentNodeMoves!.isEmpty) {
-        isTrainingFinished = true;
-        currentMessage = "Treinamento concluído!";
-      }
-
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      if (currentRepertoire != savedRepertoire) {
+      // Se houver mais de uma opção e o modo for Select, pause e exponha as opções para a UI
+      if (availableMoves.length > 1 && variationMode == VariationMode.select) {
+        pendingVariations = _currentNodeMoves;
         isAutoPlaying = false;
         return;
       }
 
-      isAutoPlaying = false;
-
-      // Chama de novo caso tenha engatilhado outro lance automático (Ex: PlayerMode.both não cai aqui, mas evita bugs)
-      _checkAutoMove();
+      // Se for random ou só tiver 1 lance, sorteia (ou pega o único) e joga
+      final randomMoveKey = availableMoves[Random().nextInt(availableMoves.length)];
+      await _executeEngineMove(randomMoveKey);
     }
+  }
+
+  @action
+  Future<void> chooseVariation(String moveKey) async {
+    pendingVariations = null;
+    isAutoPlaying = true;
+    await _executeEngineMove(moveKey);
+  }
+
+  Future<void> _executeEngineMove(String moveKey) async {
+    final selectedNode = _currentNodeMoves![moveKey]!;
+
+    final String from = moveKey.substring(0, 2);
+    final String to = moveKey.substring(2, 4);
+    final String? promotion = moveKey.length > 4 ? moveKey.substring(4, 5) : null;
+
+    try {
+      if (promotion != null) {
+        try {
+          chessController.makeMoveWithPromotion(from: from, to: to, pieceToPromoteTo: promotion);
+        } catch (_) {
+          chessController.makeMove(from: from, to: to);
+        }
+      } else {
+        chessController.makeMove(from: from, to: to);
+      }
+    } catch (e) {
+      errorMessage = "Erro interno no lance automático ($from para $to): $e";
+    }
+
+    _lastValidFen = chessController.getFen();
+    _updateMessage(selectedNode);
+    _currentNodeMoves = selectedNode.expectedMoves;
+
+    if (_currentNodeMoves == null || _currentNodeMoves!.isEmpty) {
+      isTrainingFinished = true;
+      currentMessage = "Treinamento concluído!";
+    }
+
+    await Future.delayed(const Duration(milliseconds: 100));
+    isAutoPlaying = false;
+
+    _checkAutoMove();
   }
 
   void _updateMessage(OpTrainNode node) {
