@@ -154,7 +154,7 @@ class OpeningBoard extends StatelessWidget {
                                         ),
                                       ),
                                     );
-                                  }).toList(),
+                                  }),
                                 ],
                               ),
                             ),
