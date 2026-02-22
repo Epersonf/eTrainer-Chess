@@ -79,7 +79,11 @@ abstract class OpeningEditorStoreBase with Store {
 
   @action
   void jumpToNode(List<String> path) {
-    currentPath = ObservableList.of(path);
+    // Preserve a mesma instância da ObservableList para que os Observers
+    // que estavam rastreando a lista original continuem a receber alterações.
+    currentPath.clear();
+    currentPath.addAll(path);
+
     chessController.resetBoard();
     for (String move in path) {
       final from = move.substring(0, 2);
@@ -92,6 +96,7 @@ abstract class OpeningEditorStoreBase with Store {
         chessController.makeMove(from: from, to: to);
       }
     }
+
     _loadMessagesForCurrentNode();
   }
 

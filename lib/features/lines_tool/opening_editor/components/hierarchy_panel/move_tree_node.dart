@@ -41,11 +41,13 @@ class MoveTreeNode extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: node.expectedMoves!.entries.map((childEntry) {
+                  final childPath = [...path, childEntry.key];
                   return MoveTreeNode(
+                    key: ValueKey(childPath.join(',')),
                     store: store,
                     moveKey: childEntry.key,
                     node: childEntry.value,
-                    path: [...path, childEntry.key],
+                    path: childPath,
                     depth: depth + 1,
                   );
                 }).toList(),

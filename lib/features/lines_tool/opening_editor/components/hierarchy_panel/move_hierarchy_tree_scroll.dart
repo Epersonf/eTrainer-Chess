@@ -60,6 +60,7 @@ class _MoveHierarchyTreeScrollState extends State<MoveHierarchyTreeScroll> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: widget.store.repertoire.expectedMoves.entries.map((entry) {
                         return MoveTreeNode(
+                          key: ValueKey(entry.key),
                           store: widget.store,
                           moveKey: entry.key,
                           node: entry.value,
