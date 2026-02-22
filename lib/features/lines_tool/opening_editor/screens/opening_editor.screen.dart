@@ -24,8 +24,15 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
   final OpeningEditorStore store = sl<OpeningEditorStore>();
 
   @override
+  void initState() {
+    super.initState();
+    BrowserContextMenu.disableContextMenu();
+  }
+
+  @override
   void dispose() {
     store.dispose();
+    BrowserContextMenu.enableContextMenu();
     super.dispose();
   }
 

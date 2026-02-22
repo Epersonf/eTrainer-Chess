@@ -52,19 +52,29 @@ class MoveHierarchyPanel extends StatelessWidget {
                   );
                 }
                 
+                // Scroll duplo (Vertical e Horizontal)
                 return SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: store.repertoire.expectedMoves.entries.map((entry) {
-                      return _MoveTreeNode(
-                        store: store,
-                        moveKey: entry.key,
-                        node: entry.value,
-                        path: [entry.key],
-                        depth: 0,
-                      );
-                    }).toList(),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                      // Mantém a largura mínima igual à do painel para o background preencher tudo
+                      constraints: const BoxConstraints(minWidth: 320),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: store.repertoire.expectedMoves.entries.map((entry) {
+                            return _MoveTreeNode(
+                              store: store,
+                              moveKey: entry.key,
+                              node: entry.value,
+                              path: [entry.key],
+                              depth: 0,
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
                   ),
                 );
               },
@@ -120,6 +130,9 @@ class _MoveTreeNode extends StatelessWidget {
     
     final isExactlyActive = currentPathStr == thisPathStr;
     final isAncestor = currentPathStr.startsWith('$thisPathStr,');
+    
+    // Lógica unificada para saber se o lance faz parte do caminho atual
+    final isActivePath = isExactlyActive || isAncestor;
 
     final int moveNumber = (depth / 2).floor() + 1;
     final String turnStr = depth % 2 == 0 ? '$moveNumber.' : '$moveNumber...';
@@ -127,17 +140,17 @@ class _MoveTreeNode extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // O nó atual
         GestureDetector(
           onTap: () => store.jumpToNode(path),
           onSecondaryTapDown: (details) => _showContextMenu(context, details.globalPosition),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: isExactlyActive ? Colors.cyanAccent.withOpacity(0.15) : Colors.transparent,
+              // Usa o isActivePath para colorir toda a linha da variante
+              color: isActivePath ? Colors.cyanAccent.withOpacity(0.15) : Colors.transparent,
               border: Border(
                 left: BorderSide(
-                  color: isExactlyActive ? Colors.cyanAccent : (isAncestor ? Colors.cyan.withOpacity(0.5) : Colors.transparent),
+                  color: isActivePath ? Colors.cyanAccent : Colors.transparent,
                   width: 3,
                 ),
               ),
@@ -151,12 +164,13 @@ class _MoveTreeNode extends StatelessWidget {
                 Text(
                   moveKey,
                   style: TextStyle(
-                    color: isExactlyActive ? Colors.cyanAccent : (isAncestor ? Colors.white : Colors.white70),
-                    fontWeight: isExactlyActive ? FontWeight.bold : FontWeight.normal,
+                    // Letra realçada em toda a variante ativa
+                    color: isActivePath ? Colors.cyanAccent : Colors.white70,
+                    fontWeight: isActivePath ? FontWeight.bold : FontWeight.normal,
                     fontSize: 14,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 16), // Espaçador para empurrar o chat
                 if (node.possibleMessages != null && node.possibleMessages!.isNotEmpty)
                   const Icon(Icons.chat_bubble, color: Colors.white24, size: 12),
               ],
