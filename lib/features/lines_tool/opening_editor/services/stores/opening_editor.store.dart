@@ -72,9 +72,8 @@ abstract class OpeningEditorStoreBase with Store {
   @action
   void undoMove() {
     if (currentPath.isNotEmpty) {
-      currentPath.removeLast();
-      chessController.undoMove();
-      _loadMessagesForCurrentNode();
+      final newPath = List<String>.from(currentPath)..removeLast();
+      jumpToNode(newPath);
     }
   }
 
