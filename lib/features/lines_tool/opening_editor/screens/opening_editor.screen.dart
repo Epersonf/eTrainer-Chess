@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:e_trainer_chess/core/service_locator.dart';
+import 'package:e_trainer_chess/features/lines_tool/opening_editor/components/hierarchy_panel/move_hierarchy_panel.dart';
 import 'package:flutter/material.dart' hide Color;
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/services.dart';
@@ -9,7 +10,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:e_trainer_chess/components/main_app_bar.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_editor/services/stores/opening_editor.store.dart';
 
-import '../components/move_hierarchy_panel.dart';
 import '../components/message_editor_panel.dart';
 
 @RoutePage()

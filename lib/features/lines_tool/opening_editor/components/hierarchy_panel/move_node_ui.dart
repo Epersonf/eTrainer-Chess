@@ -46,7 +46,9 @@ class MoveNodeUI extends StatelessWidget {
     // ENVOLVIDO EM UM OBSERVER PARA REAGIR AO currentPath IMEDIATAMENTE
     return Observer(
       builder: (_) {
-        final currentPathStr = store.currentPath.join(',');
+        // CORREÇÃO: extrair a cópia da lista força o MobX a registrar a leitura
+        final activePath = store.currentPath.toList();
+        final currentPathStr = activePath.join(',');
         final thisPathStr = path.join(',');
 
         final isExactlyActive = currentPathStr == thisPathStr;

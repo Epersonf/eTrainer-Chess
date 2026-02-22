@@ -65,7 +65,8 @@ abstract class OpeningEditorStoreBase with Store {
       expectedMoves: newRoot,
     );
 
-    currentPath.add(moveKey);
+    // CORREÇÃO: Criar uma nova instância dispara a notificação global do MobX
+    currentPath = ObservableList.of([...currentPath, moveKey]);
     _loadMessagesForCurrentNode();
   }
 
@@ -79,10 +80,8 @@ abstract class OpeningEditorStoreBase with Store {
 
   @action
   void jumpToNode(List<String> path) {
-    // Preserve a mesma instância da ObservableList para que os Observers
-    // que estavam rastreando a lista original continuem a receber alterações.
-    currentPath.clear();
-    currentPath.addAll(path);
+    // CORREÇÃO: Sobrescrever a variável faz o átomo acordar todos os Observers pendentes
+    currentPath = ObservableList.of(path);
 
     chessController.resetBoard();
     for (String move in path) {
