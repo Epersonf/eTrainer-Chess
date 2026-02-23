@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import '../../services/stores/opening_editor.store.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optrain_node.dart';
+import '../message_editor_modal.dart';
 
 class MoveNodeUI extends StatelessWidget {
   final OpeningEditorStore store;
@@ -66,6 +67,16 @@ class MoveNodeUI extends StatelessWidget {
       color: const Color(0xFF2A2A2A),
       items: [
         const PopupMenuItem(
+          value: 'messages',
+          child: Row(
+            children: [
+              Icon(Icons.chat_bubble_outline, color: Colors.amberAccent, size: 18),
+              SizedBox(width: 8),
+              Text("Editar Mensagens", style: TextStyle(color: Colors.amberAccent)),
+            ],
+          ),
+        ),
+        const PopupMenuItem(
           value: 'rename',
           child: Row(
             children: [
@@ -89,6 +100,13 @@ class MoveNodeUI extends StatelessWidget {
     ).then((value) {
       if (value == 'delete') store.deleteNode(path);
       if (value == 'rename') _showRenameDialog(context);
+      if (value == 'messages') {
+        store.jumpToNode(path);
+        showDialog(
+          context: context,
+          builder: (ctx) => MessageEditorModal(store: store, moveKey: moveKey),
+        );
+      }
     });
   }
 
