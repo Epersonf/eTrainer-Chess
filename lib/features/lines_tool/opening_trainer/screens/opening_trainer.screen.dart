@@ -51,7 +51,7 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
   Future<void> _loadAssetOpening(String openingKey) async {
     try {
       final String jsonString = await rootBundle.loadString(
-        'assets/openings/$openingKey.optrain',
+        'assets/openings/$openingKey.linetrain', // <-- AQUI
       );
       final Object? decoded = jsonDecode(jsonString);
 
@@ -120,7 +120,7 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
           )),
       const DropdownMenuItem(
         value: 'custom',
-        child: Text('Personalizado (.optrain)', style: TextStyle(color: Colors.cyanAccent)),
+        child: Text('Personalizado (.linetrain)', style: TextStyle(color: Colors.cyanAccent)), // <-- AQUI
       ),
     ];
 

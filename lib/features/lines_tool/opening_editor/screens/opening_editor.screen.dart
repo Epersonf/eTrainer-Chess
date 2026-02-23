@@ -1,4 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
+
 import 'package:auto_route/auto_route.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:e_trainer_chess/core/service_locator.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_editor/components/hierarchy_panel/move_hierarchy_panel.dart';
 import 'package:flutter/material.dart' hide Color;
@@ -6,10 +13,11 @@ import 'package:flutter/material.dart' as material;
 import 'package:flutter/services.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'package:e_trainer_chess/components/main_app_bar.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_editor/services/stores/opening_editor.store.dart';
+import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optrain_repertoire.dart';
 
-@RoutePage()
 @RoutePage()
 class OpeningEditorScreen extends StatefulWidget {
   const OpeningEditorScreen({super.key});
@@ -34,40 +42,92 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
     super.dispose();
   }
 
-  void _showExportDialog() {
+  Future<void> _importLinetrain() async {
+    try {
+      final FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.any, // Você pode restringir para extensões customizadas se preferir
+      );
+
+      if (result != null) {
+        String fileContents;
+        if (result.files.single.bytes != null) {
+          fileContents = utf8.decode(result.files.single.bytes!);
+        } else {
+          final File file = File(result.files.single.path!);
+          fileContents = await file.readAsString();
+        }
+
+        final Object? decoded = jsonDecode(fileContents);
+        if (decoded is Map) {
+          final Map<String, Object?> jsonMap = Map<String, Object?>.from(decoded);
+          final OpTrainRepertoire repertoire = OpTrainRepertoire.fromJson(jsonMap);
+          store.loadRepertoire(repertoire);
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Linha carregada com sucesso!"),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Erro ao carregar arquivo: $e"),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportLinetrain() async {
     final jsonText = store.exportJson();
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: material.Color.fromARGB(255, 30, 30, 30),
-        title: Text(
-          "JSON Exportado",
-          style: GoogleFonts.michroma(color: Colors.cyanAccent),
-        ),
-        content: SingleChildScrollView(
-          child: Text(
-            jsonText,
-            style: GoogleFonts.ibmPlexMono(color: Colors.white70, fontSize: 12),
+    const fileName = 'my_repertoire.linetrain';
+
+    try {
+      if (kIsWeb) {
+        final bytes = utf8.encode(jsonText);
+        final blob = html.Blob([bytes]);
+        final url = html.Url.createObjectUrlFromBlob(blob);
+        final anchor = html.AnchorElement(href: url)
+          ..setAttribute("download", fileName)
+          ..click();
+        html.Url.revokeObjectUrl(url);
+      } else {
+        String? outputFile = await FilePicker.platform.saveFile(
+          dialogTitle: 'Salvar Linha de Treino',
+          fileName: fileName,
+        );
+
+        if (outputFile != null) {
+          final file = File(outputFile);
+          await file.writeAsString(jsonText);
+        }
+      }
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Arquivo salvo com sucesso!"),
+            backgroundColor: Colors.green,
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Clipboard.setData(ClipboardData(text: jsonText));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Copiado para a área de transferência!")),
-              );
-              Navigator.pop(context);
-            },
-            child: const Text("Copiar", style: TextStyle(color: Colors.cyanAccent)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Erro ao salvar: $e"),
+            backgroundColor: Colors.redAccent,
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Fechar", style: TextStyle(color: Colors.grey)),
-          ),
-        ],
-      ),
-    );
+        );
+      }
+    }
   }
 
   @override
@@ -91,12 +151,19 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
         appBar: MainAppBar(
           actions: [
             IconButton(
+              icon: const Icon(Icons.upload_file, color: Colors.amberAccent),
+              tooltip: "Importar .linetrain",
+              onPressed: _importLinetrain,
+            ),
+            IconButton(
               icon: const Icon(Icons.download, color: Colors.cyanAccent),
-              tooltip: "Exportar JSON",
-              onPressed: _showExportDialog,
+              tooltip: "Exportar .linetrain",
+              onPressed: _exportLinetrain,
             ),
           ],
         ),
+        // ... (resto do LayoutBuilder que divide a tela fica idêntico ao que já ajustamos na etapa anterior)
+
         body: Row(
           children: [
             // Painel da Esquerda (Tabuleiro + Editor de Mensagens)

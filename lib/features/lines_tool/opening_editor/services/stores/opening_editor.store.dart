@@ -255,6 +255,17 @@ abstract class OpeningEditorStoreBase with Store {
     _syncMessagesToRepertoire();
   }
 
+  @action
+  void loadRepertoire(OpTrainRepertoire newRepertoire) {
+    repertoire = newRepertoire;
+    currentPath.clear();
+    currentMessages.clear();
+    currentVariantName = null;
+    
+    chessController.resetBoard();
+    chessController.loadFen(repertoire.initialFen);
+  }
+
   String exportJson() {
     final Map<String, dynamic> json = repertoire.toJson();
     return const JsonEncoder.withIndent('  ').convert(json);
