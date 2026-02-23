@@ -12,7 +12,6 @@ import 'package:flutter/material.dart' hide Color;
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/services.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'package:e_trainer_chess/components/main_app_bar.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_editor/services/stores/opening_editor.store.dart';
@@ -94,9 +93,6 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
         final bytes = utf8.encode(jsonText);
         final blob = html.Blob([bytes]);
         final url = html.Url.createObjectUrlFromBlob(blob);
-        final anchor = html.AnchorElement(href: url)
-          ..setAttribute("download", fileName)
-          ..click();
         html.Url.revokeObjectUrl(url);
       } else {
         String? outputFile = await FilePicker.platform.saveFile(
