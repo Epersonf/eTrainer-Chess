@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart'; // <-- ADICIONADO
+import 'package:flutter_mobx/flutter_mobx.dart';
 import '../../services/stores/opening_editor.store.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optrain_node.dart';
 
@@ -19,12 +19,62 @@ class MoveNodeUI extends StatelessWidget {
     required this.depth,
   });
 
+  void _showRenameDialog(BuildContext context) {
+    final TextEditingController controller = TextEditingController(text: node.name ?? '');
+    
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: const Text("Renomear Variante", style: TextStyle(color: Colors.cyanAccent)),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: "Nome (ex: Abertura Peão Rei)",
+            hintStyle: const TextStyle(color: Colors.white38),
+            filled: true,
+            fillColor: const Color(0xFF2A2A2A),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text("Cancelar", style: TextStyle(color: Colors.white54)),
+          ),
+          TextButton(
+            onPressed: () {
+              store.renameNodeByPath(path, controller.text);
+              Navigator.pop(ctx);
+            },
+            child: const Text("Salvar", style: TextStyle(color: Colors.cyanAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showContextMenu(BuildContext context, Offset position) {
     showMenu(
       context: context,
       position: RelativeRect.fromLTRB(position.dx, position.dy, position.dx, position.dy),
       color: const Color(0xFF2A2A2A),
       items: [
+        const PopupMenuItem(
+          value: 'rename',
+          child: Row(
+            children: [
+              Icon(Icons.edit, color: Colors.blueAccent, size: 18),
+              SizedBox(width: 8),
+              Text("Renomear Variante", style: TextStyle(color: Colors.blueAccent)),
+            ],
+          ),
+        ),
         const PopupMenuItem(
           value: 'delete',
           child: Row(
@@ -38,15 +88,14 @@ class MoveNodeUI extends StatelessWidget {
       ],
     ).then((value) {
       if (value == 'delete') store.deleteNode(path);
+      if (value == 'rename') _showRenameDialog(context);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // ENVOLVIDO EM UM OBSERVER PARA REAGIR AO currentPath IMEDIATAMENTE
     return Observer(
       builder: (_) {
-        // CORREÇÃO: extrair a cópia da lista força o MobX a registrar a leitura
         final activePath = store.currentPath.toList();
         final currentPathStr = activePath.join(',');
         final thisPathStr = path.join(',');
@@ -56,6 +105,12 @@ class MoveNodeUI extends StatelessWidget {
 
         final int moveNumber = (depth / 2).floor() + 1;
         final String turnStr = depth % 2 == 0 ? '$moveNumber.' : '$moveNumber...';
+
+        // Lógica de exibição do nome
+        String displayName = moveKey;
+        if (node.name != null && node.name!.isNotEmpty) {
+          displayName = "$moveKey - ${node.name}";
+        }
 
         return GestureDetector(
           onTap: () => store.jumpToNode(path),
@@ -82,14 +137,17 @@ class MoveNodeUI extends StatelessWidget {
                   width: 32,
                   child: Text(turnStr, style: const TextStyle(color: Colors.white38, fontSize: 12)),
                 ),
-                Text(
-                  moveKey,
-                  style: TextStyle(
-                    color: isExactlyActive
-                        ? Colors.cyanAccent
-                        : (isAncestor ? Colors.white : Colors.white54),
-                    fontWeight: isExactlyActive ? FontWeight.bold : FontWeight.normal,
-                    fontSize: 14,
+                Flexible( // Evita quebra de layout se o nome for muito longo
+                  child: Text(
+                    displayName,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: isExactlyActive
+                          ? Colors.cyanAccent
+                          : (isAncestor ? Colors.white : Colors.white54),
+                      fontWeight: isExactlyActive ? FontWeight.bold : FontWeight.normal,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),

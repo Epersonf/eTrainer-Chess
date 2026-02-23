@@ -147,6 +147,18 @@ mixin _$OpeningEditorStore on OpeningEditorStoreBase, Store {
   }
 
   @override
+  void renameNodeByPath(List<String> path, String newName) {
+    final _$actionInfo = _$OpeningEditorStoreBaseActionController.startAction(
+      name: 'OpeningEditorStoreBase.renameNodeByPath',
+    );
+    try {
+      return super.renameNodeByPath(path, newName);
+    } finally {
+      _$OpeningEditorStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void addMessage() {
     final _$actionInfo = _$OpeningEditorStoreBaseActionController.startAction(
       name: 'OpeningEditorStoreBase.addMessage',

@@ -149,6 +149,39 @@ abstract class OpeningEditorStoreBase with Store {
     }
   }
 
+  @action
+  void renameNodeByPath(List<String> path, String newName) {
+    if (path.isEmpty) return;
+
+    final newRoot = _cloneTree(repertoire.expectedMoves);
+    Map<String, OpTrainNode> currentMap = newRoot;
+
+    // Navega até o pai do nó que será renomeado
+    for (int i = 0; i < path.length - 1; i++) {
+      currentMap = currentMap[path[i]]!.expectedMoves!;
+    }
+
+    final targetKey = path.last;
+    final existingNode = currentMap[targetKey]!;
+
+    // Atualiza o nó com o novo nome
+    currentMap[targetKey] = OpTrainNode(
+      name: newName.trim().isEmpty ? null : newName.trim(),
+      possibleMessages: existingNode.possibleMessages,
+      expectedMoves: existingNode.expectedMoves,
+    );
+    
+    repertoire = OpTrainRepertoire(
+      initialFen: repertoire.initialFen,
+      expectedMoves: newRoot,
+    );
+
+    // Se o nó renomeado for o que está focado no momento, sincroniza o textfield
+    if (currentPath.join(',') == path.join(',')) {
+      currentVariantName = currentMap[targetKey]!.name;
+    }
+  }
+
   // ---- MANIPULAÇÃO DE MENSAGENS ----
 
   @action
