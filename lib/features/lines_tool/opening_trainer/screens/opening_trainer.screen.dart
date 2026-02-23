@@ -34,6 +34,7 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
     'london': 'London System',
     'english': 'English Opening',
     'sicilian': 'Sicilian Defense',
+    'grunfeld': 'Grünfeld Defense',
   };
 
   @override

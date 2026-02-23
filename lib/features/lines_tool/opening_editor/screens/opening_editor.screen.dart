@@ -44,7 +44,8 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
   Future<void> _importLinetrain() async {
     try {
       final FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.any, // Você pode restringir para extensões customizadas se preferir
+        type: FileType
+            .any, // Você pode restringir para extensões customizadas se preferir
       );
 
       if (result != null) {
@@ -58,10 +59,14 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
 
         final Object? decoded = jsonDecode(fileContents);
         if (decoded is Map) {
-          final Map<String, Object?> jsonMap = Map<String, Object?>.from(decoded);
-          final OpTrainRepertoire repertoire = OpTrainRepertoire.fromJson(jsonMap);
+          final Map<String, Object?> jsonMap = Map<String, Object?>.from(
+            decoded,
+          );
+          final OpTrainRepertoire repertoire = OpTrainRepertoire.fromJson(
+            jsonMap,
+          );
           store.loadRepertoire(repertoire);
-          
+
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -87,12 +92,22 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
   Future<void> _exportLinetrain() async {
     final jsonText = store.exportJson();
     const fileName = 'my_repertoire.linetrain';
+    
+    debugPrint("===== SEU REPERTÓRIO (COPIE SE ALGO DER ERRADO) =====");
+    debugPrint(jsonText);
+    debugPrint("=====================================================");
 
     try {
       if (kIsWeb) {
         final bytes = utf8.encode(jsonText);
         final blob = html.Blob([bytes]);
         final url = html.Url.createObjectUrlFromBlob(blob);
+
+        // FALTAVA ISSO AQUI: Criar o link de download e clicar nele!
+        final anchor = html.AnchorElement(href: url)
+          ..setAttribute("download", fileName)
+          ..click(); // É isso que força o navegador a baixar
+
         html.Url.revokeObjectUrl(url);
       } else {
         String? outputFile = await FilePicker.platform.saveFile(
@@ -105,7 +120,7 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
           await file.writeAsString(jsonText);
         }
       }
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -158,80 +173,96 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
             ),
           ],
         ),
-        // ... (resto do LayoutBuilder que divide a tela fica idêntico ao que já ajustamos na etapa anterior)
 
+        // ... (resto do LayoutBuilder que divide a tela fica idêntico ao que já ajustamos na etapa anterior)
         body: Row(
           children: [
             // Painel da Esquerda (Tabuleiro + Editor de Mensagens)
             Expanded(
-              flex: 5, 
+              flex: 5,
               child: Container(
                 padding: const EdgeInsets.all(24),
                 color: const material.Color.fromARGB(255, 26, 26, 26),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                  final bool isWide = constraints.maxWidth > 700;
-            
-                  final boardWidget = Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 600, maxHeight: 600),
-                      child: ChessBoard(
-                        controller: store.chessController,
-                        boardColor: BoardColor.brown,
-                        enableUserMoves: true,
-                        onMove: () {
-                          final history = store.chessController.game.history;
-                          if (history.isNotEmpty) {
-                            final lastMove = history.last.move;
-                            String? promotionStr;
-                            if (lastMove.promotion != null) {
-                              promotionStr = lastMove.promotion.toString().split('.').last.toLowerCase();
-                              if (promotionStr.isNotEmpty) promotionStr = promotionStr[0];
-                            }
-                            store.onMoveMade(
-                              lastMove.fromAlgebraic,
-                              lastMove.toAlgebraic,
-                              promotionStr,
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                  );
+                    final bool isWide = constraints.maxWidth > 700;
 
-                  // Se for Desktop/Web divide a tela, senão empilha no mobile
-                  if (isWide) {
-                    return Row(
-                      children: [
-                        Expanded(
-                          flex: 4, 
-                          child: Container(
-                            padding: const EdgeInsets.all(24),
-                            color: const material.Color.fromARGB(255, 26, 26, 26),
+                    final boardWidget = Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 600,
+                          maxHeight: 600,
+                        ),
+                        child: ChessBoard(
+                          controller: store.chessController,
+                          boardColor: BoardColor.brown,
+                          enableUserMoves: true,
+                          onMove: () {
+                            final history = store.chessController.game.history;
+                            if (history.isNotEmpty) {
+                              final lastMove = history.last.move;
+                              String? promotionStr;
+                              if (lastMove.promotion != null) {
+                                promotionStr = lastMove.promotion
+                                    .toString()
+                                    .split('.')
+                                    .last
+                                    .toLowerCase();
+                                if (promotionStr.isNotEmpty)
+                                  promotionStr = promotionStr[0];
+                              }
+                              store.onMoveMade(
+                                lastMove.fromAlgebraic,
+                                lastMove.toAlgebraic,
+                                promotionStr,
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    );
+
+                    // Se for Desktop/Web divide a tela, senão empilha no mobile
+                    if (isWide) {
+                      return Row(
+                        children: [
+                          Expanded(
+                            flex: 4,
+                            child: Container(
+                              padding: const EdgeInsets.all(24),
+                              color: const material.Color.fromARGB(
+                                255,
+                                26,
+                                26,
+                                26,
+                              ),
+                              child: boardWidget,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 6,
+                            child: MoveHierarchyPanel(store: store),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            color: const material.Color.fromARGB(
+                              255,
+                              26,
+                              26,
+                              26,
+                            ),
                             child: boardWidget,
                           ),
-                        ),
-                        Expanded(
-                          flex: 6,
-                          child: MoveHierarchyPanel(store: store),
-                        ),
-                      ],
-                    );
-                  } else {
-                    return Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          color: const material.Color.fromARGB(255, 26, 26, 26),
-                          child: boardWidget,
-                        ),
-                        Expanded(
-                          child: MoveHierarchyPanel(store: store),
-                        ),
-                      ],
-                    );
-                  }
-                },
+                          Expanded(child: MoveHierarchyPanel(store: store)),
+                        ],
+                      );
+                    }
+                  },
                 ),
               ),
             ),

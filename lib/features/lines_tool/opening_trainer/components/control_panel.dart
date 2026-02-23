@@ -120,7 +120,7 @@ class ControlPanel extends StatelessWidget {
                               const DropdownMenuItem(
                                 value: 'custom',
                                 child: Text(
-                                  'Personalizado (.optrain)',
+                                  'Personalizado (.linetrain)',
                                   style: TextStyle(color: Colors.cyanAccent),
                                 ),
                               ),
