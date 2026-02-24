@@ -68,16 +68,19 @@
                                                                 "b6b2": {
                                                                   "name": null,
                                                                   "possibleMessages": [],
-                                                                  "expectedMoves": {}
+                                                                  "expectedMoves": {},
+                                                                  "quality": "good"
                                                                 }
-                                                              }
+                                                              },
+                                                              "quality": "bad"
                                                             },
                                                             "c2c1": {
                                                               "name": "Posição vantajosa",
                                                               "possibleMessages": [
                                                                 "Esse lance já dá uma posição muito vantajosa pras pretas."
                                                               ],
-                                                              "expectedMoves": {}
+                                                              "expectedMoves": {},
+                                                              "quality": "good"
                                                             },
                                                             "c2d2": {
                                                               "name": null,
@@ -86,13 +89,17 @@
                                                                 "f6e4": {
                                                                   "name": null,
                                                                   "possibleMessages": [],
-                                                                  "expectedMoves": {}
+                                                                  "expectedMoves": {},
+                                                                  "quality": "good"
                                                                 }
-                                                              }
+                                                              },
+                                                              "quality": "bad"
                                                             }
-                                                          }
+                                                          },
+                                                          "quality": "good"
                                                         }
-                                                      }
+                                                      },
+                                                      "quality": "good"
                                                     },
                                                     "b3b6": {
                                                       "name": null,
@@ -101,29 +108,41 @@
                                                         "a7b6": {
                                                           "name": null,
                                                           "possibleMessages": [],
-                                                          "expectedMoves": {}
+                                                          "expectedMoves": {},
+                                                          "quality": "good"
                                                         }
-                                                      }
+                                                      },
+                                                      "quality": "good"
                                                     }
-                                                  }
+                                                  },
+                                                  "quality": "good"
                                                 }
-                                              }
+                                              },
+                                              "quality": "good"
                                             }
-                                          }
+                                          },
+                                          "quality": "good"
                                         }
-                                      }
+                                      },
+                                      "quality": "good"
                                     }
-                                  }
+                                  },
+                                  "quality": "good"
                                 }
-                              }
+                              },
+                              "quality": "good"
                             }
-                          }
+                          },
+                          "quality": "good"
                         }
-                      }
+                      },
+                      "quality": "good"
                     }
-                  }
+                  },
+                  "quality": "good"
                 }
-              }
+              },
+              "quality": "good"
             },
             "c2c4": {
               "name": "Peão de C",
@@ -174,9 +193,11 @@
                                                           "possibleMessages": [
                                                             "Nessa variante as pretas estão ganhas com forte centro e um peão a mais."
                                                           ],
-                                                          "expectedMoves": {}
+                                                          "expectedMoves": {},
+                                                          "quality": "good"
                                                         }
-                                                      }
+                                                      },
+                                                      "quality": "good"
                                                     },
                                                     "f3e5": {
                                                       "name": "Erro Cavalo para E5",
@@ -187,26 +208,35 @@
                                                         "f7f6": {
                                                           "name": null,
                                                           "possibleMessages": [],
-                                                          "expectedMoves": {}
+                                                          "expectedMoves": {},
+                                                          "quality": "good"
                                                         }
-                                                      }
+                                                      },
+                                                      "quality": "bad"
                                                     }
-                                                  }
+                                                  },
+                                                  "quality": "good"
                                                 }
-                                              }
+                                              },
+                                              "quality": "bad"
                                             },
                                             "g5f4": {
                                               "name": "Lance Correto",
                                               "possibleMessages": [],
-                                              "expectedMoves": {}
+                                              "expectedMoves": {},
+                                              "quality": "good"
                                             }
-                                          }
+                                          },
+                                          "quality": "good"
                                         }
-                                      }
+                                      },
+                                      "quality": "good"
                                     }
-                                  }
+                                  },
+                                  "quality": "good"
                                 }
-                              }
+                              },
+                              "quality": "good"
                             },
                             "c1g5": {
                               "name": null,
@@ -241,37 +271,50 @@
                                                         "c7c5": {
                                                           "name": null,
                                                           "possibleMessages": [],
-                                                          "expectedMoves": {}
+                                                          "expectedMoves": {},
+                                                          "quality": "good"
                                                         }
-                                                      }
+                                                      },
+                                                      "quality": "good"
                                                     }
-                                                  }
+                                                  },
+                                                  "quality": "good"
                                                 }
-                                              }
+                                              },
+                                              "quality": "good"
                                             }
-                                          }
+                                          },
+                                          "quality": "good"
                                         }
-                                      }
+                                      },
+                                      "quality": "good"
                                     },
                                     "g5f4": {
                                       "name": null,
                                       "possibleMessages": [],
-                                      "expectedMoves": {}
+                                      "expectedMoves": {},
+                                      "quality": "good"
                                     },
                                     "g5h4": {
                                       "name": null,
                                       "possibleMessages": [],
-                                      "expectedMoves": {}
+                                      "expectedMoves": {},
+                                      "quality": "good"
                                     }
-                                  }
+                                  },
+                                  "quality": "good"
                                 }
-                              }
+                              },
+                              "quality": "good"
                             }
-                          }
+                          },
+                          "quality": "good"
                         }
-                      }
+                      },
+                      "quality": "good"
                     }
-                  }
+                  },
+                  "quality": "good"
                 },
                 "d7d5": {
                   "name": null,
@@ -300,9 +343,11 @@
                                         "g7g6": {
                                           "name": null,
                                           "possibleMessages": [],
-                                          "expectedMoves": {}
+                                          "expectedMoves": {},
+                                          "quality": "good"
                                         }
-                                      }
+                                      },
+                                      "quality": "good"
                                     },
                                     "d4c5": {
                                       "name": "Tomar peão",
@@ -323,31 +368,44 @@
                                                     "b2c3": {
                                                       "name": null,
                                                       "possibleMessages": [],
-                                                      "expectedMoves": {}
+                                                      "expectedMoves": {},
+                                                      "quality": "good"
                                                     }
-                                                  }
+                                                  },
+                                                  "quality": "good"
                                                 }
-                                              }
+                                              },
+                                              "quality": "good"
                                             }
-                                          }
+                                          },
+                                          "quality": "good"
                                         }
-                                      }
+                                      },
+                                      "quality": "good"
                                     }
-                                  }
+                                  },
+                                  "quality": "good"
                                 }
-                              }
+                              },
+                              "quality": "good"
                             }
-                          }
+                          },
+                          "quality": "good"
                         }
-                      }
+                      },
+                      "quality": "good"
                     }
-                  }
+                  },
+                  "quality": "good"
                 }
-              }
+              },
+              "quality": "good"
             }
-          }
+          },
+          "quality": "good"
         }
-      }
+      },
+      "quality": "good"
     }
   }
 }
