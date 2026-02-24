@@ -37,9 +37,6 @@ abstract class OpeningTrainerStoreBase with Store {
 
   // NOVO: Flags de Filtro do Treino
   @observable
-  bool allowGoodMoves = true;
-
-  @observable
   bool allowBadMoves = false;
 
   @observable
@@ -61,12 +58,6 @@ abstract class OpeningTrainerStoreBase with Store {
   void toggleCoordinates() {
     showCoordinates = !showCoordinates;
   }
-
-  @action
-  void setAllowGoodMoves(bool value) {
-    allowGoodMoves = value;
-  }
-
   @action
   void setAllowBadMoves(bool value) {
     allowBadMoves = value;
@@ -187,9 +178,10 @@ abstract class OpeningTrainerStoreBase with Store {
       }
 
       // NOVO: Seleciona randomicamente qualquer lance esperado ou pede escolha
+      // NOVO: Filtra os lances permitidos
       final availableMoves = _currentNodeMoves!.entries.where((entry) {
         final quality = entry.value.quality;
-        if (quality == MoveQuality.good && !allowGoodMoves) return false;
+        // Lances bons sempre entram. Barramos os ruins apenas se o toggle estiver false.
         if (quality == MoveQuality.bad && !allowBadMoves) return false;
         return true;
       }).map((e) => e.key).toList();

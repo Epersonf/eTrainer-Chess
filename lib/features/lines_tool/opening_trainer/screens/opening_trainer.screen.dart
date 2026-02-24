@@ -162,8 +162,6 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
                       onModeChanged: store.setPlayerMode,
                       variationMode: store.variationMode,
                       onVariationModeChanged: store.setVariationMode,
-                      allowGoodMoves: store.allowGoodMoves,
-                      onAllowGoodMovesChanged: store.setAllowGoodMoves,
                       allowBadMoves: store.allowBadMoves,
                       onAllowBadMovesChanged: store.setAllowBadMoves,
                     ),

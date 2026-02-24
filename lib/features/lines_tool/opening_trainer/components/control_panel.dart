@@ -19,8 +19,6 @@ class ControlPanel extends StatelessWidget {
   final ValueChanged<VariationMode> onVariationModeChanged;
   
   // NOVO: Flags de filtro de lances
-  final bool allowGoodMoves;
-  final ValueChanged<bool> onAllowGoodMovesChanged;
   final bool allowBadMoves;
   final ValueChanged<bool> onAllowBadMovesChanged;
 
@@ -37,8 +35,6 @@ class ControlPanel extends StatelessWidget {
     required this.onModeChanged,
     required this.variationMode,
     required this.onVariationModeChanged,
-    required this.allowGoodMoves,
-    required this.onAllowGoodMovesChanged,
     required this.allowBadMoves,
     required this.onAllowBadMovesChanged,
   });
@@ -171,34 +167,19 @@ class ControlPanel extends StatelessWidget {
               style: GoogleFonts.ibmPlexSans(color: Colors.grey[400], fontSize: 12),
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: CheckboxListTile(
-                    title: const Text("Bons", style: TextStyle(color: Colors.white, fontSize: 12)),
-                    value: allowGoodMoves,
-                    onChanged: (val) => onAllowGoodMovesChanged(val ?? true),
-                    activeColor: Colors.cyanAccent,
-                    checkColor: Colors.black,
-                    contentPadding: EdgeInsets.zero,
-                    controlAffinity: ListTileControlAffinity.leading,
-                    dense: true,
-                  ),
-                ),
-                Expanded(
-                  child: CheckboxListTile(
-                    title: const Text("Ruins (Armadilhas)", style: TextStyle(color: Colors.white, fontSize: 12)),
-                    value: allowBadMoves,
-                    onChanged: (val) => onAllowBadMovesChanged(val ?? false),
-                    activeColor: Colors.redAccent,
-                    checkColor: Colors.black,
-                    contentPadding: EdgeInsets.zero,
-                    controlAffinity: ListTileControlAffinity.leading,
-                    dense: true,
-                  ),
-                ),
-              ],
+            
+            // NOVO: Apenas um checkbox direto ao ponto
+            CheckboxListTile(
+              title: const Text("Permitir Lances Ruins (Armadilhas)", style: TextStyle(color: Colors.white, fontSize: 12)),
+              value: allowBadMoves,
+              onChanged: (val) => onAllowBadMovesChanged(val ?? false),
+              activeColor: Colors.redAccent,
+              checkColor: Colors.black,
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              dense: true,
             ),
+            const SizedBox(height: 8),
 
             Container(
               decoration: BoxDecoration(

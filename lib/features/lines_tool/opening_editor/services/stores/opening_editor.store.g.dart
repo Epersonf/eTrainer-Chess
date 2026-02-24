@@ -159,6 +159,18 @@ mixin _$OpeningEditorStore on OpeningEditorStoreBase, Store {
   }
 
   @override
+  void toggleNodeQuality(List<String> path) {
+    final _$actionInfo = _$OpeningEditorStoreBaseActionController.startAction(
+      name: 'OpeningEditorStoreBase.toggleNodeQuality',
+    );
+    try {
+      return super.toggleNodeQuality(path);
+    } finally {
+      _$OpeningEditorStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void addMessage() {
     final _$actionInfo = _$OpeningEditorStoreBaseActionController.startAction(
       name: 'OpeningEditorStoreBase.addMessage',
@@ -201,6 +213,18 @@ mixin _$OpeningEditorStore on OpeningEditorStoreBase, Store {
     );
     try {
       return super.updateVariantName(name);
+    } finally {
+      _$OpeningEditorStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void loadRepertoire(OpTrainRepertoire newRepertoire) {
+    final _$actionInfo = _$OpeningEditorStoreBaseActionController.startAction(
+      name: 'OpeningEditorStoreBase.loadRepertoire',
+    );
+    try {
+      return super.loadRepertoire(newRepertoire);
     } finally {
       _$OpeningEditorStoreBaseActionController.endAction(_$actionInfo);
     }

@@ -81,6 +81,24 @@ mixin _$OpeningTrainerStore on OpeningTrainerStoreBase, Store {
     });
   }
 
+  late final _$allowBadMovesAtom = Atom(
+    name: 'OpeningTrainerStoreBase.allowBadMoves',
+    context: context,
+  );
+
+  @override
+  bool get allowBadMoves {
+    _$allowBadMovesAtom.reportRead();
+    return super.allowBadMoves;
+  }
+
+  @override
+  set allowBadMoves(bool value) {
+    _$allowBadMovesAtom.reportWrite(value, super.allowBadMoves, () {
+      super.allowBadMoves = value;
+    });
+  }
+
   late final _$isAutoPlayingAtom = Atom(
     name: 'OpeningTrainerStoreBase.isAutoPlaying',
     context: context,
@@ -211,6 +229,18 @@ mixin _$OpeningTrainerStore on OpeningTrainerStoreBase, Store {
   }
 
   @override
+  void setAllowBadMoves(bool value) {
+    final _$actionInfo = _$OpeningTrainerStoreBaseActionController.startAction(
+      name: 'OpeningTrainerStoreBase.setAllowBadMoves',
+    );
+    try {
+      return super.setAllowBadMoves(value);
+    } finally {
+      _$OpeningTrainerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setPlayerMode(PlayerMode mode) {
     final _$actionInfo = _$OpeningTrainerStoreBaseActionController.startAction(
       name: 'OpeningTrainerStoreBase.setPlayerMode',
@@ -301,6 +331,7 @@ playerMode: ${playerMode},
 variationMode: ${variationMode},
 pendingVariations: ${pendingVariations},
 showCoordinates: ${showCoordinates},
+allowBadMoves: ${allowBadMoves},
 isAutoPlaying: ${isAutoPlaying},
 hasMadeWrongMove: ${hasMadeWrongMove},
 currentMessage: ${currentMessage},
