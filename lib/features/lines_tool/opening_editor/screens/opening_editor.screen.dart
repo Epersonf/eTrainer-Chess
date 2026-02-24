@@ -103,10 +103,9 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
         final blob = html.Blob([bytes]);
         final url = html.Url.createObjectUrlFromBlob(blob);
 
-        // FALTAVA ISSO AQUI: Criar o link de download e clicar nele!
-        final anchor = html.AnchorElement(href: url)
+        final _ = html.AnchorElement(href: url)
           ..setAttribute("download", fileName)
-          ..click(); // É isso que força o navegador a baixar
+          ..click();
 
         html.Url.revokeObjectUrl(url);
       } else {

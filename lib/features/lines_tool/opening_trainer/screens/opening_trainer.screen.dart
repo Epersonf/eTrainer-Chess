@@ -177,7 +177,13 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
                   children: [
                     Expanded(flex: 3, child: boardWidget),
                     const SizedBox(width: 32),
-                    Expanded(flex: 2, child: panelWidget),
+                    // Envolver o panelWidget em SingleChildScrollView para evitar overflow vertical em janelas baixas
+                    Expanded(
+                      flex: 2,
+                      child: SingleChildScrollView(
+                        child: panelWidget,
+                      ),
+                    ),
                   ],
                 );
               } else {
