@@ -42,18 +42,40 @@ class TrainerPanel extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-                const Spacer(), // Empurra a lâmpada para a direita
+                const Spacer(),
                 
-                // NOVO: Botão de Lâmpada (Dica)
+                // NOVO: Botões de Desfazer e Refazer e Dica agrupados no Observer
                 Observer(
                   builder: (_) {
-                    if (store.isTrainingFinished || store.hasMadeWrongMove || store.isAutoPlaying) {
-                      return const SizedBox.shrink(); // Esconde se não for a vez do usuário
-                    }
-                    return IconButton(
-                      icon: const Icon(Icons.lightbulb, color: Colors.amberAccent),
-                      tooltip: "Mostrar Dica",
-                      onPressed: store.showHint,
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Botão Desfazer (Undo)
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back_ios, size: 16),
+                          tooltip: "Voltar Lance",
+                          color: store.canUndo || store.hasMadeWrongMove ? Colors.white : Colors.white24,
+                          onPressed: (store.canUndo || store.hasMadeWrongMove) && !store.isAutoPlaying 
+                              ? store.undoMove 
+                              : null,
+                        ),
+                        // Botão Refazer (Redo)
+                        IconButton(
+                          icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                          tooltip: "Avançar Lance",
+                          color: store.canRedo ? Colors.white : Colors.white24,
+                          onPressed: store.canRedo && !store.isAutoPlaying 
+                              ? store.redoMove 
+                              : null,
+                        ),
+                        // Botão Dica
+                        if (!store.isTrainingFinished && !store.hasMadeWrongMove && !store.isAutoPlaying)
+                          IconButton(
+                            icon: const Icon(Icons.lightbulb, color: Colors.amberAccent),
+                            tooltip: "Mostrar Dica",
+                            onPressed: store.showHint,
+                          ),
+                      ],
                     );
                   },
                 ),
@@ -99,24 +121,6 @@ class TrainerPanel extends StatelessWidget {
                             ),
                           ),
                         ),
-                        // NOVO: Botão Desfazer aparece apenas se ele cometeu erro
-                        if (store.hasMadeWrongMove) ...[
-                          const SizedBox(width: 12),
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent.withOpacity(0.2),
-                              foregroundColor: Colors.redAccent,
-                              elevation: 0,
-                              side: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            icon: const Icon(Icons.undo, size: 16),
-                            label: const Text("Desfazer"),
-                            onPressed: store.undoWrongMove,
-                          ),
-                        ],
                       ],
                     ),
                   ),

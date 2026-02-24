@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:e_trainer_chess/core/service_locator.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optrain_repertoire.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_trainer/services/stores/opening_trainer.store.dart';
 import 'package:flutter/material.dart';
@@ -115,13 +115,18 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
   Widget build(BuildContext context) {
     // Prepara os itens do dropdown uma vez por build
     final dropdownItems = [
-      ..._defaultOpenings.entries.map((e) => DropdownMenuItem(
-            value: e.key,
-            child: Text(e.value, style: const TextStyle(color: Colors.white)),
-          )),
+      ..._defaultOpenings.entries.map(
+        (e) => DropdownMenuItem(
+          value: e.key,
+          child: Text(e.value, style: const TextStyle(color: Colors.white)),
+        ),
+      ),
       const DropdownMenuItem(
         value: 'custom',
-        child: Text('Personalizado (.linetrain)', style: TextStyle(color: Colors.cyanAccent)), // <-- AQUI
+        child: Text(
+          'Personalizado (.linetrain)',
+          style: TextStyle(color: Colors.cyanAccent),
+        ), // <-- AQUI
       ),
     ];
 
@@ -130,74 +135,93 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
       backgroundColor: const Color(0xFF121212),
       appBar: const MainAppBar(),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final isDesktop = constraints.maxWidth > 800;
+        // NOVO: Widget Focus captura cliques do teclado
+        child: Focus(
+          autofocus: true,
+          onKeyEvent: (node, event) {
+            if (event is KeyDownEvent) {
+              if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                if ((store.canUndo || store.hasMadeWrongMove) &&
+                    !store.isAutoPlaying) {
+                  store.undoMove();
+                }
+                return KeyEventResult.handled;
+              } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                if (store.canRedo && !store.isAutoPlaying) {
+                  store.redoMove();
+                }
+                return KeyEventResult.handled;
+              }
+            }
+            return KeyEventResult.ignored;
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isDesktop = constraints.maxWidth > 800;
 
-              final boardWidget = OpeningBoard(store: store);
-              final panelWidget = Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // NOVO: Observer para atualizar o ícone do botão quando clicar
-                  Observer(
-                    builder: (_) => ControlPanel(
-                      selectedOpening: _selectedOpening,
-                      defaultOpenings: _defaultOpenings,
-                      dropdownItems: dropdownItems,
-                      onChanged: (val) {
-                        if (val == null) return;
-                        if (val == 'custom') {
-                          _pickAndLoadFile();
-                        } else {
-                          setState(() => _selectedOpening = val);
-                          _loadAssetOpening(val);
-                        }
-                      },
-                      onRestart: store.restartTraining,
-                      showCoordinates: store.showCoordinates,
-                      onToggleCoordinates: store.toggleCoordinates,
-                      playerMode: store.playerMode,
-                      onModeChanged: store.setPlayerMode,
-                      variationMode: store.variationMode,
-                      onVariationModeChanged: store.setVariationMode,
-                      allowBadMoves: store.allowBadMoves,
-                      onAllowBadMovesChanged: store.setAllowBadMoves,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  TrainerPanel(store: store),
-                ],
-              );
-
-              if (isDesktop) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                final boardWidget = OpeningBoard(store: store);
+                final panelWidget = Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(flex: 3, child: boardWidget),
-                    const SizedBox(width: 32),
-                    // Envolver o panelWidget em SingleChildScrollView para evitar overflow vertical em janelas baixas
-                    Expanded(
-                      flex: 2,
-                      child: SingleChildScrollView(
-                        child: panelWidget,
+                    // NOVO: Observer para atualizar o ícone do botão quando clicar
+                    Observer(
+                      builder: (_) => ControlPanel(
+                        selectedOpening: _selectedOpening,
+                        defaultOpenings: _defaultOpenings,
+                        dropdownItems: dropdownItems,
+                        onChanged: (val) {
+                          if (val == null) return;
+                          if (val == 'custom') {
+                            _pickAndLoadFile();
+                          } else {
+                            setState(() => _selectedOpening = val);
+                            _loadAssetOpening(val);
+                          }
+                        },
+                        onRestart: store.restartTraining,
+                        showCoordinates: store.showCoordinates,
+                        onToggleCoordinates: store.toggleCoordinates,
+                        playerMode: store.playerMode,
+                        onModeChanged: store.setPlayerMode,
+                        variationMode: store.variationMode,
+                        onVariationModeChanged: store.setVariationMode,
+                        allowBadMoves: store.allowBadMoves,
+                        onAllowBadMovesChanged: store.setAllowBadMoves,
                       ),
                     ),
+                    const SizedBox(height: 24),
+                    TrainerPanel(store: store),
                   ],
                 );
-              } else {
-                return SingleChildScrollView(
-                  child: Column(
+
+                if (isDesktop) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      boardWidget,
-                      const SizedBox(height: 32),
-                      panelWidget,
+                      Expanded(flex: 3, child: boardWidget),
+                      const SizedBox(width: 32),
+                      // Envolver o panelWidget em SingleChildScrollView para evitar overflow vertical em janelas baixas
+                      Expanded(
+                        flex: 2,
+                        child: SingleChildScrollView(child: panelWidget),
+                      ),
                     ],
-                  ),
-                );
-              }
-            },
+                  );
+                } else {
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        boardWidget,
+                        const SizedBox(height: 32),
+                        panelWidget,
+                      ],
+                    ),
+                  );
+                }
+              },
+            ),
           ),
         ),
       ),
