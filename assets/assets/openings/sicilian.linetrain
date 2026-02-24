@@ -2,11 +2,122 @@
   "initialFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
   "expectedMoves": {
     "e2e4": {
-      "possibleMessages": ["As brancas abrem com e4."],
+      "possibleMessages": ["As brancas abrem com o peão do rei em e4."],
       "expectedMoves": {
         "c7c5": {
-          "possibleMessages": ["Defesa Siciliana! Você luta pelo centro com um peão lateral.", "Muito bem, jogando pela vitória de pretas."],
-          "expectedMoves": {}
+          "possibleMessages": [
+            "Defesa Siciliana! Você luta pelo centro com um peão lateral e desequilibra a posição desde o primeiro lance.",
+            "Excelente escolha. Jogando para vencer de pretas."
+          ],
+          "expectedMoves": {
+            "g1f3": {
+              "possibleMessages": ["A continuação mais crítica e popular. As brancas preparam d4 (Siciliana Aberta)."],
+              "expectedMoves": {
+                "d7d6": {
+                  "possibleMessages": [
+                    "Uma escolha flexível. Controla a casa e5 e prepara o terreno para as temidas variantes Najdorf ou Dragão."
+                  ],
+                  "expectedMoves": {
+                    "d2d4": {
+                      "possibleMessages": ["O golpe central esperado. As brancas querem abrir a posição rapidamente."],
+                      "expectedMoves": {
+                        "c5d4": {
+                          "possibleMessages": ["A troca padrão. Você troca seu peão de flanco pelo peão central das brancas."],
+                          "expectedMoves": {
+                            "f3d4": {
+                              "possibleMessages": ["O cavalo retoma e se centraliza perigosamente."],
+                              "expectedMoves": {
+                                "g8f6": {
+                                  "possibleMessages": ["Desenvolve o cavalo, ataca o peão de e4 e obriga as brancas a reagirem."],
+                                  "expectedMoves": {
+                                    "b1c3": {
+                                      "possibleMessages": ["A resposta mais natural e forte, defendendo e4 e desenvolvendo o cavalo."],
+                                      "expectedMoves": {
+                                        "a7a6": {
+                                          "possibleMessages": [
+                                            "A Variante Najdorf! Um lance profilático genial que tira a casa b5 das peças brancas e prepara expansão com b5.",
+                                            "Bem-vindo à linha favorita de Kasparov e Fischer."
+                                          ],
+                                          "expectedMoves": {
+                                            "c1e3": {
+                                              "possibleMessages": ["O Ataque Inglês. As brancas preparam f3, Dd2 e roque longo. Vai ter fogo no tabuleiro!"],
+                                              "expectedMoves": {
+                                                "e7e5": {
+                                                  "possibleMessages": ["A resposta clássica da Najdorf. Você expulsa o cavalo central e ganha espaço, aceitando um peão atrasado em d6."]
+                                                }
+                                              }
+                                            },
+                                            "c1g5": {
+                                              "possibleMessages": ["A linha principal mais aguda. As brancas cravam o cavalo e ameaçam estragar a estrutura de peões."],
+                                              "expectedMoves": {
+                                                "e7e6": {
+                                                  "possibleMessages": ["Obrigatório. Quebra a cravada, solidifica o centro e prepara o desenvolvimento da ala do rei."]
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "c2c3": {
+              "possibleMessages": ["A Variante Alapin. A principal anti-Siciliana. As brancas querem construir um forte centro de peões com d4 sem precisar sacrificar."],
+              "expectedMoves": {
+                "d7d5": {
+                  "possibleMessages": ["A melhor resposta e a mais enérgica! Você ataca o centro imediatamente, explorando o fato de que o peão de c3 tira a casa ideal do cavalo da dama branco."],
+                  "expectedMoves": {
+                    "e4d5": {
+                      "possibleMessages": ["As brancas capturam, a continuação padrão."],
+                      "expectedMoves": {
+                        "d8d5": {
+                          "possibleMessages": ["A dama recaptura. Ao contrário de outras aberturas, aqui a dama está segura porque o cavalo branco não pode pular para c3 para atacá-la."],
+                          "expectedMoves": {
+                            "d2d4": {
+                              "possibleMessages": ["As brancas contestam o centro."],
+                              "expectedMoves": {
+                                "g8f6": {
+                                  "possibleMessages": ["Desenvolvimento sólido. Prepara para lidar com peão isolado das brancas se houver trocas em d4."]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "b1c3": {
+              "possibleMessages": ["A Siciliana Fechada. As brancas evitam a teoria massiva da Aberta e buscam um jogo de manobras."],
+              "expectedMoves": {
+                "b8c6": {
+                  "possibleMessages": ["Desenvolvimento natural, controlando d4 e e5."],
+                  "expectedMoves": {
+                    "g2g3": {
+                      "possibleMessages": ["O plano padrão da Fechada. As brancas vão fianquetar o bispo em g2."],
+                      "expectedMoves": {
+                        "g7g6": {
+                          "possibleMessages": ["Você imita a estratégia! O fianqueto de pretas é excelente para combater a Siciliana Fechada, lutando pelas casas centrais claras."]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
