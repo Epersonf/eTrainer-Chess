@@ -1,0 +1,411 @@
+{
+  "initialFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "expectedMoves": {
+    "d2d4": {
+      "name": null,
+      "possibleMessages": [],
+      "expectedMoves": {
+        "g8f6": {
+          "name": null,
+          "possibleMessages": [],
+          "expectedMoves": {
+            "c1f4": {
+              "name": null,
+              "possibleMessages": [],
+              "expectedMoves": {
+                "d7d5": {
+                  "name": "Liberar Bispo London",
+                  "possibleMessages": [
+                    "Nesse lance, as brancas desenvolvem seu bispo London."
+                  ],
+                  "expectedMoves": {
+                    "e2e3": {
+                      "name": "Sistema London",
+                      "possibleMessages": [],
+                      "expectedMoves": {
+                        "c7c5": {
+                          "name": null,
+                          "possibleMessages": [],
+                          "expectedMoves": {
+                            "g1f3": {
+                              "name": null,
+                              "possibleMessages": [],
+                              "expectedMoves": {
+                                "b8c6": {
+                                  "name": null,
+                                  "possibleMessages": [],
+                                  "expectedMoves": {
+                                    "c2c3": {
+                                      "name": null,
+                                      "possibleMessages": [],
+                                      "expectedMoves": {
+                                        "d8b6": {
+                                          "name": null,
+                                          "possibleMessages": [],
+                                          "expectedMoves": {
+                                            "d1b3": {
+                                              "name": null,
+                                              "possibleMessages": [],
+                                              "expectedMoves": {
+                                                "c5c4": {
+                                                  "name": null,
+                                                  "possibleMessages": [],
+                                                  "expectedMoves": {
+                                                    "b3c2": {
+                                                      "name": null,
+                                                      "possibleMessages": [],
+                                                      "expectedMoves": {
+                                                        "c8f5": {
+                                                          "name": null,
+                                                          "possibleMessages": [],
+                                                          "expectedMoves": {
+                                                            "c2f5": {
+                                                              "name": "Captura Errada",
+                                                              "possibleMessages": [
+                                                                "Esse lance das brancas é um erro grave. Permite a captura da torre."
+                                                              ],
+                                                              "expectedMoves": {
+                                                                "b6b2": {
+                                                                  "name": null,
+                                                                  "possibleMessages": [],
+                                                                  "expectedMoves": {},
+                                                                  "quality": "good"
+                                                                }
+                                                              },
+                                                              "quality": "bad"
+                                                            },
+                                                            "c2c1": {
+                                                              "name": "Posição vantajosa",
+                                                              "possibleMessages": [
+                                                                "Esse lance já dá uma posição muito vantajosa pras pretas."
+                                                              ],
+                                                              "expectedMoves": {},
+                                                              "quality": "good"
+                                                            },
+                                                            "c2d2": {
+                                                              "name": null,
+                                                              "possibleMessages": [],
+                                                              "expectedMoves": {
+                                                                "f6e4": {
+                                                                  "name": null,
+                                                                  "possibleMessages": [],
+                                                                  "expectedMoves": {},
+                                                                  "quality": "good"
+                                                                }
+                                                              },
+                                                              "quality": "bad"
+                                                            }
+                                                          },
+                                                          "quality": "good"
+                                                        }
+                                                      },
+                                                      "quality": "good"
+                                                    },
+                                                    "b3b6": {
+                                                      "name": null,
+                                                      "possibleMessages": [],
+                                                      "expectedMoves": {
+                                                        "a7b6": {
+                                                          "name": null,
+                                                          "possibleMessages": [],
+                                                          "expectedMoves": {},
+                                                          "quality": "good"
+                                                        }
+                                                      },
+                                                      "quality": "good"
+                                                    }
+                                                  },
+                                                  "quality": "good"
+                                                }
+                                              },
+                                              "quality": "good"
+                                            }
+                                          },
+                                          "quality": "good"
+                                        }
+                                      },
+                                      "quality": "good"
+                                    }
+                                  },
+                                  "quality": "good"
+                                }
+                              },
+                              "quality": "good"
+                            }
+                          },
+                          "quality": "good"
+                        }
+                      },
+                      "quality": "good"
+                    }
+                  },
+                  "quality": "good"
+                }
+              },
+              "quality": "good"
+            },
+            "c2c4": {
+              "name": "Peão de C",
+              "possibleMessages": [],
+              "expectedMoves": {
+                "g7g6": {
+                  "name": null,
+                  "possibleMessages": [],
+                  "expectedMoves": {
+                    "b1c3": {
+                      "name": null,
+                      "possibleMessages": [],
+                      "expectedMoves": {
+                        "d7d5": {
+                          "name": "Grunfeld Clássica",
+                          "possibleMessages": [],
+                          "expectedMoves": {
+                            "g1f3": {
+                              "name": null,
+                              "possibleMessages": [],
+                              "expectedMoves": {
+                                "f8g7": {
+                                  "name": null,
+                                  "possibleMessages": [],
+                                  "expectedMoves": {
+                                    "c1g5": {
+                                      "name": null,
+                                      "possibleMessages": [],
+                                      "expectedMoves": {
+                                        "f6e4": {
+                                          "name": null,
+                                          "possibleMessages": [],
+                                          "expectedMoves": {
+                                            "c3e4": {
+                                              "name": "Erro Cavalo por E4",
+                                              "possibleMessages": [],
+                                              "expectedMoves": {
+                                                "d5e4": {
+                                                  "name": null,
+                                                  "possibleMessages": [],
+                                                  "expectedMoves": {
+                                                    "f3d2": {
+                                                      "name": null,
+                                                      "possibleMessages": [],
+                                                      "expectedMoves": {
+                                                        "d8d4": {
+                                                          "name": null,
+                                                          "possibleMessages": [
+                                                            "Nessa variante as pretas estão ganhas com forte centro e um peão a mais."
+                                                          ],
+                                                          "expectedMoves": {},
+                                                          "quality": "good"
+                                                        }
+                                                      },
+                                                      "quality": "good"
+                                                    },
+                                                    "f3e5": {
+                                                      "name": "Erro Cavalo para E5",
+                                                      "possibleMessages": [
+                                                        "Puna a posição das brancas perdendo material."
+                                                      ],
+                                                      "expectedMoves": {
+                                                        "f7f6": {
+                                                          "name": null,
+                                                          "possibleMessages": [],
+                                                          "expectedMoves": {},
+                                                          "quality": "good"
+                                                        }
+                                                      },
+                                                      "quality": "bad"
+                                                    }
+                                                  },
+                                                  "quality": "good"
+                                                }
+                                              },
+                                              "quality": "bad"
+                                            },
+                                            "g5f4": {
+                                              "name": "Lance Correto",
+                                              "possibleMessages": [],
+                                              "expectedMoves": {},
+                                              "quality": "good"
+                                            }
+                                          },
+                                          "quality": "good"
+                                        }
+                                      },
+                                      "quality": "good"
+                                    }
+                                  },
+                                  "quality": "good"
+                                }
+                              },
+                              "quality": "good"
+                            },
+                            "c1g5": {
+                              "name": null,
+                              "possibleMessages": [],
+                              "expectedMoves": {
+                                "f6e4": {
+                                  "name": null,
+                                  "possibleMessages": [],
+                                  "expectedMoves": {
+                                    "c3e4": {
+                                      "name": "Erro Cavalo por E4",
+                                      "possibleMessages": [],
+                                      "expectedMoves": {
+                                        "d5e4": {
+                                          "name": null,
+                                          "possibleMessages": [
+                                            "Aqui as pretas tem uma posição muito boa."
+                                          ],
+                                          "expectedMoves": {
+                                            "e2e3": {
+                                              "name": null,
+                                              "possibleMessages": [],
+                                              "expectedMoves": {
+                                                "f8g7": {
+                                                  "name": null,
+                                                  "possibleMessages": [],
+                                                  "expectedMoves": {
+                                                    "g1e2": {
+                                                      "name": null,
+                                                      "possibleMessages": [],
+                                                      "expectedMoves": {
+                                                        "c7c5": {
+                                                          "name": null,
+                                                          "possibleMessages": [],
+                                                          "expectedMoves": {},
+                                                          "quality": "good"
+                                                        }
+                                                      },
+                                                      "quality": "good"
+                                                    }
+                                                  },
+                                                  "quality": "good"
+                                                }
+                                              },
+                                              "quality": "good"
+                                            }
+                                          },
+                                          "quality": "good"
+                                        }
+                                      },
+                                      "quality": "good"
+                                    },
+                                    "g5f4": {
+                                      "name": null,
+                                      "possibleMessages": [],
+                                      "expectedMoves": {},
+                                      "quality": "good"
+                                    },
+                                    "g5h4": {
+                                      "name": null,
+                                      "possibleMessages": [],
+                                      "expectedMoves": {},
+                                      "quality": "good"
+                                    }
+                                  },
+                                  "quality": "good"
+                                }
+                              },
+                              "quality": "good"
+                            }
+                          },
+                          "quality": "good"
+                        }
+                      },
+                      "quality": "good"
+                    }
+                  },
+                  "quality": "good"
+                },
+                "d7d5": {
+                  "name": null,
+                  "possibleMessages": [],
+                  "expectedMoves": {
+                    "b1c3": {
+                      "name": null,
+                      "possibleMessages": [],
+                      "expectedMoves": {
+                        "c7c5": {
+                          "name": null,
+                          "possibleMessages": [],
+                          "expectedMoves": {
+                            "c4d5": {
+                              "name": null,
+                              "possibleMessages": [],
+                              "expectedMoves": {
+                                "f6d5": {
+                                  "name": null,
+                                  "possibleMessages": [],
+                                  "expectedMoves": {
+                                    "g1f3": {
+                                      "name": null,
+                                      "possibleMessages": [],
+                                      "expectedMoves": {
+                                        "g7g6": {
+                                          "name": null,
+                                          "possibleMessages": [],
+                                          "expectedMoves": {},
+                                          "quality": "good"
+                                        }
+                                      },
+                                      "quality": "good"
+                                    },
+                                    "d4c5": {
+                                      "name": "Tomar peão",
+                                      "possibleMessages": [],
+                                      "expectedMoves": {
+                                        "d5c3": {
+                                          "name": null,
+                                          "possibleMessages": [],
+                                          "expectedMoves": {
+                                            "d1d8": {
+                                              "name": null,
+                                              "possibleMessages": [],
+                                              "expectedMoves": {
+                                                "e8d8": {
+                                                  "name": null,
+                                                  "possibleMessages": [],
+                                                  "expectedMoves": {
+                                                    "b2c3": {
+                                                      "name": null,
+                                                      "possibleMessages": [],
+                                                      "expectedMoves": {},
+                                                      "quality": "good"
+                                                    }
+                                                  },
+                                                  "quality": "good"
+                                                }
+                                              },
+                                              "quality": "good"
+                                            }
+                                          },
+                                          "quality": "good"
+                                        }
+                                      },
+                                      "quality": "good"
+                                    }
+                                  },
+                                  "quality": "good"
+                                }
+                              },
+                              "quality": "good"
+                            }
+                          },
+                          "quality": "good"
+                        }
+                      },
+                      "quality": "good"
+                    }
+                  },
+                  "quality": "good"
+                }
+              },
+              "quality": "good"
+            }
+          },
+          "quality": "good"
+        }
+      },
+      "quality": "good"
+    }
+  }
+}

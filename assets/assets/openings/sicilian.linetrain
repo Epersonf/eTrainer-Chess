@@ -1,0 +1,14 @@
+{
+  "initialFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "expectedMoves": {
+    "e2e4": {
+      "possibleMessages": ["As brancas abrem com e4."],
+      "expectedMoves": {
+        "c7c5": {
+          "possibleMessages": ["Defesa Siciliana! Você luta pelo centro com um peão lateral.", "Muito bem, jogando pela vitória de pretas."],
+          "expectedMoves": {}
+        }
+      }
+    }
+  }
+}

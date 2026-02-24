@@ -1,0 +1,29 @@
+{
+  "initialFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "expectedMoves": {
+    "c2c4": {
+      "possibleMessages": ["Você jogou c4. A flexível e posicional Abertura Inglesa."],
+      "expectedMoves": {
+        "e7e5": {
+          "possibleMessages": ["As pretas respondem com e5, entrando na Siciliana Reversa."],
+          "expectedMoves": {
+            "b1c3": {
+              "possibleMessages": ["Desenvolvendo o cavalo e controlando a casa d5."],
+              "expectedMoves": {
+                "g8f6": {
+                  "possibleMessages": ["As pretas desenvolvem o cavalo para f6."],
+                  "expectedMoves": {
+                    "g2g3": {
+                      "possibleMessages": ["Preparando o fianchetto do bispo. Sólido e hipermoderno!", "Excelente memória!"],
+                      "expectedMoves": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

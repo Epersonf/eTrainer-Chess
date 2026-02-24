@@ -1,0 +1,19 @@
+{
+  "initialFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "expectedMoves": {
+    "d2d4": {
+      "possibleMessages": ["Iniciando o London System.", "Estrutura sólida e fácil de memorizar."],
+      "expectedMoves": {
+        "d7d5": {
+          "possibleMessages": ["As pretas ocupam o centro com d5."],
+          "expectedMoves": {
+            "c1f4": {
+              "possibleMessages": ["Desenvolva o bispo fora da cadeia de peões."],
+              "expectedMoves": {}
+            }
+          }
+        }
+      }
+    }
+  }
+}
