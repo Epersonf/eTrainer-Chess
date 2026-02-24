@@ -61,7 +61,9 @@ class MoveNodeUI extends StatelessWidget {
   }
 
   void _showContextMenu(BuildContext context, Offset position) {
-    showMenu(
+    final isGood = node.quality == MoveQuality.good; // NOVO
+    
+    showMenu<String>(
       context: context,
       position: RelativeRect.fromLTRB(position.dx, position.dy, position.dx, position.dy),
       color: const Color(0xFF2A2A2A),
@@ -96,10 +98,24 @@ class MoveNodeUI extends StatelessWidget {
             ],
           ),
         ),
+
+        // NOVO: Toggle Quality
+        const PopupMenuDivider(height: 1),
+        PopupMenuItem(
+          value: 'toggle_quality',
+          child: Row(
+            children: [
+              Icon(isGood ? Icons.thumb_down : Icons.thumb_up, color: isGood ? Colors.redAccent : Colors.greenAccent, size: 18),
+              const SizedBox(width: 8),
+              Text(isGood ? "Marcar como Lance Ruim" : "Marcar como Lance Bom", style: TextStyle(color: isGood ? Colors.redAccent : Colors.greenAccent)),
+            ],
+          ),
+        ),
       ],
     ).then((value) {
       if (value == 'delete') store.deleteNode(path);
       if (value == 'rename') _showRenameDialog(context);
+      if (value == 'toggle_quality') store.toggleNodeQuality(path); // NOVO
       if (value == 'messages') {
         store.jumpToNode(path);
         showDialog(
@@ -129,6 +145,8 @@ class MoveNodeUI extends StatelessWidget {
         if (node.name != null && node.name!.isNotEmpty) {
           displayName = "$moveKey - ${node.name}";
         }
+
+        final isBadMove = node.quality == MoveQuality.bad; // NOVO
 
         return GestureDetector(
           onTap: () => store.jumpToNode(path),
@@ -160,9 +178,12 @@ class MoveNodeUI extends StatelessWidget {
                     displayName,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
+                      // NOVO: Se for ruim, fica vermelho pálido (a menos que seja o ativo, que fica vermelho forte)
                       color: isExactlyActive
-                          ? Colors.cyanAccent
-                          : (isAncestor ? Colors.white : Colors.white54),
+                          ? (isBadMove ? Colors.redAccent : Colors.cyanAccent)
+                          : (isAncestor 
+                              ? (isBadMove ? Colors.red[300] : Colors.white) 
+                              : (isBadMove ? Colors.red[900] : Colors.white54)),
                       fontWeight: isExactlyActive ? FontWeight.bold : FontWeight.normal,
                       fontSize: 14,
                     ),

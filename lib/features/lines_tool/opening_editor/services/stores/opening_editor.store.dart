@@ -33,6 +33,7 @@ abstract class OpeningEditorStoreBase with Store {
       name: v.name,
       possibleMessages: v.possibleMessages?.toList(),
       expectedMoves: _cloneTree(v.expectedMoves),
+      quality: v.quality, // NOVO
     )));
   }
 
@@ -46,13 +47,14 @@ abstract class OpeningEditorStoreBase with Store {
     
     for (String pathKey in currentPath) {
       if (!currentMap.containsKey(pathKey)) {
-         currentMap[pathKey] = OpTrainNode(name: null, possibleMessages: [], expectedMoves: {});
+         currentMap[pathKey] = OpTrainNode(name: null, possibleMessages: [], expectedMoves: {}, quality: MoveQuality.good);
       }
       if (currentMap[pathKey]!.expectedMoves == null) {
         currentMap[pathKey] = OpTrainNode(
           name: currentMap[pathKey]!.name,
           possibleMessages: currentMap[pathKey]!.possibleMessages,
           expectedMoves: {},
+          quality: currentMap[pathKey]!.quality, // NOVO
         );
       }
       currentMap = currentMap[pathKey]!.expectedMoves!;
@@ -63,6 +65,7 @@ abstract class OpeningEditorStoreBase with Store {
         name: null,
         possibleMessages: [],
         expectedMoves: {},
+        quality: MoveQuality.good, // <-- Lance novo nasce "bom"
       );
     }
 
@@ -169,6 +172,7 @@ abstract class OpeningEditorStoreBase with Store {
       name: newName.trim().isEmpty ? null : newName.trim(),
       possibleMessages: existingNode.possibleMessages,
       expectedMoves: existingNode.expectedMoves,
+      quality: existingNode.quality, // <-- Adicionado
     );
     
     repertoire = OpTrainRepertoire(
@@ -180,6 +184,35 @@ abstract class OpeningEditorStoreBase with Store {
     if (currentPath.join(',') == path.join(',')) {
       currentVariantName = currentMap[targetKey]!.name;
     }
+  }
+
+  @action
+  void toggleNodeQuality(List<String> path) {
+    if (path.isEmpty) return;
+
+    final newRoot = _cloneTree(repertoire.expectedMoves);
+    Map<String, OpTrainNode> currentMap = newRoot;
+
+    // Navega até o pai do nó
+    for (int i = 0; i < path.length - 1; i++) {
+      currentMap = currentMap[path[i]]!.expectedMoves!;
+    }
+
+    final targetKey = path.last;
+    final existingNode = currentMap[targetKey]!;
+
+    // Inverte a qualidade
+    currentMap[targetKey] = OpTrainNode(
+      name: existingNode.name,
+      possibleMessages: existingNode.possibleMessages,
+      expectedMoves: existingNode.expectedMoves,
+      quality: existingNode.quality == MoveQuality.good ? MoveQuality.bad : MoveQuality.good,
+    );
+    
+    repertoire = OpTrainRepertoire(
+      initialFen: repertoire.initialFen,
+      expectedMoves: newRoot,
+    );
   }
 
   // ---- MANIPULAÇÃO DE MENSAGENS ----
@@ -219,6 +252,7 @@ abstract class OpeningEditorStoreBase with Store {
       name: currentVariantName?.trim().isEmpty == true ? null : currentVariantName,
       possibleMessages: currentMessages.where((msg) => msg.trim().isNotEmpty).toList(),
       expectedMoves: existingNode.expectedMoves,
+      quality: existingNode.quality, // <-- Adicionado
     );
     
     repertoire = OpTrainRepertoire(

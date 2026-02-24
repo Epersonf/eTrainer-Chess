@@ -35,6 +35,13 @@ abstract class OpeningTrainerStoreBase with Store {
   @observable
   bool showCoordinates = true;
 
+  // NOVO: Flags de Filtro do Treino
+  @observable
+  bool allowGoodMoves = true;
+
+  @observable
+  bool allowBadMoves = false;
+
   @observable
   bool isAutoPlaying = false;
 
@@ -53,6 +60,16 @@ abstract class OpeningTrainerStoreBase with Store {
   @action
   void toggleCoordinates() {
     showCoordinates = !showCoordinates;
+  }
+
+  @action
+  void setAllowGoodMoves(bool value) {
+    allowGoodMoves = value;
+  }
+
+  @action
+  void setAllowBadMoves(bool value) {
+    allowBadMoves = value;
   }
 
   // NOVO: Ação para mudar a cor e reiniciar automaticamente o treino
@@ -170,7 +187,19 @@ abstract class OpeningTrainerStoreBase with Store {
       }
 
       // NOVO: Seleciona randomicamente qualquer lance esperado ou pede escolha
-      final availableMoves = _currentNodeMoves!.keys.toList();
+      final availableMoves = _currentNodeMoves!.entries.where((entry) {
+        final quality = entry.value.quality;
+        if (quality == MoveQuality.good && !allowGoodMoves) return false;
+        if (quality == MoveQuality.bad && !allowBadMoves) return false;
+        return true;
+      }).map((e) => e.key).toList();
+
+      // Precisa lidar com o caso em que o filtro oculta todos os lances
+      if (availableMoves.isEmpty) {
+        isAutoPlaying = false;
+        errorMessage = "A engine não possui lances permitidos nesta variante sob os filtros atuais.";
+        return;
+      }
 
       // Se houver mais de uma opção e o modo for Select, pause e exponha as opções para a UI
       if (availableMoves.length > 1 && variationMode == VariationMode.select) {

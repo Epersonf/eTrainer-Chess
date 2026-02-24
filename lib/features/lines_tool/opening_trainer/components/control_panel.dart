@@ -17,6 +17,12 @@ class ControlPanel extends StatelessWidget {
   // NOVO: Seletor de variação (Random / Select)
   final VariationMode variationMode;
   final ValueChanged<VariationMode> onVariationModeChanged;
+  
+  // NOVO: Flags de filtro de lances
+  final bool allowGoodMoves;
+  final ValueChanged<bool> onAllowGoodMovesChanged;
+  final bool allowBadMoves;
+  final ValueChanged<bool> onAllowBadMovesChanged;
 
   const ControlPanel({
     super.key,
@@ -31,6 +37,10 @@ class ControlPanel extends StatelessWidget {
     required this.onModeChanged,
     required this.variationMode,
     required this.onVariationModeChanged,
+    required this.allowGoodMoves,
+    required this.onAllowGoodMovesChanged,
+    required this.allowBadMoves,
+    required this.onAllowBadMovesChanged,
   });
 
   @override
@@ -154,6 +164,41 @@ class ControlPanel extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
+
+            const SizedBox(height: 16),
+            Text(
+              "Filtros da Engine:",
+              style: GoogleFonts.ibmPlexSans(color: Colors.grey[400], fontSize: 12),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: CheckboxListTile(
+                    title: const Text("Bons", style: TextStyle(color: Colors.white, fontSize: 12)),
+                    value: allowGoodMoves,
+                    onChanged: (val) => onAllowGoodMovesChanged(val ?? true),
+                    activeColor: Colors.cyanAccent,
+                    checkColor: Colors.black,
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    dense: true,
+                  ),
+                ),
+                Expanded(
+                  child: CheckboxListTile(
+                    title: const Text("Ruins (Armadilhas)", style: TextStyle(color: Colors.white, fontSize: 12)),
+                    value: allowBadMoves,
+                    onChanged: (val) => onAllowBadMovesChanged(val ?? false),
+                    activeColor: Colors.redAccent,
+                    checkColor: Colors.black,
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    dense: true,
+                  ),
+                ),
+              ],
+            ),
 
             Container(
               decoration: BoxDecoration(
