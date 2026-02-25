@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:e_trainer_chess/core/service_locator.dart';
+import 'package:e_trainer_chess/core/localization/localization.store.dart';
 import '../services/stores/opening_editor.store.dart';
 
 class MessageEditorModal extends StatelessWidget {
@@ -11,19 +13,21 @@ class MessageEditorModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locStore = sl<LocalizationStore>();
+
     return AlertDialog(
       backgroundColor: const Color(0xFF1E1E1E),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            "Mensagens - $moveKey",
+            "${locStore.t('lineTool.editor.messages_title')} - $moveKey",
             style: GoogleFonts.michroma(color: Colors.cyanAccent, fontSize: 16),
           ),
           Observer(
             builder: (_) => IconButton(
               icon: const Icon(Icons.add_comment, color: Colors.cyanAccent, size: 20),
-              tooltip: "Adicionar Mensagem",
+              tooltip: locStore.t('lineTool.editor.add_message'),
               onPressed: store.addMessage,
             ),
           ),
@@ -33,12 +37,12 @@ class MessageEditorModal extends StatelessWidget {
         width: 500,
         height: 400,
         child: Observer(
-          builder: (_) {
+            builder: (_) {
             if (store.currentMessages.isEmpty) {
-              return const Center(
+              return Center(
                 child: Text(
-                  "Nenhuma mensagem nesta posição.",
-                  style: TextStyle(color: Colors.white24, fontSize: 14),
+                  locStore.t('lineTool.editor.no_messages'),
+                  style: const TextStyle(color: Colors.white24, fontSize: 14),
                 ),
               );
             }
@@ -56,7 +60,7 @@ class MessageEditorModal extends StatelessWidget {
                         style: const TextStyle(color: Colors.white, fontSize: 14),
                         maxLines: null,
                         decoration: InputDecoration(
-                          hintText: "Digite a dica aqui...",
+                          hintText: locStore.t('lineTool.editor.hint_input'),
                           hintStyle: const TextStyle(color: Colors.white24),
                           filled: true,
                           fillColor: const Color(0xFF2A2A2A),
@@ -72,7 +76,7 @@ class MessageEditorModal extends StatelessWidget {
                     const SizedBox(width: 8),
                     IconButton(
                       icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
-                      tooltip: "Excluir",
+                      tooltip: locStore.t('common.delete'),
                       onPressed: () => store.removeMessage(index),
                     ),
                   ],
@@ -85,7 +89,7 @@ class MessageEditorModal extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text("Fechar", style: TextStyle(color: Colors.white54)),
+          child: Text(locStore.t('common.close'), style: const TextStyle(color: Colors.white54)),
         ),
       ],
     );

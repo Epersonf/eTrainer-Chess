@@ -2,6 +2,8 @@ import 'package:e_trainer_chess/features/lines_tool/opening_trainer/services/sto
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:e_trainer_chess/core/service_locator.dart';
+import 'package:e_trainer_chess/core/localization/localization.store.dart';
 
 class TrainerPanel extends StatelessWidget {
   final OpeningTrainerStore store;
@@ -10,6 +12,7 @@ class TrainerPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locStore = sl<LocalizationStore>();
     return Card(
       color: const Color(0xFF1E1E1E),
       elevation: 8,
@@ -35,7 +38,7 @@ class TrainerPanel extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 Text(
-                  "Seu Treinador",
+                  locStore.t('lineTool.trainer.your_trainer'),
                   style: GoogleFonts.michroma(
                     color: Colors.cyanAccent,
                     fontWeight: FontWeight.bold,
@@ -53,7 +56,7 @@ class TrainerPanel extends StatelessWidget {
                         // Botão Desfazer (Undo)
                         IconButton(
                           icon: const Icon(Icons.arrow_back_ios, size: 16),
-                          tooltip: "Voltar Lance",
+                          tooltip: locStore.t('lineTool.trainer.undo_move'),
                           color: store.canUndo || store.hasMadeWrongMove ? Colors.white : Colors.white24,
                           onPressed: (store.canUndo || store.hasMadeWrongMove) && !store.isAutoPlaying 
                               ? store.undoMove 
@@ -62,7 +65,7 @@ class TrainerPanel extends StatelessWidget {
                         // Botão Refazer (Redo)
                         IconButton(
                           icon: const Icon(Icons.arrow_forward_ios, size: 16),
-                          tooltip: "Avançar Lance",
+                          tooltip: locStore.t('lineTool.trainer.redo_move'),
                           color: store.canRedo ? Colors.white : Colors.white24,
                           onPressed: store.canRedo && !store.isAutoPlaying 
                               ? store.redoMove 
@@ -72,7 +75,7 @@ class TrainerPanel extends StatelessWidget {
                         if (!store.isTrainingFinished && !store.hasMadeWrongMove && !store.isAutoPlaying)
                           IconButton(
                             icon: const Icon(Icons.lightbulb, color: Colors.amberAccent),
-                            tooltip: "Mostrar Dica",
+                            tooltip: locStore.t('lineTool.trainer.show_hint'),
                             onPressed: store.showHint,
                           ),
                       ],

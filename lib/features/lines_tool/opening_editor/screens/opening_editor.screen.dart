@@ -7,6 +7,7 @@ import 'dart:html' as html;
 import 'package:auto_route/auto_route.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:e_trainer_chess/core/service_locator.dart';
+import 'package:e_trainer_chess/core/localization/localization.store.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_editor/components/hierarchy_panel/move_hierarchy_panel.dart';
 import 'package:flutter/material.dart' hide Color;
 import 'package:flutter/material.dart' as material;
@@ -69,8 +70,8 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Linha carregada com sucesso!"),
+              SnackBar(
+                content: Text(sl<LocalizationStore>().t('lineTool.editor.line_loaded_success')),
                 backgroundColor: Colors.green,
               ),
             );
@@ -81,7 +82,7 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Erro ao carregar arquivo: $e"),
+            content: Text("${sl<LocalizationStore>().t('lineTool.editor.error_loading_file')} $e"),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -122,8 +123,8 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Arquivo salvo com sucesso!"),
+          SnackBar(
+            content: Text(sl<LocalizationStore>().t('lineTool.editor.file_saved_success')),
             backgroundColor: Colors.green,
           ),
         );
@@ -132,7 +133,7 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Erro ao salvar: $e"),
+            content: Text("${sl<LocalizationStore>().t('lineTool.editor.error_saving')} $e"),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -162,12 +163,12 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
           actions: [
             IconButton(
               icon: const Icon(Icons.upload_file, color: Colors.amberAccent),
-              tooltip: "Importar .linetrain",
+              tooltip: sl<LocalizationStore>().t('lineTool.editor.import_linetrain'),
               onPressed: _importLinetrain,
             ),
             IconButton(
               icon: const Icon(Icons.download, color: Colors.cyanAccent),
-              tooltip: "Exportar .linetrain",
+              tooltip: sl<LocalizationStore>().t('lineTool.editor.export_linetrain'),
               onPressed: _exportLinetrain,
             ),
           ],

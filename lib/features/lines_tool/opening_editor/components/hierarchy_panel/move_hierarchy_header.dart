@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:e_trainer_chess/core/service_locator.dart';
+import 'package:e_trainer_chess/core/localization/localization.store.dart';
 import '../../services/stores/opening_editor.store.dart';
 
 class MoveHierarchyHeader extends StatelessWidget {
@@ -9,6 +11,7 @@ class MoveHierarchyHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locStore = sl<LocalizationStore>();
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: const BoxDecoration(
@@ -18,13 +21,13 @@ class MoveHierarchyHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.account_tree, color: Colors.white70, size: 18),
-              SizedBox(width: 8),
+              const Icon(Icons.account_tree, color: Colors.white70, size: 18),
+              const SizedBox(width: 8),
               Text(
-                "Árvore de Variantes",
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                locStore.t('lineTool.editor.variant_tree'),
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -33,7 +36,7 @@ class MoveHierarchyHeader extends StatelessWidget {
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
               icon: const Icon(Icons.undo, color: Colors.white70, size: 18),
-              tooltip: "Voltar um lance",
+              tooltip: locStore.t('lineTool.editor.undo_move'),
               onPressed: store.currentPath.isEmpty ? null : store.undoMove,
             ),
           ),

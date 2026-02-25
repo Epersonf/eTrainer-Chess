@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:e_trainer_chess/core/service_locator.dart';
+import 'package:e_trainer_chess/core/localization/localization.store.dart';
 import '../../services/stores/opening_editor.store.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optrain_node.dart';
 import '../message_editor_modal.dart';
@@ -27,13 +29,13 @@ class MoveNodeUI extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text("Renomear Variante", style: TextStyle(color: Colors.cyanAccent)),
+        title: Text(sl<LocalizationStore>().t('lineTool.editor.rename_variant'), style: const TextStyle(color: Colors.cyanAccent)),
         content: TextField(
           controller: controller,
           autofocus: true,
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
-            hintText: "Nome (ex: Abertura Peão Rei)",
+            hintText: sl<LocalizationStore>().t('lineTool.editor.variant_name_hint'),
             hintStyle: const TextStyle(color: Colors.white38),
             filled: true,
             fillColor: const Color(0xFF2A2A2A),
@@ -46,14 +48,14 @@ class MoveNodeUI extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text("Cancelar", style: TextStyle(color: Colors.white54)),
+            child: Text(sl<LocalizationStore>().t('common.cancel'), style: const TextStyle(color: Colors.white54)),
           ),
           TextButton(
             onPressed: () {
               store.renameNodeByPath(path, controller.text);
               Navigator.pop(ctx);
             },
-            child: const Text("Salvar", style: TextStyle(color: Colors.cyanAccent)),
+            child: Text(sl<LocalizationStore>().t('common.save'), style: const TextStyle(color: Colors.cyanAccent)),
           ),
         ],
       ),
@@ -68,33 +70,33 @@ class MoveNodeUI extends StatelessWidget {
       position: RelativeRect.fromLTRB(position.dx, position.dy, position.dx, position.dy),
       color: const Color(0xFF2A2A2A),
       items: [
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'messages',
           child: Row(
             children: [
-              Icon(Icons.chat_bubble_outline, color: Colors.amberAccent, size: 18),
-              SizedBox(width: 8),
-              Text("Editar Mensagens", style: TextStyle(color: Colors.amberAccent)),
+              const Icon(Icons.chat_bubble_outline, color: Colors.amberAccent, size: 18),
+              const SizedBox(width: 8),
+              Text(sl<LocalizationStore>().t('lineTool.editor.edit_messages'), style: const TextStyle(color: Colors.amberAccent)),
             ],
           ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'rename',
           child: Row(
             children: [
-              Icon(Icons.edit, color: Colors.blueAccent, size: 18),
-              SizedBox(width: 8),
-              Text("Renomear Variante", style: TextStyle(color: Colors.blueAccent)),
+              const Icon(Icons.edit, color: Colors.blueAccent, size: 18),
+              const SizedBox(width: 8),
+              Text(sl<LocalizationStore>().t('lineTool.editor.rename_variant'), style: const TextStyle(color: Colors.blueAccent)),
             ],
           ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'delete',
           child: Row(
             children: [
-              Icon(Icons.delete, color: Colors.redAccent, size: 18),
-              SizedBox(width: 8),
-              Text("Deletar Variante", style: TextStyle(color: Colors.redAccent)),
+              const Icon(Icons.delete, color: Colors.redAccent, size: 18),
+              const SizedBox(width: 8),
+              Text(sl<LocalizationStore>().t('lineTool.editor.delete_variant'), style: const TextStyle(color: Colors.redAccent)),
             ],
           ),
         ),
@@ -107,7 +109,10 @@ class MoveNodeUI extends StatelessWidget {
             children: [
               Icon(isGood ? Icons.thumb_down : Icons.thumb_up, color: isGood ? Colors.redAccent : Colors.greenAccent, size: 18),
               const SizedBox(width: 8),
-              Text(isGood ? "Marcar como Lance Ruim" : "Marcar como Lance Bom", style: TextStyle(color: isGood ? Colors.redAccent : Colors.greenAccent)),
+              Text(
+                isGood ? sl<LocalizationStore>().t('lineTool.editor.mark_bad_move') : sl<LocalizationStore>().t('lineTool.editor.mark_good_move'),
+                style: TextStyle(color: isGood ? Colors.redAccent : Colors.greenAccent),
+              ),
             ],
           ),
         ),

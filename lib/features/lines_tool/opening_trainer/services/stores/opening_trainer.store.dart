@@ -4,6 +4,8 @@ import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optra
 import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optrain_repertoire.dart';
 import 'package:mobx/mobx.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart';
+import 'package:e_trainer_chess/core/service_locator.dart';
+import 'package:e_trainer_chess/core/localization/localization.store.dart';
 
 part 'opening_trainer.store.g.dart';
 
@@ -55,7 +57,7 @@ abstract class OpeningTrainerStoreBase with Store {
   bool hasMadeWrongMove = false;
 
   @observable
-  String currentMessage = "Selecione uma abertura ou carregue um arquivo para começar!";
+  String currentMessage = "";
 
   @observable
   bool isTrainingFinished = false;
@@ -68,6 +70,9 @@ abstract class OpeningTrainerStoreBase with Store {
 
   @computed
   bool get canRedo => redoStack.isNotEmpty;
+
+  // Helper to fetch localized strings from the LocalizationStore
+  String t(String key) => sl<LocalizationStore>().t(key);
 
   @action
   void toggleCoordinates() {
@@ -98,7 +103,7 @@ abstract class OpeningTrainerStoreBase with Store {
     _lastValidFen = repertoire.initialFen;
     
     _currentNodeMoves = repertoire.expectedMoves;
-    currentMessage = "Treinamento iniciado. Faça seu lance!";
+    currentMessage = t('lineTool.trainer.training_started');
     isTrainingFinished = false;
     errorMessage = null;
     isAutoPlaying = false;
@@ -145,13 +150,13 @@ abstract class OpeningTrainerStoreBase with Store {
 
       if (_currentNodeMoves == null || _currentNodeMoves!.isEmpty) {
         isTrainingFinished = true;
-        currentMessage = "Treinamento concluído! Você memorizou a linha.";
+        currentMessage = t('lineTool.trainer.training_finished_memorized');
       } else {
         _checkAutoMove();
       }
     } else {
       hasMadeWrongMove = true;
-      errorMessage = "Lance incorreto! Tente se lembrar da preparação.";
+      errorMessage = t('lineTool.trainer.wrong_move');
     }
   }
 
@@ -160,7 +165,7 @@ abstract class OpeningTrainerStoreBase with Store {
     chessController.loadFen(_lastValidFen);
     hasMadeWrongMove = false;
     errorMessage = null;
-    currentMessage = "Tente novamente.";
+    currentMessage = t('lineTool.trainer.try_again');
   }
 
   // NOVO: Ação principal para voltar lances pelo teclado ou UI
@@ -241,7 +246,7 @@ abstract class OpeningTrainerStoreBase with Store {
         return m;
       }).join(" ou ");
 
-      currentMessage = "💡 Dica: Jogue $movesStr";
+      currentMessage = "${t('lineTool.trainer.hint_play')} $movesStr";
     }
   }
 
@@ -270,7 +275,7 @@ abstract class OpeningTrainerStoreBase with Store {
 
       if (availableMoves.isEmpty) {
         isAutoPlaying = false;
-        errorMessage = "A engine não possui lances permitidos nesta variante sob os filtros atuais.";
+        errorMessage = t('lineTool.trainer.no_allowed_moves');
         return;
       }
 
@@ -312,7 +317,7 @@ abstract class OpeningTrainerStoreBase with Store {
         chessController.makeMove(from: from, to: to);
       }
     } catch (e) {
-      errorMessage = "Erro interno no lance automático ($from para $to): $e";
+      errorMessage = "${t('lineTool.trainer.internal_error_auto_move')} ($from -> $to): $e";
     }
 
     _lastValidFen = chessController.getFen();
@@ -321,7 +326,7 @@ abstract class OpeningTrainerStoreBase with Store {
 
     if (_currentNodeMoves == null || _currentNodeMoves!.isEmpty) {
       isTrainingFinished = true;
-      currentMessage = "Treinamento concluído!";
+      currentMessage = t('lineTool.trainer.training_finished');
     }
 
     await Future.delayed(const Duration(milliseconds: 100));

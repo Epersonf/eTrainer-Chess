@@ -1,7 +1,63 @@
 {
-  "select_language": "Seleziona la lingua",
-  "repertoire": "Repertorio di Aperture",
-  "white": "Bianche",
-  "black": "Nere",
-  "both": "Entrambi"
+  "select_language": "Seleziona la Lingua",
+  "common": {
+    "cancel": "Annulla",
+    "save": "Salva",
+    "delete": "Elimina",
+    "close": "Chiudi",
+    "or": "o"
+  },
+  "lineTool": {
+    "editor": {
+      "variant_tree": "Albero delle Varianti",
+      "undo_move": "Annulla mossa",
+      "make_first_move": "Fai la prima mossa",
+      "rename_variant": "Rinomina Variante",
+      "variant_name_hint": "Nome (es. Apertura di Re)",
+      "edit_messages": "Modifica Messaggi",
+      "delete_variant": "Elimina Variante",
+      "mark_bad_move": "Segna come Mossa Errata",
+      "mark_good_move": "Segna come Buona Mossa",
+      "messages_title": "Messaggi",
+      "add_message": "Aggiungi Messaggio",
+      "no_messages": "Nessun messaggio in questa posizione.",
+      "hint_input": "Scrivi il suggerimento qui...",
+      "import_linetrain": "Importa .linetrain",
+      "export_linetrain": "Esporta .linetrain",
+      "line_loaded_success": "Linea caricata con successo!",
+      "error_loading_file": "Errore nel caricamento del file:",
+      "file_saved_success": "File salvato con successo!",
+      "error_saving": "Errore di salvataggio:"
+    },
+    "trainer": {
+      "repertoire": "Repertorio di Aperture",
+      "coords": "Coords",
+      "custom_linetrain": "Personalizzato (.linetrain)",
+      "restart_training": "Riavvia Allenamento",
+      "engine_variation_selection": "Selezione Variante (Motore):",
+      "engine_filters": "Filtri del Motore:",
+      "allow_bad_moves": "Consenti Mosse Errate (Trappole)",
+      "random": "Random",
+      "select": "Select",
+      "play_as": "Gioca come:",
+      "white": "Bianco",
+      "both": "Entrambi",
+      "black": "Nero",
+      "choose_variation": "Scegli la variante:",
+      "variant": "Variante",
+      "your_trainer": "Il Tuo Allenatore",
+      "undo_move": "Annulla Mossa",
+      "redo_move": "Ripeti Mossa",
+      "show_hint": "Mostra Suggerimento",
+      "select_opening_start": "Seleziona un'apertura o carica un file per iniziare!",
+      "training_started": "Allenamento iniziato. Fai la tua mossa!",
+      "wrong_move": "Mossa sbagliata! Cerca di ricordare la preparazione.",
+      "try_again": "Riprova.",
+      "hint_play": "💡 Suggerimento: Gioca",
+      "no_allowed_moves": "Il motore non ha mosse consentite in questa variante con i filtri attuali.",
+      "internal_error_auto_move": "Errore interno durante la mossa automatica",
+      "training_finished_memorized": "Allenamento terminato! Hai memorizzato la linea.",
+      "training_finished": "Allenamento terminato!"
+    }
+  }
 }

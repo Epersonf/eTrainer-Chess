@@ -14,7 +14,7 @@ abstract class LocalizationStoreBase with Store {
   String currentLocale = 'pt';
 
   @observable
-  ObservableMap<String, dynamic> translations = ObservableMap<String, dynamic>();
+  ObservableMap<String, String> translations = ObservableMap<String, String>();
 
   final List<Map<String, String>> availableLanguages = [
     {'code': 'en', 'name': 'English', 'flag': '🇺🇸'},
@@ -34,17 +34,35 @@ abstract class LocalizationStoreBase with Store {
   @action
   Future<void> setLocale(String locale) async {
     try {
-      final jsonString = await rootBundle.loadString('assets/localization/$locale.json');
+      final jsonString = await rootBundle.loadString(
+        'assets/localization/$locale.json',
+      );
       final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
 
-      translations = ObservableMap.of(jsonMap);
+      translations = ObservableMap.of(_flattenMap(jsonMap));
       currentLocale = locale;
 
       await SharedPrefsHelper.prefs.setString(_langKey, locale);
     } catch (e) {
-      // Fallback em caso de erro no JSON
-      print("Erro ao carregar idioma: $e");
+      print("Erro ao carregar idioma $locale: $e");
     }
+  }
+
+  // Achata o JSON aninhado para notação de ponto
+  Map<String, String> _flattenMap(
+    Map<String, dynamic> map, {
+    String prefix = '',
+  }) {
+    Map<String, String> result = {};
+    map.forEach((key, value) {
+      final newKey = prefix.isEmpty ? key : '$prefix.$key';
+      if (value is Map<String, dynamic>) {
+        result.addAll(_flattenMap(value, prefix: newKey));
+      } else {
+        result[newKey] = value.toString();
+      }
+    });
+    return result;
   }
 
   String t(String key) {

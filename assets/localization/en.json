@@ -1,7 +1,63 @@
 {
   "select_language": "Select Language",
-  "repertoire": "Opening Repertoire",
-  "white": "White",
-  "black": "Black",
-  "both": "Both"
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "close": "Close",
+    "or": "or"
+  },
+  "lineTool": {
+    "editor": {
+      "variant_tree": "Variant Tree",
+      "undo_move": "Undo move",
+      "make_first_move": "Make the first move",
+      "rename_variant": "Rename Variant",
+      "variant_name_hint": "Name (e.g. King's Pawn Opening)",
+      "edit_messages": "Edit Messages",
+      "delete_variant": "Delete Variant",
+      "mark_bad_move": "Mark as Bad Move",
+      "mark_good_move": "Mark as Good Move",
+      "messages_title": "Messages",
+      "add_message": "Add Message",
+      "no_messages": "No messages in this position.",
+      "hint_input": "Type the hint here...",
+      "import_linetrain": "Import .linetrain",
+      "export_linetrain": "Export .linetrain",
+      "line_loaded_success": "Line loaded successfully!",
+      "error_loading_file": "Error loading file:",
+      "file_saved_success": "File saved successfully!",
+      "error_saving": "Error saving:"
+    },
+    "trainer": {
+      "repertoire": "Opening Repertoire",
+      "coords": "Coords",
+      "custom_linetrain": "Custom (.linetrain)",
+      "restart_training": "Restart Training",
+      "engine_variation_selection": "Variation Selection (Engine):",
+      "engine_filters": "Engine Filters:",
+      "allow_bad_moves": "Allow Bad Moves (Traps)",
+      "random": "Random",
+      "select": "Select",
+      "play_as": "Play as:",
+      "white": "White",
+      "both": "Both",
+      "black": "Black",
+      "choose_variation": "Choose variation:",
+      "variant": "Variant",
+      "your_trainer": "Your Trainer",
+      "undo_move": "Undo Move",
+      "redo_move": "Redo Move",
+      "show_hint": "Show Hint",
+      "select_opening_start": "Select an opening or load a file to start!",
+      "training_started": "Training started. Make your move!",
+      "wrong_move": "Wrong move! Try to remember the preparation.",
+      "try_again": "Try again.",
+      "hint_play": "💡 Hint: Play",
+      "no_allowed_moves": "The engine has no allowed moves in this variation under current filters.",
+      "internal_error_auto_move": "Internal error in auto move",
+      "training_finished_memorized": "Training finished! You memorized the line.",
+      "training_finished": "Training finished!"
+    }
+  }
 }

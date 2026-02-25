@@ -33,13 +33,13 @@ mixin _$LocalizationStore on LocalizationStoreBase, Store {
   );
 
   @override
-  ObservableMap<String, dynamic> get translations {
+  ObservableMap<String, String> get translations {
     _$translationsAtom.reportRead();
     return super.translations;
   }
 
   @override
-  set translations(ObservableMap<String, dynamic> value) {
+  set translations(ObservableMap<String, String> value) {
     _$translationsAtom.reportWrite(value, super.translations, () {
       super.translations = value;
     });

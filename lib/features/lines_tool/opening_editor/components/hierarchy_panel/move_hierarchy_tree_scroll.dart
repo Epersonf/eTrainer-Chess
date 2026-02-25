@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:e_trainer_chess/core/service_locator.dart';
+import 'package:e_trainer_chess/core/localization/localization.store.dart';
 import 'move_tree_node.dart';
 import '../../services/stores/opening_editor.store.dart';
 
@@ -27,9 +29,15 @@ class _MoveHierarchyTreeScrollState extends State<MoveHierarchyTreeScroll> {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
+        final locStore = sl<LocalizationStore>();
         if (widget.store.repertoire.expectedMoves.isEmpty) {
-          return const Center(
-            child: Text("Faça o primeiro lance", style: TextStyle(color: Colors.white38)),
+          return Center(
+            child: Observer(
+              builder: (_) => Text(
+                locStore.t('lineTool.editor.make_first_move'),
+                style: const TextStyle(color: Colors.white38),
+              ),
+            ),
           );
         }
 

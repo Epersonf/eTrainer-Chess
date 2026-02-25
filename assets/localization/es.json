@@ -1,7 +1,63 @@
 {
-  "select_language": "Seleccione el idioma",
-  "repertoire": "Repertorio de Aperturas",
-  "white": "Blancas",
-  "black": "Negras",
-  "both": "Ambas"
+  "select_language": "Seleccionar Idioma",
+  "common": {
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "close": "Cerrar",
+    "or": "o"
+  },
+  "lineTool": {
+    "editor": {
+      "variant_tree": "Árbol de Variantes",
+      "undo_move": "Deshacer movimiento",
+      "make_first_move": "Haz el primer movimiento",
+      "rename_variant": "Renombrar Variante",
+      "variant_name_hint": "Nombre (ej: Apertura de Peón de Rey)",
+      "edit_messages": "Editar Mensajes",
+      "delete_variant": "Eliminar Variante",
+      "mark_bad_move": "Marcar como Mala Jugada",
+      "mark_good_move": "Marcar como Buena Jugada",
+      "messages_title": "Mensajes",
+      "add_message": "Añadir Mensaje",
+      "no_messages": "No hay mensajes en esta posición.",
+      "hint_input": "Escribe el consejo aquí...",
+      "import_linetrain": "Importar .linetrain",
+      "export_linetrain": "Exportar .linetrain",
+      "line_loaded_success": "¡Línea cargada con éxito!",
+      "error_loading_file": "Error al cargar archivo:",
+      "file_saved_success": "¡Archivo guardado con éxito!",
+      "error_saving": "Error al guardar:"
+    },
+    "trainer": {
+      "repertoire": "Repertorio de Aperturas",
+      "coords": "Coords",
+      "custom_linetrain": "Personalizado (.linetrain)",
+      "restart_training": "Reiniciar Entrenamiento",
+      "engine_variation_selection": "Selección de Variante (Engine):",
+      "engine_filters": "Filtros del Engine:",
+      "allow_bad_moves": "Permitir Malas Jugadas (Trampas)",
+      "random": "Random",
+      "select": "Select",
+      "play_as": "Jugar con:",
+      "white": "Blancas",
+      "both": "Ambas",
+      "black": "Negras",
+      "choose_variation": "Elige la variante:",
+      "variant": "Variante",
+      "your_trainer": "Tu Entrenador",
+      "undo_move": "Deshacer Movimiento",
+      "redo_move": "Rehacer Movimiento",
+      "show_hint": "Mostrar Consejo",
+      "select_opening_start": "¡Selecciona una apertura o carga un archivo para empezar!",
+      "training_started": "Entrenamiento iniciado. ¡Haz tu movimiento!",
+      "wrong_move": "¡Movimiento incorrecto! Intenta recordar la preparación.",
+      "try_again": "Inténtalo de nuevo.",
+      "hint_play": "💡 Consejo: Juega",
+      "no_allowed_moves": "El engine no tiene jugadas permitidas en esta variante con los filtros actuales.",
+      "internal_error_auto_move": "Error interno en movimiento automático",
+      "training_finished_memorized": "¡Entrenamiento terminado! Memorizaste la línea.",
+      "training_finished": "¡Entrenamiento terminado!"
+    }
+  }
 }

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter_chess_board/flutter_chess_board.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:e_trainer_chess/core/service_locator.dart';
+import 'package:e_trainer_chess/core/localization/localization.store.dart';
 
 class OpeningBoard extends StatelessWidget {
   final OpeningTrainerStore store;
@@ -121,9 +123,9 @@ class OpeningBoard extends StatelessWidget {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Text(
-                                    "Escolha a variante:",
-                                    style: TextStyle(
+                                  Text(
+                                    sl<LocalizationStore>().t('lineTool.trainer.choose_variation'),
+                                    style: const TextStyle(
                                       color: Colors.cyanAccent,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -133,7 +135,7 @@ class OpeningBoard extends StatelessWidget {
                                   ...store.pendingVariations!.entries.map((entry) {
                                     final moveKey = entry.key;
                                     final node = entry.value;
-                                    final displayName = node.name ?? "Variante ${moveKey.substring(0, 2)}-${moveKey.substring(2, 4)}";
+                                    final displayName = node.name ?? "${sl<LocalizationStore>().t('lineTool.trainer.variant')} ${moveKey.substring(0, 2)}-${moveKey.substring(2, 4)}";
 
                                     return Padding(
                                       padding: const EdgeInsets.only(bottom: 8.0),

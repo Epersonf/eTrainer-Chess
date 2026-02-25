@@ -5,6 +5,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:e_trainer_chess/core/service_locator.dart';
 import 'package:flutter/services.dart';
+import 'package:e_trainer_chess/core/localization/localization.store.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optrain_repertoire.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_trainer/services/stores/opening_trainer.store.dart';
 import 'package:flutter/material.dart';
@@ -121,12 +122,12 @@ class _OpeningTrainerScreenState extends State<OpeningTrainerScreen> {
           child: Text(e.value, style: const TextStyle(color: Colors.white)),
         ),
       ),
-      const DropdownMenuItem(
+      DropdownMenuItem(
         value: 'custom',
         child: Text(
-          'Personalizado (.linetrain)',
-          style: TextStyle(color: Colors.cyanAccent),
-        ), // <-- AQUI
+          sl<LocalizationStore>().t('lineTool.trainer.custom_linetrain'),
+          style: const TextStyle(color: Colors.cyanAccent),
+        ),
       ),
     ];
 

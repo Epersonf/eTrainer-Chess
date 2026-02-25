@@ -1,7 +1,63 @@
 {
-  "select_language": "Sélectionner la langue",
-  "repertoire": "Répertoire d'ouvertures",
-  "white": "Blancs",
-  "black": "Noirs",
-  "both": "Les deux"
+  "select_language": "Choisir la Langue",
+  "common": {
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "close": "Fermer",
+    "or": "ou"
+  },
+  "lineTool": {
+    "editor": {
+      "variant_tree": "Arbre des Variantes",
+      "undo_move": "Annuler le coup",
+      "make_first_move": "Jouez le premier coup",
+      "rename_variant": "Renommer la Variante",
+      "variant_name_hint": "Nom (ex: Pion du Roi)",
+      "edit_messages": "Modifier les Messages",
+      "delete_variant": "Supprimer la Variante",
+      "mark_bad_move": "Marquer comme Mauvais Coup",
+      "mark_good_move": "Marquer comme Bon Coup",
+      "messages_title": "Messages",
+      "add_message": "Ajouter un Message",
+      "no_messages": "Aucun message dans cette position.",
+      "hint_input": "Tapez l'indice ici...",
+      "import_linetrain": "Importer .linetrain",
+      "export_linetrain": "Exporter .linetrain",
+      "line_loaded_success": "Ligne chargée avec succès !",
+      "error_loading_file": "Erreur de chargement :",
+      "file_saved_success": "Fichier enregistré avec succès !",
+      "error_saving": "Erreur d'enregistrement :"
+    },
+    "trainer": {
+      "repertoire": "Répertoire d'Ouvertures",
+      "coords": "Coords",
+      "custom_linetrain": "Personnalisé (.linetrain)",
+      "restart_training": "Redémarrer l'Entraînement",
+      "engine_variation_selection": "Sélection de Variante (Moteur) :",
+      "engine_filters": "Filtres du Moteur :",
+      "allow_bad_moves": "Autoriser les Mauvais Coups (Pièges)",
+      "random": "Random",
+      "select": "Select",
+      "play_as": "Jouer en tant que :",
+      "white": "Blancs",
+      "both": "Les deux",
+      "black": "Noirs",
+      "choose_variation": "Choisissez la variante :",
+      "variant": "Variante",
+      "your_trainer": "Votre Entraîneur",
+      "undo_move": "Annuler le coup",
+      "redo_move": "Refaire le coup",
+      "show_hint": "Afficher l'indice",
+      "select_opening_start": "Sélectionnez une ouverture ou chargez un fichier pour commencer !",
+      "training_started": "Entraînement commencé. À vous de jouer !",
+      "wrong_move": "Mauvais coup ! Essayez de vous souvenir de la préparation.",
+      "try_again": "Réessayez.",
+      "hint_play": "💡 Indice : Jouez",
+      "no_allowed_moves": "Le moteur n'a aucun coup autorisé dans cette variante sous les filtres actuels.",
+      "internal_error_auto_move": "Erreur interne lors du coup automatique",
+      "training_finished_memorized": "Entraînement terminé ! Vous avez mémorisé la ligne.",
+      "training_finished": "Entraînement terminé !"
+    }
+  }
 }
