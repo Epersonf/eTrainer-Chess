@@ -1,7 +1,63 @@
 {
   "select_language": "Selecione o Idioma",
-  "repertoire": "Repertório de Aberturas",
-  "white": "Brancas",
-  "black": "Pretas",
-  "both": "Ambas"
+  "common": {
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "close": "Fechar",
+    "or": "ou"
+  },
+  "lineTool": {
+    "editor": {
+      "variant_tree": "Árvore de Variantes",
+      "undo_move": "Voltar um lance",
+      "make_first_move": "Faça o primeiro lance",
+      "rename_variant": "Renomear Variante",
+      "variant_name_hint": "Nome (ex: Abertura Peão Rei)",
+      "edit_messages": "Editar Mensagens",
+      "delete_variant": "Deletar Variante",
+      "mark_bad_move": "Marcar como Lance Ruim",
+      "mark_good_move": "Marcar como Lance Bom",
+      "messages_title": "Mensagens",
+      "add_message": "Adicionar Mensagem",
+      "no_messages": "Nenhuma mensagem nesta posição.",
+      "hint_input": "Digite a dica aqui...",
+      "import_linetrain": "Importar .linetrain",
+      "export_linetrain": "Exportar .linetrain",
+      "line_loaded_success": "Linha carregada com sucesso!",
+      "error_loading_file": "Erro ao carregar arquivo:",
+      "file_saved_success": "Arquivo salvo com sucesso!",
+      "error_saving": "Erro ao salvar:"
+    },
+    "trainer": {
+      "repertoire": "Repertório de Aberturas",
+      "coords": "Coords",
+      "custom_linetrain": "Personalizado (.linetrain)",
+      "restart_training": "Reiniciar Treino",
+      "engine_variation_selection": "Seleção de Variante (Engine):",
+      "engine_filters": "Filtros da Engine:",
+      "allow_bad_moves": "Permitir Lances Ruins (Armadilhas)",
+      "random": "Random",
+      "select": "Select",
+      "play_as": "Jogar de:",
+      "white": "Brancas",
+      "both": "Ambas",
+      "black": "Pretas",
+      "choose_variation": "Escolha a variante:",
+      "variant": "Variante",
+      "your_trainer": "Seu Treinador",
+      "undo_move": "Voltar Lance",
+      "redo_move": "Avançar Lance",
+      "show_hint": "Mostrar Dica",
+      "select_opening_start": "Selecione uma abertura ou carregue um arquivo para começar!",
+      "training_started": "Treinamento iniciado. Faça seu lance!",
+      "wrong_move": "Lance incorreto! Tente se lembrar da preparação.",
+      "try_again": "Tente novamente.",
+      "hint_play": "💡 Dica: Jogue",
+      "no_allowed_moves": "A engine não possui lances permitidos nesta variante sob os filtros atuais.",
+      "internal_error_auto_move": "Erro interno no lance automático",
+      "training_finished_memorized": "Treinamento concluído! Você memorizou a linha.",
+      "training_finished": "Treinamento concluído!"
+    }
+  }
 }

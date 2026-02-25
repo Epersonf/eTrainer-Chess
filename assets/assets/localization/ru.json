@@ -1,7 +1,63 @@
 {
-  "select_language": "Выберите язык",
-  "repertoire": "Репертуар дебютов",
-  "white": "Белые",
-  "black": "Чёрные",
-  "both": "Обе"
+  "select_language": "Выберите Язык",
+  "common": {
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "close": "Закрыть",
+    "or": "или"
+  },
+  "lineTool": {
+    "editor": {
+      "variant_tree": "Дерево вариантов",
+      "undo_move": "Отменить ход",
+      "make_first_move": "Сделайте первый ход",
+      "rename_variant": "Переименовать вариант",
+      "variant_name_hint": "Имя (напр. Королевская пешка)",
+      "edit_messages": "Редактировать сообщения",
+      "delete_variant": "Удалить вариант",
+      "mark_bad_move": "Отметить как Плохой Ход",
+      "mark_good_move": "Отметить как Хороший Ход",
+      "messages_title": "Сообщения",
+      "add_message": "Добавить сообщение",
+      "no_messages": "Нет сообщений в этой позиции.",
+      "hint_input": "Введите подсказку здесь...",
+      "import_linetrain": "Импорт .linetrain",
+      "export_linetrain": "Экспорт .linetrain",
+      "line_loaded_success": "Линия успешно загружена!",
+      "error_loading_file": "Ошибка загрузки файла:",
+      "file_saved_success": "Файл успешно сохранен!",
+      "error_saving": "Ошибка сохранения:"
+    },
+    "trainer": {
+      "repertoire": "Репертуар Дебютов",
+      "coords": "Coords",
+      "custom_linetrain": "Свой (.linetrain)",
+      "restart_training": "Перезапустить",
+      "engine_variation_selection": "Выбор Варианта (Движок):",
+      "engine_filters": "Фильтры Движка:",
+      "allow_bad_moves": "Разрешить Плохие Ходы (Ловушки)",
+      "random": "Random",
+      "select": "Select",
+      "play_as": "Играть за:",
+      "white": "Белые",
+      "both": "Оба",
+      "black": "Черные",
+      "choose_variation": "Выберите вариант:",
+      "variant": "Вариант",
+      "your_trainer": "Ваш Тренер",
+      "undo_move": "Отменить ход",
+      "redo_move": "Повторить ход",
+      "show_hint": "Показать Подсказку",
+      "select_opening_start": "Выберите дебют или загрузите файл для начала!",
+      "training_started": "Тренировка начата. Ваш ход!",
+      "wrong_move": "Неверный ход! Постарайтесь вспомнить подготовку.",
+      "try_again": "Попробуйте снова.",
+      "hint_play": "💡 Подсказка: Сыграйте",
+      "no_allowed_moves": "У движка нет разрешенных ходов в этом варианте при текущих фильтрах.",
+      "internal_error_auto_move": "Внутренняя ошибка автоматического хода",
+      "training_finished_memorized": "Тренировка завершена! Вы запомнили линию.",
+      "training_finished": "Тренировка завершена!"
+    }
+  }
 }
