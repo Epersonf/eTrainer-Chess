@@ -1,4 +1,5 @@
 import 'package:e_trainer_chess/main.module.dart';
+import 'package:e_trainer_chess/core/localization/localization.store.dart';
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 
@@ -14,5 +15,12 @@ Future<void> setupLocator() async {
     ),
   )..interceptors.add(LogInterceptor(requestBody: true, responseBody: true)));
 
+  // Register stores from MainModule
   MainModule().registerStores(sl);
+
+  // Register and initialize LocalizationStore
+  if (!sl.isRegistered<LocalizationStore>()) {
+    sl.registerSingleton<LocalizationStore>(LocalizationStore());
+    await sl<LocalizationStore>().init();
+  }
 }
