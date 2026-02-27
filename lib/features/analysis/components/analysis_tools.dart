@@ -38,7 +38,7 @@ class AnalysisTools extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             SwitchListTile(
-              title: const Text("Mapa de Tensão (Hearthstone)", style: TextStyle(color: Colors.white, fontSize: 14)),
+              title: const Text("Mapa de Tensão", style: TextStyle(color: Colors.white, fontSize: 14)),
               value: store.showHeatmap,
               activeColor: Colors.amber,
               contentPadding: EdgeInsets.zero,
@@ -46,7 +46,7 @@ class AnalysisTools extends StatelessWidget {
             ),
             const Divider(color: Colors.white10),
             SwitchListTile(
-              title: const Text("Avaliação da Engine (Setas)", style: TextStyle(color: Colors.white, fontSize: 14)),
+              title: const Text("Avaliação da Engine", style: TextStyle(color: Colors.white, fontSize: 14)),
               value: store.showEngine,
               activeColor: Colors.cyanAccent,
               contentPadding: EdgeInsets.zero,
