@@ -1,21 +1,13 @@
 import 'package:mobx/mobx.dart';
 import 'package:chess/chess.dart' as chess_lib;
 
+// Models
+import '../../models/square_stats.dart';
+import '../../models/engine_arrow.dart';
+
 part 'analysis.store.g.dart';
 
 class AnalysisStore = AnalysisStoreBase with _$AnalysisStore;
-
-class SquareStats {
-  final int attacks;
-  final int defenses;
-  SquareStats(this.attacks, this.defenses);
-}
-
-class EngineArrow {
-  final String from;
-  final String to;
-  EngineArrow(this.from, this.to);
-}
 
 abstract class AnalysisStoreBase with Store {
   final chess_lib.Chess game = chess_lib.Chess();

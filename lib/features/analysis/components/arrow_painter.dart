@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/stores/analysis.store.dart';
+import '../models/engine_arrow.dart';
 
 class ArrowPainter extends CustomPainter {
   final List<EngineArrow> arrows;
