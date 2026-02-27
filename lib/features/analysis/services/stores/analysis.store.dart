@@ -40,7 +40,8 @@ abstract class AnalysisStoreBase with Store {
   bool showEngine = false;
 
   @observable
-  ObservableMap<String, SquareStats> heatmapData = ObservableMap<String, SquareStats>();
+  ObservableMap<String, SquareStats> heatmapData =
+      ObservableMap<String, SquareStats>();
 
   @observable
   ObservableList<EngineArrow> engineArrows = ObservableList<EngineArrow>();
@@ -60,11 +61,11 @@ abstract class AnalysisStoreBase with Store {
 
   @action
   void loadPgn(String pgn, String name) {
-    // 1. Limpa quebras de linha que quebram o parser
+    // Limpa quebras de linha que quebram o parser do Windows
     final cleanPgn = pgn.replaceAll('\r\n', '\n').trim();
     final tempGame = chess_lib.Chess();
 
-    // 2. Tenta fazer o parse. Se falhar, avisa na UI.
+    // Tenta fazer o parse do PGN
     if (!tempGame.load_pgn(cleanPgn)) {
       fileName = "Erro: Arquivo PGN inválido";
       moveList.clear();
@@ -72,21 +73,47 @@ abstract class AnalysisStoreBase with Store {
     }
 
     fileName = name;
-    moveList.clear();
     engineArrows.clear();
 
-    // 3. Salva a lista de lances em SAN (e4, Nf3, etc)
-    final moves = tempGame.history;
-    for (var m in moves) {
-      moveList.add(m.toString());
-    }
+    // -----------------------------------------------------------------
+    // SOLUÇÃO: Pegar o texto limpo do PGN e extrair apenas os lances!
+    // -----------------------------------------------------------------
+    String fullPgnText = tempGame.pgn();
 
-    // 4. Refaz o jogo gerando a lista de FENs (O Segredo!)
+    // 1. Remove Headers (ex: [Event "xyz"])
+    fullPgnText = fullPgnText.replaceAll(RegExp(r'\[.*?\]'), '');
+    // 2. Remove Comentários (ex: { excelente lance })
+    fullPgnText = fullPgnText.replaceAll(RegExp(r'\{.*?\}'), '');
+    // 3. Remove Variações (ex: ( 1... d5 ) )
+    fullPgnText = fullPgnText.replaceAll(RegExp(r'\(.*?\)'), '');
+    // 4. Remove a numeração das jogadas (ex: "1.", "25.")
+    fullPgnText = fullPgnText.replaceAll(RegExp(r'\d+\.'), '');
+    // 5. Remove resultados padrão do final do arquivo
+    fullPgnText = fullPgnText
+        .replaceAll('1-0', '')
+        .replaceAll('0-1', '')
+        .replaceAll('1/2-1/2', '')
+        .replaceAll('*', '');
+
+    // Agora temos só o texto puro dos lances, vamos separar os espaços num Array:
+    final extractedMoves = fullPgnText
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((m) => m.isNotEmpty) // Garante que não pegue vazios
+        .toList();
+
+    // Atualiza a UI (Agora sim, vai aparecer 'e4', 'Nf3', etc)
+    moveList.clear();
+    moveList.addAll(extractedMoves);
+
+    // -----------------------------------------------------------------
+    // Refaz o jogo gerando a lista de posições FENs corretamente
+    // -----------------------------------------------------------------
     final replayGame = chess_lib.Chess();
     final List<String> fens = [replayGame.fen]; // Fen inicial
 
-    for (var move in moveList) {
-      replayGame.move(move); // Move pelo SAN
+    for (var moveStr in extractedMoves) {
+      replayGame.move(moveStr); // Engine entende perfeitamente a string SAN
       fens.add(replayGame.fen);
     }
 
