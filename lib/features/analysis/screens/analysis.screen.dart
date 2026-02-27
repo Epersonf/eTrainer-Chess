@@ -50,7 +50,10 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               flex: 4, 
               child: Column(
                 children: [
-                  AnalysisBoard(store: store),
+                  // SOLUÇÃO DO OVERFLOW: Envolver o tabuleiro em um Expanded
+                  Expanded(
+                    child: AnalysisBoard(store: store),
+                  ),
                   const SizedBox(height: 16),
                   // Controles de Navegação PGN
                   Container(

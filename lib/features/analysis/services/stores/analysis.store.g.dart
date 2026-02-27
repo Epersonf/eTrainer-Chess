@@ -141,6 +141,18 @@ mixin _$AnalysisStore on AnalysisStoreBase, Store {
   }
 
   @override
+  void prevMove() {
+    final _$actionInfo = _$AnalysisStoreBaseActionController.startAction(
+      name: 'AnalysisStoreBase.prevMove',
+    );
+    try {
+      return super.prevMove();
+    } finally {
+      _$AnalysisStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void nextMove() {
     final _$actionInfo = _$AnalysisStoreBaseActionController.startAction(
       name: 'AnalysisStoreBase.nextMove',
