@@ -79,8 +79,8 @@ flutter:
     - assets/logo.png
     - assets/openings/
     - assets/localization/
-    - assets/pieces/black
-    - assets/pieces/white
+    - assets/pieces/black/
+    - assets/pieces/white/
     - assets/pieces/
 
   # To add assets to your application, add an assets section, like this:
