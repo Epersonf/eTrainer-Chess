@@ -1,3 +1,4 @@
+// lib/components/main_app_bar.dart
 import 'package:auto_route/auto_route.dart';
 import 'package:e_trainer_chess/core/router/router.gr.dart';
 import 'package:flutter/material.dart';
@@ -107,6 +108,31 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
               ],
             ),
           ),
+          
+          const SizedBox(width: 32), // Espaçamento entre as opções
+          
+          // NOVO: Botão Independente para Analysis
+          InkWell(
+            onTap: () => context.router.push(AnalysisRoute()),
+            borderRadius: BorderRadius.circular(4),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.analytics, color: Colors.cyanAccent, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Analysis',
+                    style: GoogleFonts.michroma(
+                      color: Colors.cyanAccent,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
       actions: [
@@ -167,7 +193,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
                     );
                   },
                 );
-              }).toList(),
+              }),
               const SizedBox(height: 8),
             ],
           ),
