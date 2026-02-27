@@ -19,13 +19,19 @@ class EngineArrow {
 
 abstract class AnalysisStoreBase with Store {
   final chess_lib.Chess game = chess_lib.Chess();
-
-  // Histórico de FENs para navegação
   List<String> _fensHistory = [chess_lib.Chess.DEFAULT_POSITION];
-  int _currentMoveIndex = 0;
+
+  @observable
+  int currentMoveIndex = 0; // Transformado em observable
 
   @observable
   String currentFen = chess_lib.Chess.DEFAULT_POSITION;
+
+  @observable
+  String fileName = 'Nenhum arquivo';
+
+  @observable
+  ObservableList<String> moveList = ObservableList<String>();
 
   @observable
   bool showHeatmap = true;
@@ -53,50 +59,75 @@ abstract class AnalysisStoreBase with Store {
   }
 
   @action
-  void loadPgn(String pgn) {
-    // Carrega o jogo para validar e pegar a história
-    game.load_pgn(pgn);
-    final historyMoves = game.history;
-
-    // Refaz os lances em um tabuleiro temporário para salvar todos os FENs na lista
+  void loadPgn(String pgn, String name) {
+    // 1. Limpa quebras de linha que quebram o parser
+    final cleanPgn = pgn.replaceAll('\r\n', '\n').trim();
     final tempGame = chess_lib.Chess();
-    _fensHistory = [tempGame.fen];
-    for (var move in historyMoves) {
-      tempGame.move(move);
-      _fensHistory.add(tempGame.fen);
+
+    // 2. Tenta fazer o parse. Se falhar, avisa na UI.
+    if (!tempGame.load_pgn(cleanPgn)) {
+      fileName = "Erro: Arquivo PGN inválido";
+      moveList.clear();
+      return;
     }
 
-    // Vai para o primeiro lance do PGN
-    _currentMoveIndex = 0;
+    fileName = name;
+    moveList.clear();
+    engineArrows.clear();
+
+    // 3. Salva a lista de lances em SAN (e4, Nf3, etc)
+    final moves = tempGame.history;
+    for (var m in moves) {
+      moveList.add(m.toString());
+    }
+
+    // 4. Refaz o jogo gerando a lista de FENs (O Segredo!)
+    final replayGame = chess_lib.Chess();
+    final List<String> fens = [replayGame.fen]; // Fen inicial
+
+    for (var move in moveList) {
+      replayGame.move(move); // Move pelo SAN
+      fens.add(replayGame.fen);
+    }
+
+    _fensHistory = fens;
+    currentMoveIndex = 0;
     _applyCurrentState();
   }
 
   @action
   void prevMove() {
-    if (_currentMoveIndex > 0) {
-      _currentMoveIndex--;
+    if (currentMoveIndex > 0) {
+      currentMoveIndex--;
       _applyCurrentState();
     }
   }
 
   @action
   void nextMove() {
-    if (_currentMoveIndex < _fensHistory.length - 1) {
-      _currentMoveIndex++;
+    if (currentMoveIndex < _fensHistory.length - 1) {
+      currentMoveIndex++;
+      _applyCurrentState();
+    }
+  }
+
+  @action
+  void jumpToMove(int index) {
+    if (index >= 0 && index < _fensHistory.length) {
+      currentMoveIndex = index;
       _applyCurrentState();
     }
   }
 
   void _applyCurrentState() {
-    currentFen = _fensHistory[_currentMoveIndex];
-    game.load(currentFen); // Atualiza o motor interno
+    currentFen = _fensHistory[currentMoveIndex];
+    game.load(currentFen); // Sincroniza o motor da biblioteca
     _calculateHeatmap();
     if (showEngine) _requestEngineEval();
   }
 
   void _calculateHeatmap() {
     heatmapData.clear();
-    // Por enquanto, valores simulados para teste visual
     heatmapData['e4'] = SquareStats(3, 1);
     heatmapData['d4'] = SquareStats(2, 2);
     heatmapData['f3'] = SquareStats(0, 2);

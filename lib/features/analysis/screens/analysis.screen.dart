@@ -23,7 +23,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     final result = await FilePicker.platform.pickFiles(type: FileType.any);
     if (result != null && result.files.single.bytes != null) {
       final pgnData = utf8.decode(result.files.single.bytes!);
-      store.loadPgn(pgnData);
+      store.loadPgn(pgnData, result.files.single.name);
     }
   }
 
