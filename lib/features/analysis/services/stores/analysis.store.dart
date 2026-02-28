@@ -39,7 +39,8 @@ abstract class AnalysisStoreBase with Store {
   bool showWeakSquares = false;
 
   @observable
-  ObservableMap<String, SquareStats> heatmapData = ObservableMap<String, SquareStats>();
+  ObservableMap<String, SquareStats> heatmapData =
+      ObservableMap<String, SquareStats>();
 
   // NOVO: Set Reativo
   @observable
@@ -86,7 +87,7 @@ abstract class AnalysisStoreBase with Store {
     engineArrows.clear();
 
     String fullPgnText = tempGame.pgn();
-    
+
     // Parser seguro baseado em profundidade para remover comentários e variantes aninhadas
     StringBuffer sb = StringBuffer();
     int parenDepth = 0;
@@ -95,12 +96,30 @@ abstract class AnalysisStoreBase with Store {
 
     for (int i = 0; i < fullPgnText.length; i++) {
       String char = fullPgnText[i];
-      if (char == '(') { parenDepth++; continue; }
-      if (char == ')') { if (parenDepth > 0) parenDepth--; continue; }
-      if (char == '{') { braceDepth++; continue; }
-      if (char == '}') { if (braceDepth > 0) braceDepth--; continue; }
-      if (char == '[') { bracketDepth++; continue; }
-      if (char == ']') { if (bracketDepth > 0) bracketDepth--; continue; }
+      if (char == '(') {
+        parenDepth++;
+        continue;
+      }
+      if (char == ')') {
+        if (parenDepth > 0) parenDepth--;
+        continue;
+      }
+      if (char == '{') {
+        braceDepth++;
+        continue;
+      }
+      if (char == '}') {
+        if (braceDepth > 0) braceDepth--;
+        continue;
+      }
+      if (char == '[') {
+        bracketDepth++;
+        continue;
+      }
+      if (char == ']') {
+        if (bracketDepth > 0) bracketDepth--;
+        continue;
+      }
 
       if (parenDepth == 0 && braceDepth == 0 && bracketDepth == 0) {
         sb.write(char);
@@ -199,9 +218,12 @@ abstract class AnalysisStoreBase with Store {
         if (currentFen != fenForEval) return;
 
         final data = jsonDecode(response.body);
-        final String bestMove = data['bestmove'];
 
-        if (bestMove.isNotEmpty && bestMove.length >= 4) {
+        // CORREÇÃO: Pegando a chave 'move'.
+        // Uso o fallback 'bestmove' apenas caso a API mude o formato no futuro.
+        final String? bestMove = data['move'] ?? data['bestmove'];
+
+        if (bestMove != null && bestMove.length >= 4) {
           final from = bestMove.substring(0, 2);
           final to = bestMove.substring(2, 4);
           engineArrows = ObservableList.of([EngineArrow(from, to)]);
