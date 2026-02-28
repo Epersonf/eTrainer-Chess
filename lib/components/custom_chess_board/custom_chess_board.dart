@@ -11,6 +11,7 @@ class CustomChessBoard extends StatelessWidget {
   final bool isWhiteBottom;
   final bool showCoordinates;
   final Map<String, SquareStats>? heatmapData;
+  final Set<String>? weakSquares;
   final List<EngineArrow>? arrows;
   final Function(String from, String to, [String? promotion])? onMove;
 
@@ -20,6 +21,7 @@ class CustomChessBoard extends StatelessWidget {
     this.isWhiteBottom = true,
     this.showCoordinates = false,
     this.heatmapData,
+    this.weakSquares,
     this.arrows,
     this.onMove,
   });
@@ -60,6 +62,7 @@ class CustomChessBoard extends StatelessWidget {
                       isWhiteBottom: isWhiteBottom,
                       showCoordinates: showCoordinates,
                       heatmapData: heatmapData,
+                      weakSquares: weakSquares,
                       onMove: onMove,
                     );
                   },

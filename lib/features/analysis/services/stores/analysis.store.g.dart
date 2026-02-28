@@ -117,6 +117,24 @@ mixin _$AnalysisStore on AnalysisStoreBase, Store {
     });
   }
 
+  late final _$showWeakSquaresAtom = Atom(
+    name: 'AnalysisStoreBase.showWeakSquares',
+    context: context,
+  );
+
+  @override
+  bool get showWeakSquares {
+    _$showWeakSquaresAtom.reportRead();
+    return super.showWeakSquares;
+  }
+
+  @override
+  set showWeakSquares(bool value) {
+    _$showWeakSquaresAtom.reportWrite(value, super.showWeakSquares, () {
+      super.showWeakSquares = value;
+    });
+  }
+
   late final _$heatmapDataAtom = Atom(
     name: 'AnalysisStoreBase.heatmapData',
     context: context,
@@ -132,6 +150,24 @@ mixin _$AnalysisStore on AnalysisStoreBase, Store {
   set heatmapData(ObservableMap<String, SquareStats> value) {
     _$heatmapDataAtom.reportWrite(value, super.heatmapData, () {
       super.heatmapData = value;
+    });
+  }
+
+  late final _$weakSquaresAtom = Atom(
+    name: 'AnalysisStoreBase.weakSquares',
+    context: context,
+  );
+
+  @override
+  ObservableSet<String> get weakSquares {
+    _$weakSquaresAtom.reportRead();
+    return super.weakSquares;
+  }
+
+  @override
+  set weakSquares(ObservableSet<String> value) {
+    _$weakSquaresAtom.reportWrite(value, super.weakSquares, () {
+      super.weakSquares = value;
     });
   }
 
@@ -177,6 +213,18 @@ mixin _$AnalysisStore on AnalysisStoreBase, Store {
     );
     try {
       return super.toggleEngine();
+    } finally {
+      _$AnalysisStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void toggleWeakSquares() {
+    final _$actionInfo = _$AnalysisStoreBaseActionController.startAction(
+      name: 'AnalysisStoreBase.toggleWeakSquares',
+    );
+    try {
+      return super.toggleWeakSquares();
     } finally {
       _$AnalysisStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -239,7 +287,9 @@ fileName: ${fileName},
 moveList: ${moveList},
 showHeatmap: ${showHeatmap},
 showEngine: ${showEngine},
+showWeakSquares: ${showWeakSquares},
 heatmapData: ${heatmapData},
+weakSquares: ${weakSquares},
 engineArrows: ${engineArrows}
     ''';
   }

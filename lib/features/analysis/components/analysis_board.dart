@@ -17,6 +17,7 @@ class AnalysisBoard extends StatelessWidget {
           isWhiteBottom: true,
           showCoordinates: true,
           heatmapData: store.showHeatmap ? store.heatmapData : null,
+          weakSquares: store.showWeakSquares ? store.weakSquares : null,
           arrows: store.showEngine ? store.engineArrows.toList() : null,
         );
       },

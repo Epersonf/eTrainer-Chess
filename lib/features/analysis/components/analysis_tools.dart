@@ -46,6 +46,14 @@ class AnalysisTools extends StatelessWidget {
             ),
             const Divider(color: Colors.white10),
             SwitchListTile(
+              title: const Text("Casas Fracas (Outposts)", style: TextStyle(color: Colors.white, fontSize: 14)),
+              value: store.showWeakSquares,
+              activeColor: Colors.purpleAccent,
+              contentPadding: EdgeInsets.zero,
+              onChanged: (val) => store.toggleWeakSquares(),
+            ),
+            const Divider(color: Colors.white10),
+            SwitchListTile(
               title: const Text("Avaliação da Engine", style: TextStyle(color: Colors.white, fontSize: 14)),
               value: store.showEngine,
               activeColor: Colors.cyanAccent,

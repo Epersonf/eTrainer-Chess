@@ -14,6 +14,7 @@ class BoardSquare extends StatelessWidget {
   final bool isWhiteBottom;
   final bool showCoordinates;
   final Map<String, SquareStats>? heatmapData;
+  final Set<String>? weakSquares;
   final Function(String from, String to, [String? promotion])? onMove;
 
   const BoardSquare({
@@ -24,6 +25,7 @@ class BoardSquare extends StatelessWidget {
     required this.isWhiteBottom,
     required this.showCoordinates,
     this.heatmapData,
+    this.weakSquares,
     this.onMove,
   });
 
@@ -66,6 +68,9 @@ class BoardSquare extends StatelessWidget {
         tensionColor = Colors.redAccent.withOpacity(0.35); // Tensão / Empate
       }
     }
+
+    // NOVO: Verifica se a casa atual está no Set de casas fracas
+    final bool isWeakSquare = weakSquares?.contains(squareName) ?? false;
 
     Widget pieceWidget = const SizedBox.shrink();
 
@@ -124,9 +129,12 @@ class BoardSquare extends StatelessWidget {
       },
       builder: (context, candidateData, rejectedData) {
         return Container(
-          color: candidateData.isNotEmpty
-              ? Colors.cyanAccent.withOpacity(0.5)
-              : (isLightSquare ? const Color(0xFFF0D9B5) : const Color(0xFFB58863)),
+          decoration: BoxDecoration(
+            color: candidateData.isNotEmpty
+                ? Colors.cyanAccent.withOpacity(0.5)
+                : (isLightSquare ? const Color(0xFFF0D9B5) : const Color(0xFFB58863)),
+            border: isWeakSquare ? Border.all(color: Colors.purpleAccent, width: 4.0) : null,
+          ),
           child: Stack(
             children: [
               // Fundo colorido indicando o domínio da casa

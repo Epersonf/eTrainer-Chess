@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:e_trainer_chess/features/analysis/utils/weak_squares_calculator.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobx/mobx.dart';
 import 'package:chess/chess.dart' as chess_lib;
@@ -33,8 +34,16 @@ abstract class AnalysisStoreBase with Store {
   @observable
   bool showEngine = false;
 
+  // NOVO: Controle de Casas Fracas
+  @observable
+  bool showWeakSquares = false;
+
   @observable
   ObservableMap<String, SquareStats> heatmapData = ObservableMap<String, SquareStats>();
+
+  // NOVO: Set Reativo
+  @observable
+  ObservableSet<String> weakSquares = ObservableSet<String>();
 
   @observable
   ObservableList<EngineArrow> engineArrows = ObservableList<EngineArrow>();
@@ -53,6 +62,13 @@ abstract class AnalysisStoreBase with Store {
     } else {
       engineArrows.clear();
     }
+  }
+
+  // NOVO: Toggle
+  @action
+  void toggleWeakSquares() {
+    showWeakSquares = !showWeakSquares;
+    if (showWeakSquares) _calculateWeakSquares();
   }
 
   @action
@@ -150,6 +166,7 @@ abstract class AnalysisStoreBase with Store {
     game.load(currentFen);
 
     if (showHeatmap) _calculateHeatmap();
+    if (showWeakSquares) _calculateWeakSquares(); // <-- ADICIONADO
     if (showEngine) _requestEngineEval();
   }
 
@@ -159,6 +176,12 @@ abstract class AnalysisStoreBase with Store {
     heatmapData.clear();
     final realStats = HeatmapCalculator.calculate(currentFen);
     heatmapData.addAll(realStats);
+  }
+
+  // NOVO: Calculador
+  void _calculateWeakSquares() {
+    weakSquares.clear();
+    weakSquares.addAll(WeakSquaresCalculator.getWeakSquares(currentFen));
   }
 
   Future<void> _requestEngineEval() async {
