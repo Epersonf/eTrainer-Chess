@@ -78,6 +78,24 @@ mixin _$OpeningTrainerStore on OpeningTrainerStoreBase, Store {
     });
   }
 
+  late final _$currentFenAtom = Atom(
+    name: 'OpeningTrainerStoreBase.currentFen',
+    context: context,
+  );
+
+  @override
+  String get currentFen {
+    _$currentFenAtom.reportRead();
+    return super.currentFen;
+  }
+
+  @override
+  set currentFen(String value) {
+    _$currentFenAtom.reportWrite(value, super.currentFen, () {
+      super.currentFen = value;
+    });
+  }
+
   late final _$showCoordinatesAtom = Atom(
     name: 'OpeningTrainerStoreBase.showCoordinates',
     context: context,
@@ -369,6 +387,7 @@ mixin _$OpeningTrainerStore on OpeningTrainerStoreBase, Store {
 playerMode: ${playerMode},
 variationMode: ${variationMode},
 pendingVariations: ${pendingVariations},
+currentFen: ${currentFen},
 showCoordinates: ${showCoordinates},
 allowBadMoves: ${allowBadMoves},
 isAutoPlaying: ${isAutoPlaying},

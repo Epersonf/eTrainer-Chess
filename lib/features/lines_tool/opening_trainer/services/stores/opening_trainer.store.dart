@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optrain_node.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optrain_repertoire.dart';
 import 'package:mobx/mobx.dart';
-import 'package:flutter_chess_board/flutter_chess_board.dart';
+import 'package:chess/chess.dart' as chess_lib;
 import 'package:e_trainer_chess/core/service_locator.dart';
 import 'package:e_trainer_chess/core/localization/localization.store.dart';
 
@@ -24,7 +24,7 @@ class AppTrainingSnapshot {
 }
 
 abstract class OpeningTrainerStoreBase with Store {
-  final ChessBoardController chessController = ChessBoardController();
+  final chess_lib.Chess game = chess_lib.Chess();
   Map<String, OpTrainNode>? _currentNodeMoves;
 
   OpTrainRepertoire? currentRepertoire;
@@ -41,6 +41,9 @@ abstract class OpeningTrainerStoreBase with Store {
 
   @observable
   Map<String, OpTrainNode>? pendingVariations;
+
+  @observable
+  String currentFen = chess_lib.Chess.DEFAULT_POSITION;
 
   String _lastValidFen = '';
 
@@ -99,7 +102,8 @@ abstract class OpeningTrainerStoreBase with Store {
   @action
   void loadRepertoire(OpTrainRepertoire repertoire) {
     currentRepertoire = repertoire;
-    chessController.loadFen(repertoire.initialFen);
+    game.load(repertoire.initialFen);
+    currentFen = game.fen;
     _lastValidFen = repertoire.initialFen;
     
     _currentNodeMoves = repertoire.expectedMoves;
@@ -143,8 +147,11 @@ abstract class OpeningTrainerStoreBase with Store {
       final nextNode = _currentNodeMoves![moveKey]!;
 
       _saveSnapshot(); // Salva estado ANTES de atualizar
+      // Aplica o lance na engine interna e atualiza a fen reativa
+      game.move({"from": from, "to": to, "promotion": promotion ?? 'q'});
+      currentFen = game.fen;
+      _lastValidFen = currentFen;
 
-      _lastValidFen = chessController.getFen(); 
       _updateMessage(nextNode);
       _currentNodeMoves = nextNode.expectedMoves;
 
@@ -162,7 +169,8 @@ abstract class OpeningTrainerStoreBase with Store {
 
   @action
   void undoWrongMove() {
-    chessController.loadFen(_lastValidFen);
+    game.load(_lastValidFen);
+    currentFen = game.fen;
     hasMadeWrongMove = false;
     errorMessage = null;
     currentMessage = t('lineTool.trainer.try_again');
@@ -223,7 +231,8 @@ abstract class OpeningTrainerStoreBase with Store {
   }
 
   void _applySnapshot(AppTrainingSnapshot snapshot) {
-    chessController.loadFen(snapshot.fen);
+    game.load(snapshot.fen);
+    currentFen = game.fen;
     _lastValidFen = snapshot.fen;
     _currentNodeMoves = snapshot.nodeMoves;
     currentMessage = snapshot.message;
@@ -307,20 +316,14 @@ abstract class OpeningTrainerStoreBase with Store {
     _saveSnapshot(); // Salva estado ANTES do lance da engine
 
     try {
-      if (promotion != null) {
-        try {
-          chessController.makeMoveWithPromotion(from: from, to: to, pieceToPromoteTo: promotion);
-        } catch (_) {
-          chessController.makeMove(from: from, to: to);
-        }
-      } else {
-        chessController.makeMove(from: from, to: to);
-      }
+      // Aplica o lance na engine base e atualiza FEN
+      game.move({"from": from, "to": to, "promotion": promotion ?? 'q'});
     } catch (e) {
       errorMessage = "${t('lineTool.trainer.internal_error_auto_move')} ($from -> $to): $e";
     }
 
-    _lastValidFen = chessController.getFen();
+    currentFen = game.fen;
+    _lastValidFen = currentFen;
     _updateMessage(selectedNode);
     _currentNodeMoves = selectedNode.expectedMoves;
 
@@ -343,6 +346,6 @@ abstract class OpeningTrainerStoreBase with Store {
   }
 
   void dispose() {
-    chessController.dispose();
+    // No cleanup required for chess_lib.Chess
   }
 }

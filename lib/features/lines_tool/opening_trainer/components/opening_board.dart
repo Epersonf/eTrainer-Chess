@@ -1,8 +1,8 @@
 import 'package:e_trainer_chess/features/lines_tool/opening_trainer/services/stores/opening_trainer.store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as material;
-import 'package:flutter_chess_board/flutter_chess_board.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:e_trainer_chess/components/custom_chess_board.dart';
 import 'package:e_trainer_chess/core/service_locator.dart';
 import 'package:e_trainer_chess/core/localization/localization.store.dart';
 
@@ -48,30 +48,13 @@ class OpeningBoard extends StatelessWidget {
                 
                 return Stack(
                   children: [
-                    ChessBoard(
-                      controller: store.chessController,
-                      boardColor: BoardColor.brown,
-                      // Define a orientação usando o model do JSON
-                      boardOrientation: isWhiteBottom ? PlayerColor.white : PlayerColor.black,
-                      enableUserMoves: !store.isAutoPlaying && !store.hasMadeWrongMove,
-                      onMove: () {
-                        try {
-                          final history = store.chessController.game.history;
-                          if (history.isNotEmpty) {
-                            final lastMove = history.last.move;
-                            final String from = lastMove.fromAlgebraic;
-                            final String to = lastMove.toAlgebraic;
-                            
-                            String? promotionStr;
-                            if (lastMove.promotion != null) {
-                              promotionStr = lastMove.promotion.toString().split('.').last.toLowerCase();
-                              if (promotionStr.isNotEmpty) promotionStr = promotionStr[0];
-                            }
-
-                            store.onUserMove(from, to, promotionStr);
-                          }
-                        } catch (_) {}
-                      },
+                    CustomChessBoard(
+                      fen: store.currentFen,
+                      isWhiteBottom: isWhiteBottom,
+                      showCoordinates: store.showCoordinates,
+                      onMove: (store.isAutoPlaying || store.hasMadeWrongMove)
+                          ? null
+                          : (from, to, [promotion]) => store.onUserMove(from, to, promotion),
                     ),
                     
                     // Overlay de Coordenadas independentes da lib
