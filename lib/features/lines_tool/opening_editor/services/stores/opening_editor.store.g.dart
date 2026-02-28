@@ -9,6 +9,24 @@ part of 'opening_editor.store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$OpeningEditorStore on OpeningEditorStoreBase, Store {
+  late final _$currentFenAtom = Atom(
+    name: 'OpeningEditorStoreBase.currentFen',
+    context: context,
+  );
+
+  @override
+  String get currentFen {
+    _$currentFenAtom.reportRead();
+    return super.currentFen;
+  }
+
+  @override
+  set currentFen(String value) {
+    _$currentFenAtom.reportWrite(value, super.currentFen, () {
+      super.currentFen = value;
+    });
+  }
+
   late final _$repertoireAtom = Atom(
     name: 'OpeningEditorStoreBase.repertoire',
     context: context,
@@ -233,6 +251,7 @@ mixin _$OpeningEditorStore on OpeningEditorStoreBase, Store {
   @override
   String toString() {
     return '''
+currentFen: ${currentFen},
 repertoire: ${repertoire},
 currentPath: ${currentPath},
 currentMessages: ${currentMessages},

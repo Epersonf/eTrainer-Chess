@@ -12,11 +12,12 @@ import 'package:e_trainer_chess/features/lines_tool/opening_editor/components/hi
 import 'package:flutter/material.dart' hide Color;
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/services.dart';
-import 'package:flutter_chess_board/flutter_chess_board.dart';
+import 'package:e_trainer_chess/components/custom_chess_board.dart';
 
 import 'package:e_trainer_chess/components/main_app_bar.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_editor/services/stores/opening_editor.store.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optrain_repertoire.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 @RoutePage()
 class OpeningEditorScreen extends StatefulWidget {
@@ -193,31 +194,31 @@ class _OpeningEditorScreenState extends State<OpeningEditorScreen> {
                           maxWidth: 600,
                           maxHeight: 600,
                         ),
-                        child: ChessBoard(
-                          controller: store.chessController,
-                          boardColor: BoardColor.brown,
-                          enableUserMoves: true,
-                          onMove: () {
-                            final history = store.chessController.game.history;
-                            if (history.isNotEmpty) {
-                              final lastMove = history.last.move;
-                              String? promotionStr;
-                              if (lastMove.promotion != null) {
-                                promotionStr = lastMove.promotion
-                                    .toString()
-                                    .split('.')
-                                    .last
-                                    .toLowerCase();
-                                if (promotionStr.isNotEmpty)
-                                  promotionStr = promotionStr[0];
-                              }
-                              store.onMoveMade(
-                                lastMove.fromAlgebraic,
-                                lastMove.toAlgebraic,
-                                promotionStr,
-                              );
-                            }
-                          },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.6),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                            border: Border.all(color: Colors.white10, width: 1),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Observer(
+                              builder: (_) => CustomChessBoard(
+                                fen: store.currentFen,
+                                isWhiteBottom: true,
+                                showCoordinates: true,
+                                onMove: (from, to, [promotion]) {
+                                  store.onMoveMade(from, to, promotion);
+                                },
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     );

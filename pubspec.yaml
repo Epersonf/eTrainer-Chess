@@ -1,5 +1,5 @@
 name: e_trainer_chess
-description: "A new Flutter project."
+description: "A chess training app built with Flutter, offering features like opening training, game analysis, and puzzle solving to help players improve their chess skills."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -47,7 +47,6 @@ dependencies:
   flutter_mobx: ^2.3.0
   json_annotation: ^4.10.0
   google_fonts: ^6.1.0
-  flutter_chess_board: ^1.0.1
   mobx: ^2.6.0
   file_picker: ^10.3.10
   chess: ^0.7.0

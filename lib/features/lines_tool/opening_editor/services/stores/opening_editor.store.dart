@@ -2,14 +2,17 @@ import 'dart:convert';
 import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optrain_node.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_trainer/models/optrain_repertoire.dart';
 import 'package:mobx/mobx.dart';
-import 'package:flutter_chess_board/flutter_chess_board.dart';
+import 'package:chess/chess.dart' as chess_lib;
 
 part 'opening_editor.store.g.dart';
 
 class OpeningEditorStore = OpeningEditorStoreBase with _$OpeningEditorStore;
 
 abstract class OpeningEditorStoreBase with Store {
-  final ChessBoardController chessController = ChessBoardController();
+  final chess_lib.Chess game = chess_lib.Chess();
+
+  @observable
+  String currentFen = chess_lib.Chess.DEFAULT_POSITION;
 
   @observable
   OpTrainRepertoire repertoire = OpTrainRepertoire(
@@ -39,8 +42,14 @@ abstract class OpeningEditorStoreBase with Store {
 
   @action
   void onMoveMade(String from, String to, [String? promotion]) {
+    // Primeiro, valida e aplica o lance na engine interna
+    final moveResult = game.move({"from": from, "to": to, "promotion": promotion ?? 'q'});
+    if (moveResult == false) return; // Lance inválido, aborta
+
+    currentFen = game.fen;
+
     final String moveKey = promotion != null ? "$from$to$promotion" : "$from$to";
-    
+
     // Clona a árvore com tipos estritos para o MobX não reclamar
     final newRoot = _cloneTree(repertoire.expectedMoves);
     Map<String, OpTrainNode> currentMap = newRoot;
@@ -54,7 +63,7 @@ abstract class OpeningEditorStoreBase with Store {
           name: currentMap[pathKey]!.name,
           possibleMessages: currentMap[pathKey]!.possibleMessages,
           expectedMoves: {},
-          quality: currentMap[pathKey]!.quality, // NOVO
+          quality: currentMap[pathKey]!.quality,
         );
       }
       currentMap = currentMap[pathKey]!.expectedMoves!;
@@ -65,7 +74,7 @@ abstract class OpeningEditorStoreBase with Store {
         name: null,
         possibleMessages: [],
         expectedMoves: {},
-        quality: MoveQuality.good, // <-- Lance novo nasce "bom"
+        quality: MoveQuality.good,
       );
     }
 
@@ -74,7 +83,7 @@ abstract class OpeningEditorStoreBase with Store {
       expectedMoves: newRoot,
     );
 
-    // CORREÇÃO: Criar uma nova instância dispara a notificação global do MobX
+    // Atualiza o caminho e mensagens
     currentPath = ObservableList.of([...currentPath, moveKey]);
     _loadMessagesForCurrentNode();
   }
@@ -92,18 +101,16 @@ abstract class OpeningEditorStoreBase with Store {
     // CORREÇÃO: Sobrescrever a variável faz o átomo acordar todos os Observers pendentes
     currentPath = ObservableList.of(path);
 
-    chessController.resetBoard();
+    game.load(repertoire.initialFen);
     for (String move in path) {
       final from = move.substring(0, 2);
       final to = move.substring(2, 4);
       final promotion = move.length > 4 ? move.substring(4, 5) : null;
 
-      if (promotion != null) {
-        chessController.makeMoveWithPromotion(from: from, to: to, pieceToPromoteTo: promotion);
-      } else {
-        chessController.makeMove(from: from, to: to);
-      }
+      game.move({"from": from, "to": to, "promotion": promotion ?? 'q'});
     }
+
+    currentFen = game.fen;
 
     _loadMessagesForCurrentNode();
   }
@@ -296,8 +303,8 @@ abstract class OpeningEditorStoreBase with Store {
     currentMessages.clear();
     currentVariantName = null;
     
-    chessController.resetBoard();
-    chessController.loadFen(repertoire.initialFen);
+    game.load(repertoire.initialFen);
+    currentFen = game.fen;
   }
 
   String exportJson() {
@@ -306,6 +313,6 @@ abstract class OpeningEditorStoreBase with Store {
   }
 
   void dispose() {
-    chessController.dispose();
+    // Nada a fazer: chess_lib.Chess não precisa de dispose
   }
 }
