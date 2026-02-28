@@ -53,6 +53,7 @@ class CustomChessBoard extends StatelessWidget {
                   itemCount: 64,
                   itemBuilder: (context, index) {
                     return BoardSquare(
+                      key: ValueKey('square_${index}_$isWhiteBottom'),
                       index: index,
                       game: game,
                       squareSize: squareSize,

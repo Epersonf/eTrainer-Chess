@@ -307,6 +307,7 @@ abstract class OpeningTrainerStoreBase with Store {
   }
 
   Future<void> _executeEngineMove(String moveKey) async {
+    if (moveKey.length < 4) return;
     final selectedNode = _currentNodeMoves![moveKey]!;
 
     final String from = moveKey.substring(0, 2);

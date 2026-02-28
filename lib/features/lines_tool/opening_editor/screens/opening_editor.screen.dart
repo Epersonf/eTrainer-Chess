@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+import 'package:universal_html/html.dart' as html;
 
 import 'package:auto_route/auto_route.dart';
 import 'package:file_picker/file_picker.dart';

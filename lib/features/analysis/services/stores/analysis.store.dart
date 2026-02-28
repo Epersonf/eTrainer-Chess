@@ -70,9 +70,28 @@ abstract class AnalysisStoreBase with Store {
     engineArrows.clear();
 
     String fullPgnText = tempGame.pgn();
-    fullPgnText = fullPgnText.replaceAll(RegExp(r'\[.*?\]'), '');
-    fullPgnText = fullPgnText.replaceAll(RegExp(r'\{.*?\}'), '');
-    fullPgnText = fullPgnText.replaceAll(RegExp(r'\(.*?\)'), '');
+    
+    // Parser seguro baseado em profundidade para remover comentários e variantes aninhadas
+    StringBuffer sb = StringBuffer();
+    int parenDepth = 0;
+    int braceDepth = 0;
+    int bracketDepth = 0;
+
+    for (int i = 0; i < fullPgnText.length; i++) {
+      String char = fullPgnText[i];
+      if (char == '(') { parenDepth++; continue; }
+      if (char == ')') { if (parenDepth > 0) parenDepth--; continue; }
+      if (char == '{') { braceDepth++; continue; }
+      if (char == '}') { if (braceDepth > 0) braceDepth--; continue; }
+      if (char == '[') { bracketDepth++; continue; }
+      if (char == ']') { if (bracketDepth > 0) bracketDepth--; continue; }
+
+      if (parenDepth == 0 && braceDepth == 0 && bracketDepth == 0) {
+        sb.write(char);
+      }
+    }
+
+    fullPgnText = sb.toString();
     fullPgnText = fullPgnText.replaceAll(RegExp(r'\d+\.'), '');
     fullPgnText = fullPgnText
         .replaceAll('1-0', '')

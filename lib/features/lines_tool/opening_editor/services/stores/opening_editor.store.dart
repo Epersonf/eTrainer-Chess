@@ -29,15 +29,37 @@ abstract class OpeningEditorStoreBase with Store {
   @observable
   String? currentVariantName;
 
-  // Helper para clonar a árvore nativamente sem usar json dinâmico
-  Map<String, OpTrainNode> _cloneTree(Map<String, OpTrainNode>? original) {
-    if (original == null) return {};
-    return original.map((k, v) => MapEntry(k, OpTrainNode(
-      name: v.name,
-      possibleMessages: v.possibleMessages?.toList(),
-      expectedMoves: _cloneTree(v.expectedMoves),
-      quality: v.quality, // NOVO
-    )));
+  // Atualização Imutável Otimizada (Structural Sharing)
+  Map<String, OpTrainNode> _updateTree(
+    Map<String, OpTrainNode>? currentNodes,
+    List<String> path,
+    int depth,
+    OpTrainNode? Function(OpTrainNode?) updater,
+  ) {
+    final nodes = Map<String, OpTrainNode>.from(currentNodes ?? {});
+    
+    if (depth == path.length - 1) {
+      final targetKey = path[depth];
+      final updatedNode = updater(nodes[targetKey]);
+      if (updatedNode == null) {
+        nodes.remove(targetKey); // Se retornar nulo, deleta o nó
+      } else {
+        nodes[targetKey] = updatedNode;
+      }
+      return nodes;
+    }
+
+    final currentKey = path[depth];
+    final nextNode = nodes[currentKey] ?? OpTrainNode(expectedMoves: {});
+    
+    nodes[currentKey] = OpTrainNode(
+      name: nextNode.name,
+      possibleMessages: nextNode.possibleMessages,
+      quality: nextNode.quality,
+      expectedMoves: _updateTree(nextNode.expectedMoves, path, depth + 1, updater),
+    );
+
+    return nodes;
   }
 
   @action
@@ -50,41 +72,22 @@ abstract class OpeningEditorStoreBase with Store {
 
     final String moveKey = promotion != null ? "$from$to$promotion" : "$from$to";
 
-    // Clona a árvore com tipos estritos para o MobX não reclamar
-    final newRoot = _cloneTree(repertoire.expectedMoves);
-    Map<String, OpTrainNode> currentMap = newRoot;
+    final newPath = [...currentPath, moveKey];
     
-    for (String pathKey in currentPath) {
-      if (!currentMap.containsKey(pathKey)) {
-         currentMap[pathKey] = OpTrainNode(name: null, possibleMessages: [], expectedMoves: {}, quality: MoveQuality.good);
-      }
-      if (currentMap[pathKey]!.expectedMoves == null) {
-        currentMap[pathKey] = OpTrainNode(
-          name: currentMap[pathKey]!.name,
-          possibleMessages: currentMap[pathKey]!.possibleMessages,
-          expectedMoves: {},
-          quality: currentMap[pathKey]!.quality,
-        );
-      }
-      currentMap = currentMap[pathKey]!.expectedMoves!;
-    }
-
-    if (!currentMap.containsKey(moveKey)) {
-      currentMap[moveKey] = OpTrainNode(
-        name: null,
-        possibleMessages: [],
-        expectedMoves: {},
-        quality: MoveQuality.good,
-      );
-    }
-
     repertoire = OpTrainRepertoire(
       initialFen: repertoire.initialFen,
-      expectedMoves: newRoot,
+      expectedMoves: _updateTree(repertoire.expectedMoves, newPath, 0, (node) {
+        return node ?? OpTrainNode(
+          name: null,
+          possibleMessages: [],
+          expectedMoves: {},
+          quality: MoveQuality.good,
+        );
+      }),
     );
 
     // Atualiza o caminho e mensagens
-    currentPath = ObservableList.of([...currentPath, moveKey]);
+    currentPath = ObservableList.of(newPath);
     _loadMessagesForCurrentNode();
   }
 
@@ -103,6 +106,7 @@ abstract class OpeningEditorStoreBase with Store {
 
     game.load(repertoire.initialFen);
     for (String move in path) {
+      if (move.length < 4) continue;
       final from = move.substring(0, 2);
       final to = move.substring(2, 4);
       final promotion = move.length > 4 ? move.substring(4, 5) : null;
@@ -132,22 +136,9 @@ abstract class OpeningEditorStoreBase with Store {
   @action
   void deleteNode(List<String> pathToDelete) {
     if (pathToDelete.isEmpty) return;
-
-    final newRoot = _cloneTree(repertoire.expectedMoves);
-    Map<String, OpTrainNode> currentMap = newRoot;
-
-    // Navega até o pai do nó que será deletado
-    for (int i = 0; i < pathToDelete.length - 1; i++) {
-      currentMap = currentMap[pathToDelete[i]]!.expectedMoves!;
-    }
-
-    // Remove o nó
-    final keyToRemove = pathToDelete.last;
-    currentMap.remove(keyToRemove);
-    
     repertoire = OpTrainRepertoire(
       initialFen: repertoire.initialFen,
-      expectedMoves: newRoot,
+      expectedMoves: _updateTree(repertoire.expectedMoves, pathToDelete, 0, (node) => null), // <-- Mágica aqui
     );
 
     // Se o usuário deletou a variante atual, volte o tabuleiro
@@ -162,63 +153,38 @@ abstract class OpeningEditorStoreBase with Store {
   @action
   void renameNodeByPath(List<String> path, String newName) {
     if (path.isEmpty) return;
-
-    final newRoot = _cloneTree(repertoire.expectedMoves);
-    Map<String, OpTrainNode> currentMap = newRoot;
-
-    // Navega até o pai do nó que será renomeado
-    for (int i = 0; i < path.length - 1; i++) {
-      currentMap = currentMap[path[i]]!.expectedMoves!;
-    }
-
-    final targetKey = path.last;
-    final existingNode = currentMap[targetKey]!;
-
-    // Atualiza o nó com o novo nome
-    currentMap[targetKey] = OpTrainNode(
-      name: newName.trim().isEmpty ? null : newName.trim(),
-      possibleMessages: existingNode.possibleMessages,
-      expectedMoves: existingNode.expectedMoves,
-      quality: existingNode.quality, // <-- Adicionado
-    );
-    
     repertoire = OpTrainRepertoire(
       initialFen: repertoire.initialFen,
-      expectedMoves: newRoot,
+      expectedMoves: _updateTree(repertoire.expectedMoves, path, 0, (node) {
+        if (node == null) return null;
+        return OpTrainNode(
+          name: newName.trim().isEmpty ? null : newName.trim(),
+          possibleMessages: node.possibleMessages,
+          expectedMoves: node.expectedMoves,
+          quality: node.quality,
+        );
+      }),
     );
 
-    // Se o nó renomeado for o que está focado no momento, sincroniza o textfield
     if (currentPath.join(',') == path.join(',')) {
-      currentVariantName = currentMap[targetKey]!.name;
+      currentVariantName = newName.trim().isEmpty ? null : newName.trim();
     }
   }
 
   @action
   void toggleNodeQuality(List<String> path) {
     if (path.isEmpty) return;
-
-    final newRoot = _cloneTree(repertoire.expectedMoves);
-    Map<String, OpTrainNode> currentMap = newRoot;
-
-    // Navega até o pai do nó
-    for (int i = 0; i < path.length - 1; i++) {
-      currentMap = currentMap[path[i]]!.expectedMoves!;
-    }
-
-    final targetKey = path.last;
-    final existingNode = currentMap[targetKey]!;
-
-    // Inverte a qualidade
-    currentMap[targetKey] = OpTrainNode(
-      name: existingNode.name,
-      possibleMessages: existingNode.possibleMessages,
-      expectedMoves: existingNode.expectedMoves,
-      quality: existingNode.quality == MoveQuality.good ? MoveQuality.bad : MoveQuality.good,
-    );
-    
     repertoire = OpTrainRepertoire(
       initialFen: repertoire.initialFen,
-      expectedMoves: newRoot,
+      expectedMoves: _updateTree(repertoire.expectedMoves, path, 0, (node) {
+        if (node == null) return null;
+        return OpTrainNode(
+          name: node.name,
+          possibleMessages: node.possibleMessages,
+          expectedMoves: node.expectedMoves,
+          quality: node.quality == MoveQuality.good ? MoveQuality.bad : MoveQuality.good,
+        );
+      }),
     );
   }
 
@@ -245,26 +211,17 @@ abstract class OpeningEditorStoreBase with Store {
   void _syncMessagesToRepertoire() {
     if (currentPath.isEmpty) return;
     
-    final newRoot = _cloneTree(repertoire.expectedMoves);
-    Map<String, OpTrainNode> currentMap = newRoot;
-    
-    for (int i = 0; i < currentPath.length - 1; i++) {
-      currentMap = currentMap[currentPath[i]]!.expectedMoves!;
-    }
-    
-    final lastKey = currentPath.last;
-    final existingNode = currentMap[lastKey]!;
-    
-    currentMap[lastKey] = OpTrainNode(
-      name: currentVariantName?.trim().isEmpty == true ? null : currentVariantName,
-      possibleMessages: currentMessages.where((msg) => msg.trim().isNotEmpty).toList(),
-      expectedMoves: existingNode.expectedMoves,
-      quality: existingNode.quality, // <-- Adicionado
-    );
-    
     repertoire = OpTrainRepertoire(
       initialFen: repertoire.initialFen,
-      expectedMoves: newRoot,
+      expectedMoves: _updateTree(repertoire.expectedMoves, currentPath, 0, (node) {
+        if (node == null) return null;
+        return OpTrainNode(
+          name: currentVariantName?.trim().isEmpty == true ? null : currentVariantName,
+          possibleMessages: currentMessages.where((msg) => msg.trim().isNotEmpty).toList(),
+          expectedMoves: node.expectedMoves,
+          quality: node.quality,
+        );
+      }),
     );
   }
 
