@@ -9,42 +9,6 @@ part of 'analysis.store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$AnalysisStore on AnalysisStoreBase, Store {
-  late final _$currentMoveIndexAtom = Atom(
-    name: 'AnalysisStoreBase.currentMoveIndex',
-    context: context,
-  );
-
-  @override
-  int get currentMoveIndex {
-    _$currentMoveIndexAtom.reportRead();
-    return super.currentMoveIndex;
-  }
-
-  @override
-  set currentMoveIndex(int value) {
-    _$currentMoveIndexAtom.reportWrite(value, super.currentMoveIndex, () {
-      super.currentMoveIndex = value;
-    });
-  }
-
-  late final _$currentFenAtom = Atom(
-    name: 'AnalysisStoreBase.currentFen',
-    context: context,
-  );
-
-  @override
-  String get currentFen {
-    _$currentFenAtom.reportRead();
-    return super.currentFen;
-  }
-
-  @override
-  set currentFen(String value) {
-    _$currentFenAtom.reportWrite(value, super.currentFen, () {
-      super.currentFen = value;
-    });
-  }
-
   late final _$fileNameAtom = Atom(
     name: 'AnalysisStoreBase.fileName',
     context: context,
@@ -63,21 +27,21 @@ mixin _$AnalysisStore on AnalysisStoreBase, Store {
     });
   }
 
-  late final _$moveListAtom = Atom(
-    name: 'AnalysisStoreBase.moveList',
+  late final _$currentFenAtom = Atom(
+    name: 'AnalysisStoreBase.currentFen',
     context: context,
   );
 
   @override
-  ObservableList<String> get moveList {
-    _$moveListAtom.reportRead();
-    return super.moveList;
+  String get currentFen {
+    _$currentFenAtom.reportRead();
+    return super.currentFen;
   }
 
   @override
-  set moveList(ObservableList<String> value) {
-    _$moveListAtom.reportWrite(value, super.moveList, () {
-      super.moveList = value;
+  set currentFen(String value) {
+    _$currentFenAtom.reportWrite(value, super.currentFen, () {
+      super.currentFen = value;
     });
   }
 
@@ -351,42 +315,6 @@ mixin _$AnalysisStore on AnalysisStoreBase, Store {
   }
 
   @override
-  void prevMove() {
-    final _$actionInfo = _$AnalysisStoreBaseActionController.startAction(
-      name: 'AnalysisStoreBase.prevMove',
-    );
-    try {
-      return super.prevMove();
-    } finally {
-      _$AnalysisStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void nextMove() {
-    final _$actionInfo = _$AnalysisStoreBaseActionController.startAction(
-      name: 'AnalysisStoreBase.nextMove',
-    );
-    try {
-      return super.nextMove();
-    } finally {
-      _$AnalysisStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void jumpToMove(int index) {
-    final _$actionInfo = _$AnalysisStoreBaseActionController.startAction(
-      name: 'AnalysisStoreBase.jumpToMove',
-    );
-    try {
-      return super.jumpToMove(index);
-    } finally {
-      _$AnalysisStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void onMoveMade(String from, String to, [String? promotion]) {
     final _$actionInfo = _$AnalysisStoreBaseActionController.startAction(
       name: 'AnalysisStoreBase.onMoveMade',
@@ -423,12 +351,22 @@ mixin _$AnalysisStore on AnalysisStoreBase, Store {
   }
 
   @override
+  void advanceMove() {
+    final _$actionInfo = _$AnalysisStoreBaseActionController.startAction(
+      name: 'AnalysisStoreBase.advanceMove',
+    );
+    try {
+      return super.advanceMove();
+    } finally {
+      _$AnalysisStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
-currentMoveIndex: ${currentMoveIndex},
-currentFen: ${currentFen},
 fileName: ${fileName},
-moveList: ${moveList},
+currentFen: ${currentFen},
 showHeatmap: ${showHeatmap},
 showEngine: ${showEngine},
 showWeakSquares: ${showWeakSquares},
