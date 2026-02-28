@@ -1,33 +1,46 @@
 import 'package:flutter/material.dart';
 
 class SquareStatsBadge extends StatelessWidget {
-  final IconData icon;
+  final bool isWhite;
   final int value;
-  final Color iconColor;
 
   const SquareStatsBadge({
     super.key,
-    required this.icon,
+    required this.isWhite,
     required this.value,
-    required this.iconColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.black87,
+        color: Colors.black.withOpacity(0.65),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: iconColor, size: 10),
-          const SizedBox(width: 2),
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isWhite ? Colors.white : Colors.black,
+              border: Border.all(
+                color: isWhite ? Colors.black54 : Colors.white54,
+                width: 1,
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
           Text(
             '$value',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.white),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 10,
+              color: Colors.white,
+            ),
           ),
         ],
       ),

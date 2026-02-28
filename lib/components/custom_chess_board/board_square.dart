@@ -40,7 +40,32 @@ class BoardSquare extends StatelessWidget {
 
     final piece = game.get(squareName);
     final stats = heatmapData?[squareName];
-    final isUnderAttack = stats != null && stats.attacks > stats.defenses;
+
+    // MÁGICA: Converte 'ataques/defesas' relativos para Controle Absoluto das Brancas vs Pretas
+    int whiteControl = 0;
+    int blackControl = 0;
+
+    if (stats != null) {
+      if (piece != null && piece.color == chess_lib.Color.WHITE) {
+        whiteControl = stats.defenses;
+        blackControl = stats.attacks;
+      } else {
+        whiteControl = stats.attacks;
+        blackControl = stats.defenses;
+      }
+    }
+
+    // Calcula a cor de fundo do heatmap baseada no domínio da casa
+    Color? tensionColor;
+    if (stats != null) {
+      if (whiteControl > blackControl) {
+        tensionColor = Colors.white.withOpacity(0.25); // Brancas dominam
+      } else if (blackControl > whiteControl) {
+        tensionColor = Colors.black.withOpacity(0.35); // Pretas dominam
+      } else if (whiteControl > 0 && blackControl == whiteControl) {
+        tensionColor = Colors.redAccent.withOpacity(0.35); // Tensão / Empate
+      }
+    }
 
     Widget pieceWidget = const SizedBox.shrink();
 
@@ -104,8 +129,9 @@ class BoardSquare extends StatelessWidget {
               : (isLightSquare ? const Color(0xFFF0D9B5) : const Color(0xFFB58863)),
           child: Stack(
             children: [
-              if (heatmapData != null && isUnderAttack)
-                Container(color: Colors.redAccent.withOpacity(0.4)),
+              // Fundo colorido indicando o domínio da casa
+              if (tensionColor != null) 
+                Container(color: tensionColor),
               
               Padding(
                 padding: const EdgeInsets.all(4.0),
@@ -120,7 +146,8 @@ class BoardSquare extends StatelessWidget {
                   rank: rank,
                 ),
 
-              if (stats != null)
+              // Badges de controle absolutos
+              if (stats != null && (whiteControl > 0 || blackControl > 0))
                 Positioned(
                   bottom: 2,
                   left: 2,
@@ -128,8 +155,12 @@ class BoardSquare extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SquareStatsBadge(icon: Icons.bolt, value: stats.attacks, iconColor: Colors.amber),
-                      SquareStatsBadge(icon: Icons.shield, value: stats.defenses, iconColor: Colors.lightBlueAccent),
+                      whiteControl > 0
+                          ? SquareStatsBadge(isWhite: true, value: whiteControl)
+                          : const SizedBox.shrink(),
+                      blackControl > 0
+                          ? SquareStatsBadge(isWhite: false, value: blackControl)
+                          : const SizedBox.shrink(),
                     ],
                   ),
                 )
