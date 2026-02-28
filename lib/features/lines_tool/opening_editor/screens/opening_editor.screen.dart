@@ -12,7 +12,7 @@ import 'package:e_trainer_chess/features/lines_tool/opening_editor/components/hi
 import 'package:flutter/material.dart' hide Color;
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/services.dart';
-import 'package:e_trainer_chess/components/custom_chess_board.dart';
+import 'package:e_trainer_chess/components/custom_chess_board/custom_chess_board.dart';
 
 import 'package:e_trainer_chess/components/main_app_bar.dart';
 import 'package:e_trainer_chess/features/lines_tool/opening_editor/services/stores/opening_editor.store.dart';

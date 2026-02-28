@@ -2,7 +2,7 @@ import 'package:e_trainer_chess/features/lines_tool/opening_trainer/services/sto
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:e_trainer_chess/components/custom_chess_board.dart';
+import 'package:e_trainer_chess/components/custom_chess_board/custom_chess_board.dart';
 import 'package:e_trainer_chess/core/service_locator.dart';
 import 'package:e_trainer_chess/core/localization/localization.store.dart';
 
@@ -13,14 +13,6 @@ class OpeningBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Estilo para destacar os caracteres por cima da textura do tabuleiro
-    const coordStyle = TextStyle(
-      color: Colors.white,
-      fontSize: 12,
-      fontWeight: FontWeight.bold,
-      shadows: [Shadow(color: Colors.black, blurRadius: 4, offset: Offset(1, 1))],
-    );
-
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(

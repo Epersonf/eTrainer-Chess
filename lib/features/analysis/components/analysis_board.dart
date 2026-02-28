@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:e_trainer_chess/components/custom_chess_board.dart';
+import 'package:e_trainer_chess/components/custom_chess_board/custom_chess_board.dart';
 import '../services/stores/analysis.store.dart';
 
 class AnalysisBoard extends StatelessWidget {
