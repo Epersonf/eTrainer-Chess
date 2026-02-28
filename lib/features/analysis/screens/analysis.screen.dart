@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
 import 'package:e_trainer_chess/components/main_app_bar.dart';
@@ -9,8 +10,8 @@ import '../services/stores/analysis.store.dart';
 import '../components/analysis_board.dart';
 import '../components/analysis_controls.dart';
 import '../components/analysis_tools.dart';
-import '../components/move_list_panel.dart';
 import '../components/engine_eval_panel.dart';
+import '../components/analysis_tree_panel.dart';
 import '../components/eval_bar.dart';
 
 @RoutePage()
@@ -48,6 +49,33 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
             icon: const Icon(Icons.upload_file, color: Colors.amberAccent),
             tooltip: "Carregar PGN",
             onPressed: _pickPgn,
+          ),
+          IconButton(
+            icon: const Icon(Icons.download, color: Colors.cyanAccent),
+            tooltip: "Exportar PGN Editado",
+            onPressed: () {
+              final pgnText = store.exportPgn();
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('PGN gerado'),
+                  content: SingleChildScrollView(child: SelectableText(pgnText)),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: pgnText));
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Copiar'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Fechar'),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -116,7 +144,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                   EngineEvalPanel(store: store),
                   // O Expanded aqui é crucial para a ListView dos lances poder rolar
                   Expanded(
-                    child: MoveListPanel(store: store),
+                    child: AnalysisTreePanel(store: store),
                   )
                 ],
               ),

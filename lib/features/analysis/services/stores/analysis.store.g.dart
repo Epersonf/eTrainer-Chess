@@ -243,6 +243,60 @@ mixin _$AnalysisStore on AnalysisStoreBase, Store {
     });
   }
 
+  late final _$rootMovesAtom = Atom(
+    name: 'AnalysisStoreBase.rootMoves',
+    context: context,
+  );
+
+  @override
+  ObservableMap<String, AnalysisNode> get rootMoves {
+    _$rootMovesAtom.reportRead();
+    return super.rootMoves;
+  }
+
+  @override
+  set rootMoves(ObservableMap<String, AnalysisNode> value) {
+    _$rootMovesAtom.reportWrite(value, super.rootMoves, () {
+      super.rootMoves = value;
+    });
+  }
+
+  late final _$currentPathAtom = Atom(
+    name: 'AnalysisStoreBase.currentPath',
+    context: context,
+  );
+
+  @override
+  ObservableList<String> get currentPath {
+    _$currentPathAtom.reportRead();
+    return super.currentPath;
+  }
+
+  @override
+  set currentPath(ObservableList<String> value) {
+    _$currentPathAtom.reportWrite(value, super.currentPath, () {
+      super.currentPath = value;
+    });
+  }
+
+  late final _$startFenAtom = Atom(
+    name: 'AnalysisStoreBase.startFen',
+    context: context,
+  );
+
+  @override
+  String get startFen {
+    _$startFenAtom.reportRead();
+    return super.startFen;
+  }
+
+  @override
+  set startFen(String value) {
+    _$startFenAtom.reportWrite(value, super.startFen, () {
+      super.startFen = value;
+    });
+  }
+
   late final _$AnalysisStoreBaseActionController = ActionController(
     name: 'AnalysisStoreBase',
     context: context,
@@ -333,6 +387,42 @@ mixin _$AnalysisStore on AnalysisStoreBase, Store {
   }
 
   @override
+  void onMoveMade(String from, String to, [String? promotion]) {
+    final _$actionInfo = _$AnalysisStoreBaseActionController.startAction(
+      name: 'AnalysisStoreBase.onMoveMade',
+    );
+    try {
+      return super.onMoveMade(from, to, promotion);
+    } finally {
+      _$AnalysisStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void jumpToNode(List<String> path) {
+    final _$actionInfo = _$AnalysisStoreBaseActionController.startAction(
+      name: 'AnalysisStoreBase.jumpToNode',
+    );
+    try {
+      return super.jumpToNode(path);
+    } finally {
+      _$AnalysisStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void undoMove() {
+    final _$actionInfo = _$AnalysisStoreBaseActionController.startAction(
+      name: 'AnalysisStoreBase.undoMove',
+    );
+    try {
+      return super.undoMove();
+    } finally {
+      _$AnalysisStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 currentMoveIndex: ${currentMoveIndex},
@@ -347,7 +437,10 @@ weakSquares: ${weakSquares},
 engineArrows: ${engineArrows},
 topEvaluations: ${topEvaluations},
 currentEvalScore: ${currentEvalScore},
-currentEvalText: ${currentEvalText}
+currentEvalText: ${currentEvalText},
+rootMoves: ${rootMoves},
+currentPath: ${currentPath},
+startFen: ${startFen}
     ''';
   }
 }
