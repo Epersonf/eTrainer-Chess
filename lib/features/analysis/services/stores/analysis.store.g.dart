@@ -189,6 +189,24 @@ mixin _$AnalysisStore on AnalysisStoreBase, Store {
     });
   }
 
+  late final _$topEvaluationsAtom = Atom(
+    name: 'AnalysisStoreBase.topEvaluations',
+    context: context,
+  );
+
+  @override
+  ObservableList<EngineEvaluation> get topEvaluations {
+    _$topEvaluationsAtom.reportRead();
+    return super.topEvaluations;
+  }
+
+  @override
+  set topEvaluations(ObservableList<EngineEvaluation> value) {
+    _$topEvaluationsAtom.reportWrite(value, super.topEvaluations, () {
+      super.topEvaluations = value;
+    });
+  }
+
   late final _$AnalysisStoreBaseActionController = ActionController(
     name: 'AnalysisStoreBase',
     context: context,
@@ -290,7 +308,8 @@ showEngine: ${showEngine},
 showWeakSquares: ${showWeakSquares},
 heatmapData: ${heatmapData},
 weakSquares: ${weakSquares},
-engineArrows: ${engineArrows}
+engineArrows: ${engineArrows},
+topEvaluations: ${topEvaluations}
     ''';
   }
 }

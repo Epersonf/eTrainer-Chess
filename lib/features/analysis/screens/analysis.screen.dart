@@ -9,6 +9,7 @@ import '../components/analysis_board.dart';
 import '../components/analysis_controls.dart';
 import '../components/analysis_tools.dart';
 import '../components/move_list_panel.dart';
+import '../components/engine_eval_panel.dart';
 
 @RoutePage()
 class AnalysisScreen extends StatefulWidget {
@@ -80,6 +81,8 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                 children: [
                   AnalysisTools(store: store),
                   const SizedBox(height: 16),
+                  // NOVO: Painel de Top Lances da Engine
+                  EngineEvalPanel(store: store),
                   // O Expanded aqui é crucial para a ListView dos lances poder rolar
                   Expanded(
                     child: MoveListPanel(store: store),

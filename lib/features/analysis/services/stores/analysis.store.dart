@@ -6,6 +6,7 @@ import 'package:chess/chess.dart' as chess_lib;
 
 import '../../models/square_stats.dart';
 import '../../models/engine_arrow.dart';
+import '../../models/engine_evaluation.dart';
 import '../../utils/heatmap_calculator.dart';
 
 part 'analysis.store.g.dart';
@@ -49,6 +50,10 @@ abstract class AnalysisStoreBase with Store {
   @observable
   ObservableList<EngineArrow> engineArrows = ObservableList<EngineArrow>();
 
+  // NOVO: Lista das melhores linhas avaliadas
+  @observable
+  ObservableList<EngineEvaluation> topEvaluations = ObservableList<EngineEvaluation>();
+
   @action
   void toggleHeatmap() {
     showHeatmap = !showHeatmap;
@@ -62,6 +67,7 @@ abstract class AnalysisStoreBase with Store {
       _requestEngineEval();
     } else {
       engineArrows.clear();
+      topEvaluations.clear(); // Limpa as variantes quando desliga
     }
   }
 
@@ -205,32 +211,86 @@ abstract class AnalysisStoreBase with Store {
 
   Future<void> _requestEngineEval() async {
     engineArrows.clear();
+    topEvaluations.clear();
     final fenForEval = currentFen;
 
     try {
       final response = await http.post(
         Uri.parse('https://chess-api.com/v1'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'fen': fenForEval, 'depth': 12}),
+        // O segredo: "multipv: 3" pede ao stockfish as 3 melhores linhas!
+        body: jsonEncode({'fen': fenForEval, 'depth': 12, 'multipv': 3}), 
       );
 
       if (response.statusCode == 200) {
-        if (currentFen != fenForEval) return;
+        if (currentFen != fenForEval) return; // FEN mudou enquanto a API pensava
 
         final data = jsonDecode(response.body);
+        
+        // A API retorna um Array se pedimos multipv. Mas previnimos falhas caso retorne objeto único.
+        List<dynamic> evalList = data is List ? data : [data];
+        List<EngineEvaluation> newEvals = [];
 
-        // CORREÇÃO: Pegando a chave 'move'.
-        // Uso o fallback 'bestmove' apenas caso a API mude o formato no futuro.
-        final String? bestMove = data['move'] ?? data['bestmove'];
+        for (var item in evalList) {
+          final String? bestMove = item['move'] ?? item['bestmove'];
+          if (bestMove == null || bestMove.length < 4) continue;
 
-        if (bestMove != null && bestMove.length >= 4) {
           final from = bestMove.substring(0, 2);
           final to = bestMove.substring(2, 4);
-          engineArrows = ObservableList.of([EngineArrow(from, to)]);
+          final arrow = EngineArrow(from, to);
+
+          // Formatação do Score (Ex: +0.34, -1.2, ou M3)
+          String evalStr = "";
+          if (item['mate'] != null) {
+            int m = item['mate'];
+            evalStr = m < 0 ? "-M${m.abs()}" : "M$m";
+          } else {
+            double e = 0.0;
+            try {
+              e = (item['eval'] is int)
+                  ? (item['eval'] as int).toDouble()
+                  : (item['eval'] ?? 0.0).toDouble();
+            } catch (_) {
+              e = 0.0;
+            }
+            evalStr = e > 0 ? "+${e.toStringAsFixed(2)}" : e.toStringAsFixed(2);
+          }
+
+          // Pegar array de continuação e gerar o texto "1. e4 e5..."
+          List<String> cont = (item['continuationArr'] as List<dynamic>?)?.cast<String>() ?? [];
+          String sanLine = _buildSanLine(fenForEval, cont);
+
+          newEvals.add(EngineEvaluation(evalStr, sanLine, arrow));
+        }
+
+        if (newEvals.isNotEmpty) {
+          topEvaluations = ObservableList.of(newEvals);
+          // Desenha a seta NO TABULEIRO apenas para o primeiro lance (o absoluto melhor)
+          engineArrows = ObservableList.of([newEvals.first.arrow]);
         }
       }
     } catch (e) {
       print('Erro ao consultar a Engine: $e');
     }
+  }
+
+  // TRUQUE DE MESTRE: Simular os lances no Chess() pra formatar a linha toda automaticamente!
+  String _buildSanLine(String startFen, List<String> uciMoves) {
+    if (uciMoves.isEmpty) return "";
+    final tempBoard = chess_lib.Chess()..load(startFen);
+    
+    for (String uci in uciMoves) {
+      if (uci.length < 4) break;
+      tempBoard.move({
+        "from": uci.substring(0, 2),
+        "to": uci.substring(2, 4),
+        "promotion": uci.length > 4 ? uci[4] : 'q'
+      });
+    }
+    
+    // O PGN gera toda a string formatada! Só precisamos limpar o cabeçalho chato.
+    String pgn = tempBoard.pgn();
+    pgn = pgn.replaceAll(RegExp(r'\[.*?\]\n*'), '').trim();
+    return pgn;
   }
 }
