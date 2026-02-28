@@ -43,7 +43,6 @@ class OpeningBoard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             child: Observer(
               builder: (_) {
-                // A Orientação Visual agora depende estritamente da escolha do jogador
                 final isWhiteBottom = store.playerMode != PlayerMode.black;
                 
                 return Stack(
@@ -57,44 +56,7 @@ class OpeningBoard extends StatelessWidget {
                           : (from, to, [promotion]) => store.onUserMove(from, to, promotion),
                     ),
                     
-                    // Overlay de Coordenadas independentes da lib
-                    if (store.showCoordinates)
-                      Positioned.fill(
-                        child: IgnorePointer( // Impede as letras de bloquearem cliques nas peças
-                          child: Stack(
-                            children: [
-                              // 1 a 8
-                              Positioned(
-                                top: 0,
-                                bottom: 0,
-                                left: 4,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  children: List.generate(8, (i) {
-                                    final rank = isWhiteBottom ? 8 - i : i + 1;
-                                    return Text(rank.toString(), style: coordStyle);
-                                  }),
-                                ),
-                              ),
-                              // a até h
-                              Positioned(
-                                bottom: 2,
-                                left: 0,
-                                right: 0,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  children: List.generate(8, (i) {
-                                    final file = isWhiteBottom 
-                                        ? String.fromCharCode(97 + i) 
-                                        : String.fromCharCode(104 - i);
-                                    return Text(file, style: coordStyle);
-                                  }),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    // (Overlay de coordenadas removido — agora o CustomChessBoard desenha as coordenadas)
                     // NOVO: Overlay de Seleção de Variante (quando store.pendingVariations não for nulo)
                     if (store.pendingVariations != null)
                       Positioned.fill(
