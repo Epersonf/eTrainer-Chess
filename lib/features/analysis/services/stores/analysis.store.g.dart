@@ -207,6 +207,42 @@ mixin _$AnalysisStore on AnalysisStoreBase, Store {
     });
   }
 
+  late final _$currentEvalScoreAtom = Atom(
+    name: 'AnalysisStoreBase.currentEvalScore',
+    context: context,
+  );
+
+  @override
+  double get currentEvalScore {
+    _$currentEvalScoreAtom.reportRead();
+    return super.currentEvalScore;
+  }
+
+  @override
+  set currentEvalScore(double value) {
+    _$currentEvalScoreAtom.reportWrite(value, super.currentEvalScore, () {
+      super.currentEvalScore = value;
+    });
+  }
+
+  late final _$currentEvalTextAtom = Atom(
+    name: 'AnalysisStoreBase.currentEvalText',
+    context: context,
+  );
+
+  @override
+  String get currentEvalText {
+    _$currentEvalTextAtom.reportRead();
+    return super.currentEvalText;
+  }
+
+  @override
+  set currentEvalText(String value) {
+    _$currentEvalTextAtom.reportWrite(value, super.currentEvalText, () {
+      super.currentEvalText = value;
+    });
+  }
+
   late final _$AnalysisStoreBaseActionController = ActionController(
     name: 'AnalysisStoreBase',
     context: context,
@@ -309,7 +345,9 @@ showWeakSquares: ${showWeakSquares},
 heatmapData: ${heatmapData},
 weakSquares: ${weakSquares},
 engineArrows: ${engineArrows},
-topEvaluations: ${topEvaluations}
+topEvaluations: ${topEvaluations},
+currentEvalScore: ${currentEvalScore},
+currentEvalText: ${currentEvalText}
     ''';
   }
 }

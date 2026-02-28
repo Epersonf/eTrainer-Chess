@@ -54,6 +54,13 @@ abstract class AnalysisStoreBase with Store {
   @observable
   ObservableList<EngineEvaluation> topEvaluations = ObservableList<EngineEvaluation>();
 
+  // NOVO: Valores numéricos e em texto da Vantagem p/ a Barra
+  @observable
+  double currentEvalScore = 0.0;
+
+  @observable
+  String currentEvalText = "0.00";
+
   @action
   void toggleHeatmap() {
     showHeatmap = !showHeatmap;
@@ -68,6 +75,8 @@ abstract class AnalysisStoreBase with Store {
     } else {
       engineArrows.clear();
       topEvaluations.clear(); // Limpa as variantes quando desliga
+      currentEvalScore = 0.0; // Reseta a barra
+      currentEvalText = "0.00";
     }
   }
 
@@ -231,6 +240,8 @@ abstract class AnalysisStoreBase with Store {
         List<dynamic> evalList = data is List ? data : [data];
         List<EngineEvaluation> newEvals = [];
 
+        bool isFirstMove = true; // Controla o "Top 1" lance
+
         for (var item in evalList) {
           final String? bestMove = item['move'] ?? item['bestmove'];
           if (bestMove == null || bestMove.length < 4) continue;
@@ -239,24 +250,33 @@ abstract class AnalysisStoreBase with Store {
           final to = bestMove.substring(2, 4);
           final arrow = EngineArrow(from, to);
 
-          // Formatação do Score (Ex: +0.34, -1.2, ou M3)
           String evalStr = "";
+          
           if (item['mate'] != null) {
             int m = item['mate'];
             evalStr = m < 0 ? "-M${m.abs()}" : "M$m";
+            
+            if (isFirstMove) {
+              currentEvalScore = m < 0 ? -10.0 : 10.0; // Força a barra no máximo pro lado que dá Mate
+              currentEvalText = evalStr;
+            }
           } else {
             double e = 0.0;
             try {
-              e = (item['eval'] is int)
-                  ? (item['eval'] as int).toDouble()
-                  : (item['eval'] ?? 0.0).toDouble();
+              e = (item['eval'] is int) ? (item['eval'] as int).toDouble() : (item['eval'] ?? 0.0).toDouble();
             } catch (_) {
               e = 0.0;
             }
             evalStr = e > 0 ? "+${e.toStringAsFixed(2)}" : e.toStringAsFixed(2);
+            
+            if (isFirstMove) {
+              currentEvalScore = e;
+              currentEvalText = evalStr;
+            }
           }
 
-          // Pegar array de continuação e gerar o texto "1. e4 e5..."
+          isFirstMove = false; // Garante que a barra não pegue os lances piores
+
           List<String> cont = (item['continuationArr'] as List<dynamic>?)?.cast<String>() ?? [];
           String sanLine = _buildSanLine(fenForEval, cont);
 

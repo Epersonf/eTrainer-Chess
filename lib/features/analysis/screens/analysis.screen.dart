@@ -4,12 +4,14 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'package:e_trainer_chess/components/main_app_bar.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import '../services/stores/analysis.store.dart';
 import '../components/analysis_board.dart';
 import '../components/analysis_controls.dart';
 import '../components/analysis_tools.dart';
 import '../components/move_list_panel.dart';
 import '../components/engine_eval_panel.dart';
+import '../components/eval_bar.dart';
 
 @RoutePage()
 class AnalysisScreen extends StatefulWidget {
@@ -59,12 +61,41 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               flex: 4, 
               child: Column(
                 children: [
-                  // O Expanded + Center garante que o AspectRatio do AnalysisBoard 
-                  // consiga calcular o quadrado perfeito sem dar overflow.
                   Expanded(
-                    child: Center(
-                      child: AnalysisBoard(store: store),
-                    ),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Observer(
+                          builder: (_) {
+                            // Calcula dinamicamente o espaço com base na visibilidade da barra (28px de largura + 12px de margem)
+                            double barWidth = store.showEngine ? 40.0 : 0.0;
+                            double availableWidth = constraints.maxWidth - barWidth;
+                            double availableHeight = constraints.maxHeight;
+                            
+                            // Força o tabuleiro a ser um quadrado perfeito considerando a barra ao lado
+                            double boardSize = availableWidth < availableHeight ? availableWidth : availableHeight;
+
+                            return Center(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  if (store.showEngine)
+                                    SizedBox(
+                                      height: boardSize,
+                                      child: EvalBar(store: store),
+                                    ),
+                                  SizedBox(
+                                    width: boardSize,
+                                    height: boardSize,
+                                    child: AnalysisBoard(store: store),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    )
                   ),
                   const SizedBox(height: 16),
                   AnalysisControls(store: store),
