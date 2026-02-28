@@ -1,9 +1,11 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:mobx/mobx.dart';
 import 'package:chess/chess.dart' as chess_lib;
 
-// Models
 import '../../models/square_stats.dart';
 import '../../models/engine_arrow.dart';
+import '../../utils/heatmap_calculator.dart';
 
 part 'analysis.store.g.dart';
 
@@ -14,7 +16,7 @@ abstract class AnalysisStoreBase with Store {
   List<String> _fensHistory = [chess_lib.Chess.DEFAULT_POSITION];
 
   @observable
-  int currentMoveIndex = 0; // Transformado em observable
+  int currentMoveIndex = 0;
 
   @observable
   String currentFen = chess_lib.Chess.DEFAULT_POSITION;
@@ -32,14 +34,16 @@ abstract class AnalysisStoreBase with Store {
   bool showEngine = false;
 
   @observable
-  ObservableMap<String, SquareStats> heatmapData =
-      ObservableMap<String, SquareStats>();
+  ObservableMap<String, SquareStats> heatmapData = ObservableMap<String, SquareStats>();
 
   @observable
   ObservableList<EngineArrow> engineArrows = ObservableList<EngineArrow>();
 
   @action
-  void toggleHeatmap() => showHeatmap = !showHeatmap;
+  void toggleHeatmap() {
+    showHeatmap = !showHeatmap;
+    if (showHeatmap) _calculateHeatmap();
+  }
 
   @action
   void toggleEngine() {
@@ -53,11 +57,9 @@ abstract class AnalysisStoreBase with Store {
 
   @action
   void loadPgn(String pgn, String name) {
-    // Limpa quebras de linha que quebram o parser do Windows
     final cleanPgn = pgn.replaceAll('\r\n', '\n').trim();
     final tempGame = chess_lib.Chess();
 
-    // Tenta fazer o parse do PGN
     if (!tempGame.load_pgn(cleanPgn)) {
       fileName = "Erro: Arquivo PGN inválido";
       moveList.clear();
@@ -67,45 +69,31 @@ abstract class AnalysisStoreBase with Store {
     fileName = name;
     engineArrows.clear();
 
-    // -----------------------------------------------------------------
-    // SOLUÇÃO: Pegar o texto limpo do PGN e extrair apenas os lances!
-    // -----------------------------------------------------------------
     String fullPgnText = tempGame.pgn();
-
-    // 1. Remove Headers (ex: [Event "xyz"])
     fullPgnText = fullPgnText.replaceAll(RegExp(r'\[.*?\]'), '');
-    // 2. Remove Comentários (ex: { excelente lance })
     fullPgnText = fullPgnText.replaceAll(RegExp(r'\{.*?\}'), '');
-    // 3. Remove Variações (ex: ( 1... d5 ) )
     fullPgnText = fullPgnText.replaceAll(RegExp(r'\(.*?\)'), '');
-    // 4. Remove a numeração das jogadas (ex: "1.", "25.")
     fullPgnText = fullPgnText.replaceAll(RegExp(r'\d+\.'), '');
-    // 5. Remove resultados padrão do final do arquivo
     fullPgnText = fullPgnText
         .replaceAll('1-0', '')
         .replaceAll('0-1', '')
         .replaceAll('1/2-1/2', '')
         .replaceAll('*', '');
 
-    // Agora temos só o texto puro dos lances, vamos separar os espaços num Array:
     final extractedMoves = fullPgnText
         .trim()
         .split(RegExp(r'\s+'))
-        .where((m) => m.isNotEmpty) // Garante que não pegue vazios
+        .where((m) => m.isNotEmpty)
         .toList();
 
-    // Atualiza a UI (Agora sim, vai aparecer 'e4', 'Nf3', etc)
     moveList.clear();
     moveList.addAll(extractedMoves);
 
-    // -----------------------------------------------------------------
-    // Refaz o jogo gerando a lista de posições FENs corretamente
-    // -----------------------------------------------------------------
     final replayGame = chess_lib.Chess();
-    final List<String> fens = [replayGame.fen]; // Fen inicial
+    final List<String> fens = [replayGame.fen];
 
     for (var moveStr in extractedMoves) {
-      replayGame.move(moveStr); // Engine entende perfeitamente a string SAN
+      replayGame.move(moveStr);
       fens.add(replayGame.fen);
     }
 
@@ -140,22 +128,45 @@ abstract class AnalysisStoreBase with Store {
 
   void _applyCurrentState() {
     currentFen = _fensHistory[currentMoveIndex];
-    game.load(currentFen); // Sincroniza o motor da biblioteca
-    _calculateHeatmap();
+    game.load(currentFen);
+
+    if (showHeatmap) _calculateHeatmap();
     if (showEngine) _requestEngineEval();
   }
 
+  // --- O SEGREDO DESMOCKADO AQUI --- //
+
   void _calculateHeatmap() {
     heatmapData.clear();
-    heatmapData['e4'] = SquareStats(3, 1);
-    heatmapData['d4'] = SquareStats(2, 2);
-    heatmapData['f3'] = SquareStats(0, 2);
+    final realStats = HeatmapCalculator.calculate(currentFen);
+    heatmapData.addAll(realStats);
   }
 
-  void _requestEngineEval() {
+  Future<void> _requestEngineEval() async {
     engineArrows.clear();
-    Future.delayed(const Duration(milliseconds: 500), () {
-      engineArrows = ObservableList.of([EngineArrow('e2', 'e4')]);
-    });
+    final fenForEval = currentFen;
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://chess-api.com/v1'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'fen': fenForEval, 'depth': 12}),
+      );
+
+      if (response.statusCode == 200) {
+        if (currentFen != fenForEval) return;
+
+        final data = jsonDecode(response.body);
+        final String bestMove = data['bestmove'];
+
+        if (bestMove.isNotEmpty && bestMove.length >= 4) {
+          final from = bestMove.substring(0, 2);
+          final to = bestMove.substring(2, 4);
+          engineArrows = ObservableList.of([EngineArrow(from, to)]);
+        }
+      }
+    } catch (e) {
+      print('Erro ao consultar a Engine: $e');
+    }
   }
 }
